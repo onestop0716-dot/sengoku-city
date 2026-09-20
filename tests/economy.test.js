@@ -6,7 +6,7 @@ import { applyCommand } from '../src/sim/commands.js';
 
 async function town(seed = 21) {
   const reg = await getRegistry();
-  const world = createWorld({ seed, cityId: 'daliang', reg, size: 64, money: 200000 });
+  const world = createWorld({ seed, cityId: 'daliang', reg, size: 64, money: 200000 , village: false });
   world.services.water = new Uint8Array(64 * 64).fill(1);
   applyCommand(world, reg, { type: 'zone.set', rect: { x0: 33, y0: 33, x1: 38, y1: 34 }, zoneId: 'res_commoner' });   // 横道(y=32)の南
   applyCommand(world, reg, { type: 'zone.set', rect: { x0: 26, y0: 33, x1: 31, y1: 37 }, zoneId: 'farm_millet' });
@@ -36,7 +36,7 @@ test('粟は8月に収穫され、穀物と田租が入る。積穀率の分は�
 
 test('畑がないと飢饉になり、民忠が下がって人口が流出する', async () => {
   const reg = await getRegistry();
-  const world = createWorld({ seed: 21, cityId: 'daliang', reg, size: 64, money: 200000 });
+  const world = createWorld({ seed: 21, cityId: 'daliang', reg, size: 64, money: 200000 , village: false });
   world.services.water = new Uint8Array(64 * 64).fill(1);
   world.grain.civil = 0;
   applyCommand(world, reg, { type: 'zone.set', rect: { x0: 33, y0: 33, x1: 40, y1: 35 }, zoneId: 'res_commoner' });
@@ -74,7 +74,7 @@ test('年初に上納が引かれ、履歴は24か月まで', async () => {
 
 test('需要メーターは −100〜100 の範囲で、飢えると農需要が上がる', async () => {
   const reg = await getRegistry();
-  const world = createWorld({ seed: 4, cityId: 'chen', reg, size: 64, money: 200000 });
+  const world = createWorld({ seed: 4, cityId: 'chen', reg, size: 64, money: 200000 , village: false });
   world.services.water = new Uint8Array(64 * 64).fill(1);
   applyCommand(world, reg, { type: 'zone.set', rect: { x0: 33, y0: 33, x1: 40, y1: 35 }, zoneId: 'res_commoner' });
   world.grain.civil = 0;

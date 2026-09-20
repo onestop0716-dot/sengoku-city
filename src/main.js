@@ -29,10 +29,12 @@ window.addEventListener('error', (e) => showError(`エラー: ${e.message}`));
 window.addEventListener('unhandledrejection', (e) => showError(`エラー: ${e.reason?.message || e.reason}`));
 
 async function main() {
-  const reg = createRegistry(await loadDataBrowser('./data/'));
+  const raw = await loadDataBrowser('./data/');
+  let reg = createRegistry(raw);
   for (const w of reg.warnings) console.warn('データ警告:', w);
   const settings = loadSettings();
   const start = await showStartScreen(reg);
+  reg = createRegistry(raw, { difficulty: start.difficulty });   // 難易度でバランス値を上書き
   const world = createWorld({ seed: start.seed, cityId: start.cityId, reg, size: start.size });
 
   const canvas = document.getElementById('view');

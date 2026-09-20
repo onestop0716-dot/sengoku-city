@@ -34,3 +34,14 @@ test('ビルダーの法線は単位ベクトル', () => {
     assert.ok(Math.abs(l - 1) < 1e-5);
   }
 });
+
+test('住民の部品モデルが作れ、関節が原点にある', async () => {
+  const { PART_GENERATORS, WARDROBE } = await import('../src/render/models/people.js');
+  for (const v of ['bun', 'cap', 'crown', 'tall_crown', 'helmet', 'female']) assert.ok(PART_GENERATORS.head({ variant: v }).vertexCount > 0, v);
+  for (const v of ['short', 'robe', 'wide_robe', 'armor']) assert.ok(PART_GENERATORS.torso({ variant: v }).vertexCount > 0, v);
+  for (const k of ['hoe', 'pole', 'bundle', 'ge', 'slips', 'basket']) assert.ok(PART_GENERATORS.item({ kind: k }).vertexCount > 0, k);
+  const leg = PART_GENERATORS.leg();
+  let minY = 0; for (let i = 1; i < leg.positions.length; i += 3) minY = Math.min(minY, leg.positions[i]);
+  assert.ok(minY < -0.4 && minY > -0.5, `脚の長さ ${minY}`);
+  for (const w of Object.values(WARDROBE)) assert.ok(w.cloth.length >= 2 && w.head.length >= 1);
+});

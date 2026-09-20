@@ -1,6 +1,6 @@
 // 右の情報パネル: マス／建物の詳細と繁栄度の内訳。
 import { idx } from '../core/grid.js';
-import { computeProsperity, zoneDefAt } from '../sim/zones.js';
+import { computeProsperity, zoneDefAt, explainBuildBlockers } from '../sim/zones.js';
 import { fieldYield } from '../sim/farming.js';
 import { effectText } from './structure-info.js';
 import { structureName } from '../sim/structures.js';
@@ -56,9 +56,15 @@ export function createInfoPanel(world, reg, tooltip) {
       html += `</table>`;
     } else if (zone) {
       const p = computeProsperity(world, reg, x, y, zone);
-      html += `<div style="margin-top:8px">この場所の${tooltip.termHtml('prosperity')}: <b>${p.total}</b>（${reg.balance.growth.buildThreshold}以上で建ちます）</div><table>`;
+      const ex = explainBuildBlockers(world, reg, x, y);
+      html += `<div style="margin-top:8px">この場所の${tooltip.termHtml('prosperity')}: <b>${p.total}</b>（${reg.balance.growth.buildThreshold}以上で建ち、${reg.balance.growth.levelUp.threshold}以上で成長）</div><table>`;
       for (const [k, v] of Object.entries(p.parts)) if (k !== '基本') html += `<tr><td style="padding-left:12px;opacity:.8">${k}</td><td>${v > 0 ? '+' : ''}${Math.round(v)}</td></tr>`;
       html += `</table>`;
+      if (ex.canBuild) html += `<div class="advice ok">条件を満たしています。順に建ちます</div>`;
+      else html += `<div class="advice"><b>建たない理由</b><ul>${ex.reasons.map((r) => `<li>${r}</li>`).join('')}</ul></div>`;
+      if (ex.tips.length) html += `<div class="advice"><b>助言</b><ul>${ex.tips.map((r) => `<li>${r}</li>`).join('')}</ul></div>`;
+    } else if (t.clearable) {
+      html += `<div class="advice">森は区画や道路を置くと自動で伐採されます（木材はフェーズ5の交易品）</div>`;
     }
     el.innerHTML = html;
   };

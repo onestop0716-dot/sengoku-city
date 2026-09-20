@@ -72,11 +72,12 @@ export function tickPopulationMonthly(world, reg) {
   world.hygiene = clamp(P.hygiene.base - (pop.total / 500) * P.hygiene.per500 + (world.services.hygieneBonus || 0), 0, 100);
 
   // 人口の増減（身分ごとに住居の収容数へ向かう）
-  const attract = clamp((world.loyalty - 30) / 50, 0, 1) * (world.foodSufficient ? 1 : 0.3);
+  const A = P.attract || { loyaltyFloor: 30, loyaltySpan: 50, foodShortFactor: 0.3 };
+  const attract = clamp((world.loyalty - A.loyaltyFloor) / A.loyaltySpan, 0, 1) * (world.foodSufficient ? 1 : A.foodShortFactor);
   const move = (cur, capacity) => {
     let n = cur;
     n += n * P.naturalGrowthPerMonth;
-    if (capacity > n) n += (capacity - n) * P.immigrationRate * attract + (n === 0 && capacity > 0 && attract > 0 ? 2 : 0);
+    if (capacity > n) n += (capacity - n) * P.immigrationRate * attract + (n === 0 && capacity > 0 && attract > 0 ? (P.seedImmigrants ?? 2) : 0);
     if (world.loyalty < L.emigrateBelow || world.foodSufficiency < E.famineThreshold) n -= n * P.emigrationRate;
     if (n > capacity) n -= (n - capacity) * 0.5;          // 住居不足なら流出
     return Math.max(0, n);

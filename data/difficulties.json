@@ -1,0 +1,96 @@
+[
+ {
+  "id": "easy",
+  "name": "易しい",
+  "desc": "資金と穀物が多く、家が建ちやすく、民忠が下がりにくい。災害は少なめ（フェーズ7）。",
+  "overrides": {
+   "start": {
+    "money": 15000,
+    "grain": 3000
+   },
+   "growth": {
+    "buildThreshold": 25
+   },
+   "prosperity": {
+    "water": {
+     "penalty": -4
+    }
+   },
+   "economy": {
+    "officialsSalaryPerMonth": 10,
+    "tributeRate": 0.03
+   },
+   "population": {
+    "loyalty": {
+     "base": 66,
+     "headTax": 100,
+     "landTax": 50
+    },
+    "immigrationRate": 0.25
+   },
+   "disasterRate": 0.5,
+   "aiAggression": 0.5
+  }
+ },
+ {
+  "id": "normal",
+  "name": "標準",
+  "desc": "区画を置けば順調に街が育つ基準のバランス。",
+  "overrides": {
+   "disasterRate": 1.0,
+   "aiAggression": 1.0
+  }
+ },
+ {
+  "id": "hard",
+  "name": "難しい",
+  "desc": "以前の厳しいバランス。水がないと家が育たず、失業で民忠が大きく下がり、資金も少ない。",
+  "overrides": {
+   "start": {
+    "money": 5000,
+    "grain": 800,
+    "village": {
+     "houses": 3,
+     "fields": 6,
+     "farmhouses": 1,
+     "population": 20
+    }
+   },
+   "growth": {
+    "buildThreshold": 50
+   },
+   "prosperity": {
+    "water": {
+     "bonus": 15,
+     "penalty": -20,
+     "range": 8
+    }
+   },
+   "economy": {
+    "officialsSalaryPerMonth": 40,
+    "tributeRate": 0.08,
+    "farmJobsPerTile": 2
+   },
+   "population": {
+    "loyalty": {
+     "base": 60,
+     "headTax": 150,
+     "landTax": 80,
+     "unemployed": 30,
+     "emigrateBelow": 35
+    },
+    "immigrationRate": 0.15,
+    "security": {
+     "unemployed": 30
+    }
+   },
+   "demand": {
+    "residential": {
+     "vacancy": 80
+    }
+   },
+   "disasterRate": 1.5,
+   "aiAggression": 1.5
+  }
+ }
+]

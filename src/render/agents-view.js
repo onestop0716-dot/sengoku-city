@@ -3,6 +3,7 @@
 // 馬車は士・貴族の邸から官府へ、舟は船着場の間を水路づたいに行き来する。
 import * as THREE from 'three';
 import { idx, inBounds, N4 } from '../core/grid.js';
+import { createPeopleView, makeLook } from './people-view.js';
 
 const KINDS = ['person_farmer', 'person_artisan', 'person_merchant', 'person_shi', 'person_noble', 'person_soldier', 'oxcart', 'handcart', 'carriage', 'boat'];
 
@@ -10,7 +11,9 @@ export function createAgentsView(world, reg, scene, assets, env) {
   const group = new THREE.Group();
   scene.add(group);
   const meshes = new Map();
-  let cap = { people: 300, vehicles: 60 };
+  const people = createPeopleView(group, assets.material);
+  let cap = { people: 300, vehicles: 60 }, nearDist = 45;
+  let lookSeed = 1;
   const agents = [];
   let rngState = 12345;
   const rnd = () => { rngState = (rngState * 1664525 + 1013904223) >>> 0; return rngState / 4294967296; };
@@ -91,7 +94,8 @@ export function createAgentsView(world, reg, scene, assets, env) {
     if (!from) return false;
     let path = findPath(from, to, passable, 4000) || wander(from, passable, 20 + Math.floor(rnd() * 20));
     if (!path || path.length < 2) return false;
-    agents.push({ kind, path, t: rnd() * (path.length - 1), dir: 1, speed: speed * (0.8 + rnd() * 0.4), wait: 0, life: 60 + rnd() * 120 });
+    const look = kind.startsWith('person_') ? makeLook(kind, lookSeed++) : null;
+    agents.push({ kind, path, t: rnd() * (path.length - 1), dir: 1, speed: speed * (0.8 + rnd() * 0.4) * (look?.age === 'child' ? 0.8 : look?.age === 'elder' ? 0.7 : 1), wait: 0, life: 60 + rnd() * 120, look, phase: rnd() * 6.28, clock: rnd() * 10 });
     return true;
   };
 
@@ -109,7 +113,7 @@ export function createAgentsView(world, reg, scene, assets, env) {
       if (r < 0.55 && work.field.length) { kind = 'person_farmer'; home = pick(homes.commoner); dest = pick(work.field); }
       else if (r < 0.7 && work.workshop.length) { kind = 'person_artisan'; home = pick(homes.commoner); dest = pick(work.workshop); }
       else if (r < 0.82 && work.market.length) { kind = 'person_merchant'; home = pick(homes.commoner); dest = pick(work.market); }
-      else if (r < 0.9 && homes.shi.length) { kind = 'person_shi'; home = pick(homes.shi); dest = pick(work.yamen) || pick(work.market); }
+      else if (r < 0.9 && homes.shi.length) { kind = rnd() < 0.5 && work.yamen.length ? 'person_official' : 'person_shi'; home = pick(homes.shi); dest = kind === 'person_official' ? pick(work.yamen) : pick(work.market) || pick(work.yamen); }
       else if (r < 0.94 && homes.noble.length) { kind = 'person_noble'; home = pick(homes.noble); dest = pick(work.yamen); }
       else if (work.barracks.length) { kind = 'person_soldier'; home = pick(work.barracks); dest = pick(work.yamen) || pick(homes.commoner); }
       else { kind = 'person_farmer'; home = pick(homes.commoner); dest = pick(work.market) || pick(work.field) || pick(work.yamen); }
@@ -137,19 +141,22 @@ export function createAgentsView(world, reg, scene, assets, env) {
   return {
     group,
     debug() { return { agents: agents.length, shown: Array.from(meshes.values()).map((m) => m.count).reduce((a, b) => a + b, 0) }; },
-    setQuality(q) { cap = { people: q.maxAgents ?? 300, vehicles: q.maxVehicles ?? 60 }; if (agents.length > cap.people + cap.vehicles) agents.length = cap.people + cap.vehicles; },
+    setQuality(q) { cap = { people: q.maxAgents ?? 300, vehicles: q.maxVehicles ?? 60 }; nearDist = q.peopleNear ?? 45; if (agents.length > cap.people + cap.vehicles) agents.length = cap.people + cap.vehicles; },
     update(dt, gameSpeed, camPos) {
       const now = performance.now();
       if (now >= nextRefresh) { nextRefresh = now + 2000; refresh(); }
       const spd = gameSpeed > 0 ? Math.sqrt(gameSpeed) : 0;
       const counts = new Map();
+      people.begin();
       for (let i = agents.length - 1; i >= 0; i--) {
         const a = agents[i];
         a.life -= dt;
         if (a.life <= 0) { agents.splice(i, 1); continue; }
+        a.clock += dt;
         if (a.wait > 0) a.wait -= dt;
         else {
           a.t += a.dir * a.speed * spd * dt;
+          a.phase += a.speed * spd * dt * 7;
           if (a.t >= a.path.length - 1) { a.t = a.path.length - 1; a.dir = -1; a.wait = 8 + rnd() * 20; }
           else if (a.t <= 0) { a.t = 0; a.dir = 1; a.wait = 5 + rnd() * 15; }
         }
@@ -160,15 +167,26 @@ export function createAgentsView(world, reg, scene, assets, env) {
         const side = ((i * 7919) % 5 - 2) * 0.12;
         const dx = (p1[0] - p0[0]) * a.dir, dz = (p1[1] - p0[1]) * a.dir;
         const rot = (dx || dz) ? Math.atan2(dx, dz) : 0;
-        const y = a.kind === 'boat' ? env.terrain.field.waterLevel + 0.02 : env.terrain.heightAt(x, z) + (a.kind.startsWith('person_') && a.wait <= 0 ? Math.abs(Math.sin(a.t * 12)) * 0.03 : 0);
-        const mesh = ensure(a.kind);
-        const n = counts.get(a.kind) || 0;
+        const y = a.kind === 'boat' ? env.terrain.field.waterLevel + 0.02 : env.terrain.heightAt(x, z);
         tmp.set(x - Math.cos(rot) * side, y, z + Math.sin(rot) * side);
-        if (camPos && tmp.distanceTo(camPos) > 140) continue;
+        const dist = camPos ? tmp.distanceTo(camPos) : 0;
+        if (dist > 140) continue;
+        if (a.look && dist < nearDist) {
+          // 近景: 関節つきの人。仕事場に着いた農民は作業、商人は客と話す
+          const atWork = a.wait > 0 && a.dir === -1;
+          const action = a.wait <= 0 && spd > 0 ? 'walk' : atWork && a.kind === 'person_farmer' && a.look.item === 'hoe' ? 'work' : atWork && (a.kind === 'person_merchant' || a.kind === 'person_official') ? 'talk' : 'idle';
+          people.draw(a.look, { x: tmp.x, y: tmp.y, z: tmp.z, rot, phase: a.phase, action, t: a.clock });
+          continue;
+        }
+        const kindKey = a.kind === 'person_official' ? 'person_shi' : a.kind;
+        const mesh = ensure(kindKey);
+        const n = counts.get(kindKey) || 0;
         pos.copy(tmp); quat.setFromAxisAngle(up, rot);
-        m4.compose(pos, quat, scl); mesh.setMatrixAt(n, m4); counts.set(a.kind, n + 1);
+        if (a.look) scl.setScalar(a.look.scale); else scl.setScalar(1);
+        m4.compose(pos, quat, scl); mesh.setMatrixAt(n, m4); counts.set(kindKey, n + 1);
       }
       for (const [kind, mesh] of meshes) { mesh.count = counts.get(kind) || 0; mesh.instanceMatrix.needsUpdate = true; }
+      people.end();
     },
   };
 }

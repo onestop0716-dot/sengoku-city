@@ -12,7 +12,7 @@ export function serializeWorld(world) {
   return {
     version: SAVE_VERSION,
     savedAt: new Date().toISOString(),
-    seed: world.seed, cityId: world.cityId, nationId: world.nationId,
+    seed: world.seed, cityId: world.cityId, nationId: world.nationId, difficulty: world.difficulty || 'normal',
     rngState: world.rng.getState(),
     day: world.day, calendar: { ...world.calendar },
     map: { w: world.map.w, h: world.map.h, tile: arr(world.map.tile), height: arr(world.map.height), fertility: arr(world.map.fertility), resource: arr(world.map.resource) },

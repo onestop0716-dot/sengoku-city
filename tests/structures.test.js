@@ -10,7 +10,7 @@ import { idx } from '../src/core/grid.js';
 const run = (world, reg, n) => { for (let d = 0; d < n; d++) tick(world, reg); };
 async function fresh(seed = 3, city = 'daliang') {
   const reg = await getRegistry();
-  const world = createWorld({ seed, cityId: city, reg, size: 64, money: 1e6 });
+  const world = createWorld({ seed, cityId: city, reg, size: 64, money: 1e6 , village: false });
   return { reg, world };
 }
 

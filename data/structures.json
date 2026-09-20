@@ -1,66 +1,601 @@
 [
-  { "id": "yamen", "name": "官府（県廷）", "size": [3, 3], "cost": 0, "upkeep": 0, "buildDays": 0, "category": "admin", "unique": true, "initial": true,
-    "effects": [ { "type": "security", "value": 5, "radius": 15 }, { "type": "granary_capacity", "value": 800 } ],
-    "unlock": { "rank": "magistrate" }, "models": ["yamen_a"], "term": "yamen", "note": "秦簡に「県廷」。1都市に1つ、開始時に中央に建つ" },
-  { "id": "well", "name": "井戸", "size": [1, 1], "cost": 60, "upkeep": 1, "buildDays": 5, "category": "water",
-    "effects": [ { "type": "water", "radius": 6 }, { "type": "hygiene", "value": 1.5 } ],
-    "unlock": { "rank": "magistrate" }, "models": ["well_a"], "term": "well", "note": "戦国の都市遺跡に多数の井戸" },
-  { "id": "canal", "name": "灌漑水路", "linear": true, "cost": 12, "upkeep": 0.3, "buildDays": 3, "category": "water",
-    "effects": [ { "type": "water", "radius": 2 }, { "type": "irrigation", "value": 0.3 } ],
-    "placement": { "connectWater": true }, "unlock": { "rank": "magistrate" }, "models": ["canal_a"], "term": "canal", "note": "川・湖につながる線状に引く。隣接する畑の収量 +30%" },
-  { "id": "levee", "name": "堤防", "linear": true, "cost": 15, "upkeep": 0.3, "buildDays": 4, "category": "water",
-    "effects": [ { "type": "flood_protection", "value": 0.5 } ],
-    "placement": { "shore": true }, "unlock": { "rank": "magistrate" }, "models": ["levee_a"], "term": "levee", "note": "岸辺（水際1マス）にのみ置ける。洪水の被害を軽減（フェーズ7）" },
-  { "id": "bridge", "name": "橋", "linear": true, "cost": 40, "upkeep": 1, "buildDays": 6, "category": "road",
-    "effects": [ { "type": "road" } ],
-    "placement": { "overWater": true, "maxLength": 9 }, "unlock": { "rank": "magistrate" }, "models": ["bridge_a"], "term": "bridge", "note": "木橋。川を渡す道路になる" },
-  { "id": "granary", "name": "穀倉", "size": [2, 2], "cost": 300, "upkeep": 5, "buildDays": 30, "category": "storage",
-    "effects": [ { "type": "granary_capacity", "value": 5000 }, { "type": "famine_mitigation", "value": 0.3 } ],
-    "unlock": { "rank": "magistrate" }, "models": ["granary_a"], "term": "granary", "note": "秦簡『倉律』" },
-  { "id": "market_hall", "name": "市亭", "size": [2, 2], "cost": 250, "upkeep": 4, "buildDays": 20, "category": "market",
-    "effects": [ { "type": "market_admin", "radius": 10 } ],
-    "unlock": { "rank": "magistrate" }, "models": ["market_hall_a"], "term": "shiting", "note": "市を管理する役所。半径10マスの市区画が機能する" },
-  { "id": "wall", "name": "城壁（版築）", "linear": true, "cost": 25, "upkeep": 0.5, "buildDays": 6, "category": "defense",
-    "effects": [ { "type": "defense", "value": 10 } ],
-    "unlock": { "rank": "magistrate" }, "models": ["wall_a"], "term": "hangtu", "note": "版築の城壁。囲うと内側が「内城」になる" },
-  { "id": "gate", "name": "城門", "size": [1, 1], "cost": 120, "upkeep": 2, "buildDays": 10, "category": "defense",
-    "effects": [ { "type": "defense", "value": 5 }, { "type": "road" } ],
-    "placement": { "onWallLine": true }, "unlock": { "rank": "magistrate" }, "models": ["gate_a"], "term": "gate", "note": "城壁の出入口。道路として通れる" },
-  { "id": "watchtower", "name": "望楼", "size": [1, 1], "cost": 90, "upkeep": 1.5, "buildDays": 8, "category": "defense",
-    "effects": [ { "type": "defense", "value": 4 }, { "type": "security", "value": 3, "radius": 8 } ],
-    "unlock": { "rank": "magistrate" }, "models": ["watchtower_a"], "term": "watchtower", "note": "楼・観。見張りと弩の射座" },
-  { "id": "armory", "name": "武庫", "size": [2, 2], "cost": 280, "upkeep": 4, "buildDays": 25, "category": "military",
-    "effects": [ { "type": "equipment_capacity", "value": 500 } ],
-    "unlock": { "rank": "magistrate" }, "models": ["armory_a"], "term": "armory", "note": "「庫」。武器・甲の保管（フェーズ6）" },
-  { "id": "drill_ground", "name": "練兵場", "size": [4, 4], "cost": 350, "upkeep": 6, "buildDays": 20, "category": "military",
-    "effects": [ { "type": "training", "value": 1 } ],
-    "unlock": { "rank": "magistrate" }, "models": ["drill_ground_a"], "term": "drill", "note": "兵の練度を上げる（フェーズ6）" },
-  { "id": "ancestral_temple", "name": "宗廟", "size": [3, 3], "cost": 900, "upkeep": 10, "buildDays": 60, "category": "temple",
-    "effects": [ { "type": "loyalty", "value": 5 } ],
-    "unlock": { "rank": "governor" }, "models": ["ancestral_temple_a"], "term": "zongmiao", "note": "本来は国君のもの。郡守以上で解禁（承認済みの簡略化）" },
-  { "id": "altar", "name": "社稷壇", "size": [2, 2], "cost": 200, "upkeep": 2, "buildDays": 15, "category": "temple",
-    "effects": [ { "type": "loyalty", "value": 2 }, { "type": "farm_demand", "value": 10 }, { "type": "disaster_mitigation", "value": 0.1 } ],
-    "unlock": { "rank": "magistrate" }, "models": ["altar_a"], "term": "sheji", "note": "土地と穀物の神を祀る壇" },
-  { "id": "academy", "name": "客館", "size": [3, 3], "cost": 700, "upkeep": 12, "buildDays": 45, "category": "temple",
-    "nameByNation": { "qi": "学宮" },
-    "effects": [ { "type": "research", "value": 0.3 }, { "type": "visitor", "value": 0.2 } ],
-    "unlock": { "tech": "hospitality" }, "models": ["academy_a"], "term": "academy", "note": "斉では稷下学宮。他国は賓客の館。技術「賓客の招致」で解禁（フェーズ4）" },
-  { "id": "palace", "name": "宮殿", "size": [5, 5], "cost": 3000, "upkeep": 30, "buildDays": 120, "category": "admin",
-    "effects": [ { "type": "prestige", "value": 20 } ],
-    "unlock": { "rank": "governor" }, "models": ["palace_a"], "term": "palace", "note": "台榭（版築の高台に堂）。郡守以上" },
-  { "id": "customs", "name": "関所", "size": [1, 3], "cost": 200, "upkeep": 3, "buildDays": 15, "category": "trade",
-    "effects": [ { "type": "customs", "value": 1 } ],
-    "placement": { "onRoad": true }, "unlock": { "rank": "magistrate" }, "models": ["customs_a"], "term": "customs", "note": "道路の上に置く。関税（フェーズ5）" },
-  { "id": "beacon", "name": "烽火台", "size": [1, 1], "cost": 80, "upkeep": 1, "buildDays": 8, "category": "defense",
-    "effects": [ { "type": "warning", "value": 1 } ],
-    "unlock": { "rank": "magistrate" }, "models": ["beacon_a"], "term": "beacon", "note": "『墨子』号令篇。敵の接近を早く知る（フェーズ6）" },
-  { "id": "post_station", "name": "伝舎", "size": [2, 2], "cost": 180, "upkeep": 3, "buildDays": 15, "category": "admin",
-    "effects": [ { "type": "post", "value": 1 } ],
-    "unlock": { "rank": "magistrate" }, "models": ["post_station_a"], "term": "post", "note": "秦簡に「伝舎」。王命・外交・商隊が速くなる（フェーズ5）" },
-  { "id": "prison", "name": "獄", "size": [2, 2], "cost": 220, "upkeep": 4, "buildDays": 20, "category": "admin",
-    "effects": [ { "type": "security", "value": 10, "radius": 12 }, { "type": "loyalty", "value": -2 } ],
-    "unlock": { "rank": "magistrate" }, "models": ["prison_a"], "term": "prison", "note": "秦簡に「獄」" },
-  { "id": "dock", "name": "船着場", "size": [2, 2], "cost": 240, "upkeep": 3, "buildDays": 20, "category": "trade",
-    "effects": [ { "type": "dock", "value": 1 } ],
-    "placement": { "nearWater": true }, "unlock": { "rank": "magistrate" }, "models": ["dock_a"], "term": "dock", "note": "「津」。舟が発着する。水上交易（フェーズ5）" }
+  {
+    "id": "yamen",
+    "name": "官府（県廷）",
+    "size": [
+      3,
+      3
+    ],
+    "cost": 0,
+    "upkeep": 0,
+    "buildDays": 0,
+    "category": "admin",
+    "unique": true,
+    "initial": true,
+    "effects": [
+      {
+        "type": "security",
+        "value": 5,
+        "radius": 15
+      },
+      {
+        "type": "granary_capacity",
+        "value": 800
+      }
+    ],
+    "unlock": {
+      "rank": "magistrate"
+    },
+    "models": [
+      "yamen_a"
+    ],
+    "term": "yamen",
+    "note": "秦簡に「県廷」。1都市に1つ、開始時に中央に建つ"
+  },
+  {
+    "id": "well",
+    "name": "井戸",
+    "size": [
+      1,
+      1
+    ],
+    "cost": 60,
+    "upkeep": 1,
+    "buildDays": 5,
+    "category": "water",
+    "effects": [
+      {
+        "type": "water",
+        "radius": 10
+      },
+      {
+        "type": "hygiene",
+        "value": 1.5
+      }
+    ],
+    "unlock": {
+      "rank": "magistrate"
+    },
+    "models": [
+      "well_a"
+    ],
+    "term": "well",
+    "note": "戦国の都市遺跡に多数の井戸。半径10マスに水を供給"
+  },
+  {
+    "id": "canal",
+    "name": "灌漑水路",
+    "linear": true,
+    "cost": 12,
+    "upkeep": 0.3,
+    "buildDays": 3,
+    "category": "water",
+    "effects": [
+      {
+        "type": "water",
+        "radius": 2
+      },
+      {
+        "type": "irrigation",
+        "value": 0.3
+      }
+    ],
+    "placement": {
+      "connectWater": true
+    },
+    "unlock": {
+      "rank": "magistrate"
+    },
+    "models": [
+      "canal_a"
+    ],
+    "term": "canal",
+    "note": "川・湖につながる線状に引く。隣接する畑の収量 +30%"
+  },
+  {
+    "id": "levee",
+    "name": "堤防",
+    "linear": true,
+    "cost": 15,
+    "upkeep": 0.3,
+    "buildDays": 4,
+    "category": "water",
+    "effects": [
+      {
+        "type": "flood_protection",
+        "value": 0.5
+      }
+    ],
+    "placement": {
+      "shore": true
+    },
+    "unlock": {
+      "rank": "magistrate"
+    },
+    "models": [
+      "levee_a"
+    ],
+    "term": "levee",
+    "note": "岸辺（水際1マス）にのみ置ける。洪水の被害を軽減（フェーズ7）"
+  },
+  {
+    "id": "bridge",
+    "name": "橋",
+    "linear": true,
+    "cost": 40,
+    "upkeep": 1,
+    "buildDays": 6,
+    "category": "road",
+    "effects": [
+      {
+        "type": "road"
+      }
+    ],
+    "placement": {
+      "overWater": true,
+      "maxLength": 9
+    },
+    "unlock": {
+      "rank": "magistrate"
+    },
+    "models": [
+      "bridge_a"
+    ],
+    "term": "bridge",
+    "note": "木橋。川を渡す道路になる"
+  },
+  {
+    "id": "granary",
+    "name": "穀倉",
+    "size": [
+      2,
+      2
+    ],
+    "cost": 300,
+    "upkeep": 5,
+    "buildDays": 30,
+    "category": "storage",
+    "effects": [
+      {
+        "type": "granary_capacity",
+        "value": 5000
+      },
+      {
+        "type": "famine_mitigation",
+        "value": 0.3
+      }
+    ],
+    "unlock": {
+      "rank": "magistrate"
+    },
+    "models": [
+      "granary_a"
+    ],
+    "term": "granary",
+    "note": "秦簡『倉律』"
+  },
+  {
+    "id": "market_hall",
+    "name": "市亭",
+    "size": [
+      2,
+      2
+    ],
+    "cost": 250,
+    "upkeep": 4,
+    "buildDays": 20,
+    "category": "market",
+    "effects": [
+      {
+        "type": "market_admin",
+        "radius": 10
+      }
+    ],
+    "unlock": {
+      "rank": "magistrate"
+    },
+    "models": [
+      "market_hall_a"
+    ],
+    "term": "shiting",
+    "note": "市を管理する役所。半径10マスの市区画が機能する"
+  },
+  {
+    "id": "wall",
+    "name": "城壁（版築）",
+    "linear": true,
+    "cost": 25,
+    "upkeep": 0.5,
+    "buildDays": 6,
+    "category": "defense",
+    "effects": [
+      {
+        "type": "defense",
+        "value": 10
+      }
+    ],
+    "unlock": {
+      "rank": "magistrate"
+    },
+    "models": [
+      "wall_a"
+    ],
+    "term": "hangtu",
+    "note": "版築の城壁。囲うと内側が「内城」になる"
+  },
+  {
+    "id": "gate",
+    "name": "城門",
+    "size": [
+      1,
+      1
+    ],
+    "cost": 120,
+    "upkeep": 2,
+    "buildDays": 10,
+    "category": "defense",
+    "effects": [
+      {
+        "type": "defense",
+        "value": 5
+      },
+      {
+        "type": "road"
+      }
+    ],
+    "placement": {
+      "onWallLine": true
+    },
+    "unlock": {
+      "rank": "magistrate"
+    },
+    "models": [
+      "gate_a"
+    ],
+    "term": "gate",
+    "note": "城壁の出入口。道路として通れる"
+  },
+  {
+    "id": "watchtower",
+    "name": "望楼",
+    "size": [
+      1,
+      1
+    ],
+    "cost": 90,
+    "upkeep": 1.5,
+    "buildDays": 8,
+    "category": "defense",
+    "effects": [
+      {
+        "type": "defense",
+        "value": 4
+      },
+      {
+        "type": "security",
+        "value": 3,
+        "radius": 8
+      }
+    ],
+    "unlock": {
+      "rank": "magistrate"
+    },
+    "models": [
+      "watchtower_a"
+    ],
+    "term": "watchtower",
+    "note": "楼・観。見張りと弩の射座"
+  },
+  {
+    "id": "armory",
+    "name": "武庫",
+    "size": [
+      2,
+      2
+    ],
+    "cost": 280,
+    "upkeep": 4,
+    "buildDays": 25,
+    "category": "military",
+    "effects": [
+      {
+        "type": "equipment_capacity",
+        "value": 500
+      }
+    ],
+    "unlock": {
+      "rank": "magistrate"
+    },
+    "models": [
+      "armory_a"
+    ],
+    "term": "armory",
+    "note": "「庫」。武器・甲の保管（フェーズ6）"
+  },
+  {
+    "id": "drill_ground",
+    "name": "練兵場",
+    "size": [
+      4,
+      4
+    ],
+    "cost": 350,
+    "upkeep": 6,
+    "buildDays": 20,
+    "category": "military",
+    "effects": [
+      {
+        "type": "training",
+        "value": 1
+      }
+    ],
+    "unlock": {
+      "rank": "magistrate"
+    },
+    "models": [
+      "drill_ground_a"
+    ],
+    "term": "drill",
+    "note": "兵の練度を上げる（フェーズ6）"
+  },
+  {
+    "id": "ancestral_temple",
+    "name": "宗廟",
+    "size": [
+      3,
+      3
+    ],
+    "cost": 900,
+    "upkeep": 10,
+    "buildDays": 60,
+    "category": "temple",
+    "effects": [
+      {
+        "type": "loyalty",
+        "value": 5
+      }
+    ],
+    "unlock": {
+      "rank": "governor"
+    },
+    "models": [
+      "ancestral_temple_a"
+    ],
+    "term": "zongmiao",
+    "note": "本来は国君のもの。郡守以上で解禁（承認済みの簡略化）"
+  },
+  {
+    "id": "altar",
+    "name": "社稷壇",
+    "size": [
+      2,
+      2
+    ],
+    "cost": 200,
+    "upkeep": 2,
+    "buildDays": 15,
+    "category": "temple",
+    "effects": [
+      {
+        "type": "loyalty",
+        "value": 2
+      },
+      {
+        "type": "farm_demand",
+        "value": 10
+      },
+      {
+        "type": "disaster_mitigation",
+        "value": 0.1
+      }
+    ],
+    "unlock": {
+      "rank": "magistrate"
+    },
+    "models": [
+      "altar_a"
+    ],
+    "term": "sheji",
+    "note": "土地と穀物の神を祀る壇"
+  },
+  {
+    "id": "academy",
+    "name": "客館",
+    "size": [
+      3,
+      3
+    ],
+    "cost": 700,
+    "upkeep": 12,
+    "buildDays": 45,
+    "category": "temple",
+    "nameByNation": {
+      "qi": "学宮"
+    },
+    "effects": [
+      {
+        "type": "research",
+        "value": 0.3
+      },
+      {
+        "type": "visitor",
+        "value": 0.2
+      }
+    ],
+    "unlock": {
+      "tech": "hospitality"
+    },
+    "models": [
+      "academy_a"
+    ],
+    "term": "academy",
+    "note": "斉では稷下学宮。他国は賓客の館。技術「賓客の招致」で解禁（フェーズ4）"
+  },
+  {
+    "id": "palace",
+    "name": "宮殿",
+    "size": [
+      5,
+      5
+    ],
+    "cost": 3000,
+    "upkeep": 30,
+    "buildDays": 120,
+    "category": "admin",
+    "effects": [
+      {
+        "type": "prestige",
+        "value": 20
+      }
+    ],
+    "unlock": {
+      "rank": "governor"
+    },
+    "models": [
+      "palace_a"
+    ],
+    "term": "palace",
+    "note": "台榭（版築の高台に堂）。郡守以上"
+  },
+  {
+    "id": "customs",
+    "name": "関所",
+    "size": [
+      1,
+      3
+    ],
+    "cost": 200,
+    "upkeep": 3,
+    "buildDays": 15,
+    "category": "trade",
+    "effects": [
+      {
+        "type": "customs",
+        "value": 1
+      }
+    ],
+    "placement": {
+      "onRoad": true
+    },
+    "unlock": {
+      "rank": "magistrate"
+    },
+    "models": [
+      "customs_a"
+    ],
+    "term": "customs",
+    "note": "道路の上に置く。関税（フェーズ5）"
+  },
+  {
+    "id": "beacon",
+    "name": "烽火台",
+    "size": [
+      1,
+      1
+    ],
+    "cost": 80,
+    "upkeep": 1,
+    "buildDays": 8,
+    "category": "defense",
+    "effects": [
+      {
+        "type": "warning",
+        "value": 1
+      }
+    ],
+    "unlock": {
+      "rank": "magistrate"
+    },
+    "models": [
+      "beacon_a"
+    ],
+    "term": "beacon",
+    "note": "『墨子』号令篇。敵の接近を早く知る（フェーズ6）"
+  },
+  {
+    "id": "post_station",
+    "name": "伝舎",
+    "size": [
+      2,
+      2
+    ],
+    "cost": 180,
+    "upkeep": 3,
+    "buildDays": 15,
+    "category": "admin",
+    "effects": [
+      {
+        "type": "post",
+        "value": 1
+      }
+    ],
+    "unlock": {
+      "rank": "magistrate"
+    },
+    "models": [
+      "post_station_a"
+    ],
+    "term": "post",
+    "note": "秦簡に「伝舎」。王命・外交・商隊が速くなる（フェーズ5）"
+  },
+  {
+    "id": "prison",
+    "name": "獄",
+    "size": [
+      2,
+      2
+    ],
+    "cost": 220,
+    "upkeep": 4,
+    "buildDays": 20,
+    "category": "admin",
+    "effects": [
+      {
+        "type": "security",
+        "value": 10,
+        "radius": 12
+      },
+      {
+        "type": "loyalty",
+        "value": -2
+      }
+    ],
+    "unlock": {
+      "rank": "magistrate"
+    },
+    "models": [
+      "prison_a"
+    ],
+    "term": "prison",
+    "note": "秦簡に「獄」"
+  },
+  {
+    "id": "dock",
+    "name": "船着場",
+    "size": [
+      2,
+      2
+    ],
+    "cost": 240,
+    "upkeep": 3,
+    "buildDays": 20,
+    "category": "trade",
+    "effects": [
+      {
+        "type": "dock",
+        "value": 1
+      }
+    ],
+    "placement": {
+      "nearWater": true
+    },
+    "unlock": {
+      "rank": "magistrate"
+    },
+    "models": [
+      "dock_a"
+    ],
+    "term": "dock",
+    "note": "「津」。舟が発着する。水上交易（フェーズ5）"
+  }
 ]

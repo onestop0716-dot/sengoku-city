@@ -1,13 +1,23 @@
 // data/*.json をまとめて引けるようにする。sim/render/ui は生の JSON ではなく registry を使う。
 import { validateData } from './validate.js';
 
-export const DATA_FILES = ['nations', 'cities', 'terrain', 'zones', 'buildings', 'crops', 'assets', 'balance', 'terms', 'structures'];
+export const DATA_FILES = ['nations', 'cities', 'terrain', 'zones', 'buildings', 'crops', 'assets', 'balance', 'terms', 'structures', 'difficulties'];
+
+/** 深いマージ（難易度の上書き用） */
+export function deepMerge(base, over) {
+  if (!over || typeof over !== 'object' || Array.isArray(over)) return over === undefined ? base : over;
+  const out = { ...base };
+  for (const [k, v] of Object.entries(over)) out[k] = typeof v === 'object' && v !== null && !Array.isArray(v) && typeof base?.[k] === 'object' ? deepMerge(base[k], v) : v;
+  return out;
+}
 
 const byId = (arr) => { const m = new Map(); for (const e of arr) m.set(e.id, e); return m; };
 
 /** @param {object} raw 各ファイルの内容 */
-export function createRegistry(raw) {
+export function createRegistry(raw, { difficulty = 'normal' } = {}) {
   const { errors, warnings } = validateData(raw);
+  const diff = (raw.difficulties || []).find((d) => d.id === difficulty) || (raw.difficulties || []).find((d) => d.id === 'normal');
+  const balance = diff ? deepMerge(raw.balance, diff.overrides || {}) : raw.balance;
   if (errors.length) throw new Error('データ検証エラー:\n' + errors.join('\n'));
   const tiles = raw.terrain.tiles;
   const tileIndex = new Map(tiles.map((t, i) => [t.id, i]));
@@ -24,7 +34,7 @@ export function createRegistry(raw) {
     crops: raw.crops, cropById: byId(raw.crops),
     assets: raw.assets, assetById: byId(raw.assets),
     terms: raw.terms, termById: byId(raw.terms),
-    balance: raw.balance,
+    balance, difficulty: diff ? diff.id : 'normal', difficulties: raw.difficulties || [],
   };
 }
 

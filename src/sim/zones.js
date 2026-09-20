@@ -25,7 +25,7 @@ export function canZoneTile(world, reg, x, y, zoneDef) {
 /** 矩形に区画を設定（zoneId=null で解除。解除時はその上の建物も撤去） */
 export function setZoneRect(world, reg, rect, zoneId) {
   const w = world.map.w;
-  let changed = 0;
+  let changed = 0, cleared = 0;
   const zoneDef = zoneId ? reg.zoneById.get(zoneId) : null;
   const zi = zoneDef ? reg.zoneIndex.get(zoneId) + 1 : 0;
   for (const [x, y] of rectTiles(rect)) {
@@ -34,8 +34,8 @@ export function setZoneRect(world, reg, rect, zoneId) {
     if (zoneDef) {
       if (world.zones[i] === zi) continue;
       if (!canZoneTile(world, reg, x, y, zoneDef)) continue;
-      // 森は開墾されて平地になる
-      if (reg.tiles[world.map.tile[i]].clearable) { world.map.tile[i] = reg.tileIndex.get('plain'); world.dirty.trees = true; }
+      // 森は開墾されて平地になる（伐採数を数えて知らせる）
+      if (reg.tiles[world.map.tile[i]].clearable) { world.map.tile[i] = reg.tileIndex.get('plain'); world.dirty.trees = true; cleared++; }
       world.zones[i] = zi;
     } else {
       if (world.buildingAt[i] !== -1) removeBuilding(world, world.buildingAt[i]);
@@ -45,6 +45,7 @@ export function setZoneRect(world, reg, rect, zoneId) {
     world.dirty.tiles.add(i);
     changed++;
   }
+  if (cleared) world.log.push({ day: world.day, text: `森 ${cleared} マスを伐採して区画にしました` });
   return changed;
 }
 
@@ -113,6 +114,45 @@ export function computeProsperity(world, reg, x, y, zoneDef, building = null) {
   let total = 0;
   for (const k in parts) total += parts[k];
   return { total: clamp(Math.round(total), 0, 100), parts };
+}
+
+/**
+ * 区画のマスに建物が建たない理由と、建てるための助言（UI 表示用）。
+ * @returns {{canBuild:boolean, reasons:string[], tips:string[]}}
+ */
+export function explainBuildBlockers(world, reg, x, y) {
+  const i = idx(world.map.w, x, y);
+  const zoneDef = zoneDefAt(world, reg, i);
+  const G = reg.balance.growth, P = reg.balance.prosperity;
+  const reasons = [], tips = [];
+  if (!zoneDef) return { canBuild: false, reasons: ['区画がありません'], tips: [] };
+  ensureRoadDist(world, reg);
+  const rd = world.roadDist[i];
+  if (rd > zoneDef.roadDistance) { reasons.push(`道路から遠い（${rd >= 0xffff ? '届いていません' : rd + 'マス'}）`); tips.push(`道路を ${zoneDef.roadDistance} マス以内まで引く`); }
+  const demand = world.demand[zoneDef.demandKey] ?? 0;
+  if (demand <= 0) {
+    reasons.push(`需要が不足（${Math.round(demand)}）`);
+    if (zoneDef.demandKey === 'residential') tips.push('仕事（畑・工房・市）を増やす、税率を下げる、食糧を確保する');
+    else if (zoneDef.demandKey === 'farm') tips.push('穀物が十分にあるため農地の需要が低い。人口が増えると上がる');
+    else if (zoneDef.demandKey === 'market') tips.push('人口が 200 人を超えると市の需要が出る');
+    else tips.push('人口が増え、仕事が足りなくなると工房の需要が出る');
+  }
+  const p = computeProsperity(world, reg, x, y, zoneDef);
+  if (p.total < G.buildThreshold) reasons.push(`繁栄度が低い（${p.total} / 必要 ${G.buildThreshold}）`);
+  if ((p.parts['水'] ?? 0) < 0) tips.push(`井戸を近く（半径10マス）に建てると水 +${P.water.bonus - P.water.penalty}`);
+  if ((p.parts['市亭'] ?? 0) < 0) tips.push('市亭の管理範囲（半径10マス）の中に市区画を置く');
+  if ((p.parts['食糧'] ?? 0) < 0) tips.push('農地を増やすか積穀率を上げて食糧を確保する');
+  if ((p.parts['周辺'] ?? 0) < 0) tips.push('隣の工房から離す');
+  const cheapest = Math.min(...zoneDef.buildings.map((e) => reg.buildingById.get(e.id).levels[0].cost));
+  if (world.money < cheapest) { reasons.push('銭が足りない'); tips.push('税率を上げるか収穫を待つ'); }
+  if (zoneDef.category === 'workshop') {
+    const any = zoneDef.buildings.some((e) => meetsRequirement(world, reg, reg.buildingById.get(e.id), x, y));
+    if (!any) { reasons.push('近くに工房の材料がない'); tips.push('銅・鉄・粘土・塩の資源（半径6）や桑・麻の畑（半径8）の近くに置く。楚・秦は漆器工房が置ける'); }
+  }
+  if (zoneDef.category === 'market' && !(world.services.marketAdmin && world.services.marketAdmin[i])) { if (!reasons.some((r) => r.includes('繁栄度'))) reasons.push('市亭の範囲外'); }
+  const w = zoneDef.buildings.map((e) => reg.buildingById.get(e.id).size[0]).reduce((a, b) => Math.max(a, b), 1);
+  if (w > 1) tips.push(`この区画の建物は ${w}×${w} マスなので、それ以上の広さを空けておく`);
+  return { canBuild: reasons.length === 0, reasons, tips: Array.from(new Set(tips)) };
 }
 
 /** 建物を撤去する */

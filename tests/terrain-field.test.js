@@ -6,7 +6,7 @@ import { createTerrainField, blur3, sampleTile, fineMask, CHUNK } from '../src/r
 
 test('高さ場は連続している（隣接頂点の段差が小さい）', async () => {
   const reg = await getRegistry();
-  const world = createWorld({ seed: 7, cityId: 'chen', reg, size: 48 });
+  const world = createWorld({ seed: 7, cityId: 'chen', reg, size: 48 , village: false });
   const f = createTerrainField(world, reg, { segments: 4 });
   let maxStep = 0;
   for (let j = 0; j < f.VH; j++) for (let i = 1; i < f.VW; i++) maxStep = Math.max(maxStep, Math.abs(f.H[j * f.VW + i] - f.H[j * f.VW + i - 1]));
@@ -15,7 +15,7 @@ test('高さ場は連続している（隣接頂点の段差が小さい）', as
 
 test('チャンクは格子を過不足なく覆い、隣り合うチャンクの縁が一致する', async () => {
   const reg = await getRegistry();
-  const world = createWorld({ seed: 7, cityId: 'chen', reg, size: 48 });
+  const world = createWorld({ seed: 7, cityId: 'chen', reg, size: 48 , village: false });
   const f = createTerrainField(world, reg, { segments: 2 });
   assert.equal(f.chunksX, Math.ceil(48 / CHUNK));
   const a = f.buildChunk(0, 0), b = f.buildChunk(1, 0);
@@ -27,7 +27,7 @@ test('チャンクは格子を過不足なく覆い、隣り合うチャンク�
 
 test('水のマスの中心は水面より下、陸のマスは水面より上', async () => {
   const reg = await getRegistry();
-  const world = createWorld({ seed: 7, cityId: 'chen', reg, size: 48 });
+  const world = createWorld({ seed: 7, cityId: 'chen', reg, size: 48 , village: false });
   const f = createTerrainField(world, reg, { segments: 2 });
   const { w, h, tile } = world.map;
   let waterOk = 0, waterN = 0, landOk = 0, landN = 0;
@@ -43,7 +43,7 @@ test('水のマスの中心は水面より下、陸のマスは水面より上',
 
 test('法線は単位ベクトルで、平地ではほぼ上向き', async () => {
   const reg = await getRegistry();
-  const world = createWorld({ seed: 3, cityId: 'daliang', reg, size: 48 });
+  const world = createWorld({ seed: 3, cityId: 'daliang', reg, size: 48 , village: false });
   const f = createTerrainField(world, reg, { segments: 1 });
   const n = f.normalAt(24, 24);
   assert.ok(Math.abs(Math.hypot(...n) - 1) < 1e-6);
@@ -66,7 +66,7 @@ test('blur3 / sampleTile / fineMask', () => {
 
 test('色の再計算は変更マス周辺だけを対象にし、影響チャンクを返す', async () => {
   const reg = await getRegistry();
-  const world = createWorld({ seed: 7, cityId: 'chen', reg, size: 64 });
+  const world = createWorld({ seed: 7, cityId: 'chen', reg, size: 64 , village: false });
   const f = createTerrainField(world, reg, { segments: 2 });
   const before = Array.from(f.C);
   world.roads[10 * 64 + 10] = 1;

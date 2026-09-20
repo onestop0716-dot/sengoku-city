@@ -36,7 +36,24 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #dfe7ee; col
 .bar { display: inline-block; width: 110px; height: 8px; background: rgba(255,255,255,0.08); border-radius: 2px; vertical-align: middle; margin-right: 6px; overflow: hidden; }
 .bar span { display: block; height: 100%; background: var(--accent); }
 #finance-chart { width: 100%; height: 160px; background: rgba(0,0,0,0.2); border-radius: 4px; }
-#toolbar h4 { margin: 6px 0 2px; font-size: 11px; opacity: 0.7; font-weight: normal; }
+#toolbar .cat { margin-top: 4px; }
+#toolbar .cat-head { margin: 0; padding: 4px 4px; font-size: 12px; font-weight: normal; cursor: pointer; user-select: none; border-radius: 3px; display: flex; align-items: center; gap: 4px; opacity: .85; }
+#toolbar .cat-head:hover { background: rgba(255,255,255,0.06); }
+#toolbar .cat-head .arrow::before { content: '▶'; font-size: 9px; display: inline-block; width: 12px; opacity: .8; }
+#toolbar .cat.open .cat-head .arrow::before { content: '▼'; }
+#toolbar .cat.has-active .cat-head { color: var(--accent); }
+#toolbar .cat.has-active:not(.open) .cat-head { background: rgba(217,164,65,0.18); }
+#toolbar .cat-body { display: none; flex-direction: column; gap: 3px; padding: 2px 0 2px 6px; }
+#toolbar .cat.open .cat-body { display: flex; }
+#toolbar .sub { font-size: 10px; opacity: .55; margin: 4px 0 0; }
+#toolbar button.locked { opacity: 0.4; cursor: not-allowed; }
+#toolbar .lock { float: right; font-size: 9px; opacity: .8; margin-left: 4px; border: 1px solid var(--line); border-radius: 3px; padding: 0 3px; }
+/* スクロールバーをパネルの色に */
+.panel { scrollbar-width: thin; scrollbar-color: rgba(217,164,65,0.45) rgba(0,0,0,0.15); }
+.panel::-webkit-scrollbar { width: 7px; height: 7px; }
+.panel::-webkit-scrollbar-track { background: rgba(0,0,0,0.15); border-radius: 4px; }
+.panel::-webkit-scrollbar-thumb { background: rgba(217,164,65,0.45); border-radius: 4px; }
+.panel::-webkit-scrollbar-thumb:hover { background: rgba(217,164,65,0.7); }
 #toolbar button { text-align: left; }
 #toolbar button.locked { opacity: 0.45; cursor: not-allowed; }
 #toolbar .cost { float: right; font-size: 10px; opacity: .6; }
@@ -46,6 +63,9 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #dfe7ee; col
 #info table { width: 100%; border-collapse: collapse; }
 #info td { padding: 2px 0; border-bottom: 1px solid var(--line); }
 #info td:last-child { text-align: right; }
+#info .advice { margin-top: 8px; padding: 6px 8px; background: rgba(255,255,255,0.06); border-left: 3px solid var(--accent); font-size: 12px; }
+#info .advice.ok { border-left-color: #5fbf6a; }
+#info .advice ul { margin: 4px 0 0 16px; padding: 0; }
 #log { bottom: 8px; left: 8px; right: 8px; height: 110px; padding: 6px 10px; overflow-y: auto; font-size: 12px; line-height: 1.5; }
 #log .day { opacity: 0.55; margin-right: 6px; }
 #hint { position: absolute; bottom: 124px; left: 186px; font-size: 12px; color: #3a2e1e; background: rgba(255,255,255,0.7); padding: 3px 8px; border-radius: 4px; }

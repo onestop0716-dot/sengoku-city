@@ -15,7 +15,7 @@ export function canBuildRoad(world, reg, x, y) {
 export function buildRoadPath(world, reg, path) {
   const cost = reg.balance.road.costPerTile;
   const w = world.map.w;
-  let built = 0;
+  let built = 0, cleared = 0;
   for (const [x, y] of path) {
     const i = idx(w, x, y);
     if (world.roads[i]) continue;
@@ -24,12 +24,13 @@ export function buildRoadPath(world, reg, path) {
     world.money -= cost;
     world.roads[i] = 1;
     // 森は切り開かれて平地になる
-    if (reg.tiles[world.map.tile[i]].clearable) { world.map.tile[i] = reg.tileIndex.get('plain'); world.dirty.trees = true; }
+    if (reg.tiles[world.map.tile[i]].clearable) { world.map.tile[i] = reg.tileIndex.get('plain'); world.dirty.trees = true; cleared++; }
     world.zones[i] = 0;
     world.dirty.tiles.add(i);
     built++;
   }
   if (built) world.roadDirty = true;
+  if (cleared) world.log.push({ day: world.day, text: `森 ${cleared} マスを伐採して道路にしました` });
   return built;
 }
 

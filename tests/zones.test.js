@@ -8,7 +8,7 @@ import { idx } from '../src/core/grid.js';
 
 async function makeWorld(seed = 5) {
   const reg = await getRegistry();
-  const world = createWorld({ seed, cityId: 'xianyang', reg, size: 64, money: 100000 });
+  const world = createWorld({ seed, cityId: 'xianyang', reg, size: 64, money: 100000 , village: false });
   return { reg, world };
 }
 

@@ -9,18 +9,19 @@ import { harvest } from './farming.js';
 import { tickFoodDaily, tickPopulationMonthly } from './population.js';
 import { tickEconomyMonthly, tickEconomyYearly, updateDemand, emptyMonth } from './economy.js';
 import { tickStructures, placeInitialStructures, recomputeServices } from './structures.js';
+import { placeStartingVillage } from './start-village.js';
 
 /**
  * @param {{seed:number, cityId:string, reg:object, size?:number, money?:number}} opts
  */
-export function createWorld({ seed, cityId, reg, size, money }) {
+export function createWorld({ seed, cityId, reg, size, money, village = true }) {
   const city = reg.cityById.get(cityId);
   if (!city) throw new Error(`都市 ${cityId} がありません`);
   const w = size || reg.balance.map.defaultSize, h = w;
   const map = generateTerrain({ w, h, seed, profile: city.terrainProfile, reg });
   const world = {
     version: 1,
-    seed, cityId, nationId: city.nation,
+    seed, cityId, nationId: city.nation, difficulty: reg.difficulty || 'normal',
     rng: createRng(seed),
     day: 0,
     calendar: createCalendar(reg.balance.time.startYear),
@@ -52,6 +53,8 @@ export function createWorld({ seed, cityId, reg, size, money }) {
   buildRoadPath(world, reg, lPath(cx, cy - 6, cx, cy + 6));
   world.money = saved;
   placeInitialStructures(world, reg);
+  ensureRoadDist(world, reg);
+  if (village) placeStartingVillage(world, reg);
   ensureRoadDist(world, reg);
   recomputeServices(world, reg);
   world.log.push({ day: 0, text: `${reg.nationById.get(city.nation).name}の${city.name}に県令として着任しました` });

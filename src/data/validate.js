@@ -9,7 +9,7 @@ const FORBIDDEN_WORDS = ['紙', '椅子', '茶', '綿', '仏', '寺院', '火薬
 export function validateData(raw) {
   const errors = [], warnings = [];
   const req = (name) => { if (!raw[name]) errors.push(`${name}.json がありません`); };
-  ['nations', 'cities', 'terrain', 'zones', 'buildings', 'crops', 'assets', 'balance', 'terms', 'structures'].forEach(req);
+  ['nations', 'cities', 'terrain', 'zones', 'buildings', 'crops', 'assets', 'balance', 'terms', 'structures', 'difficulties'].forEach(req);
   if (errors.length) return { errors, warnings };
 
   const ids = (arr, name) => {
@@ -59,6 +59,8 @@ export function validateData(raw) {
     }
   }
   ids(raw.structures, 'structures');
+  ids(raw.difficulties, 'difficulties');
+  if (!raw.difficulties.some((d) => d.id === 'normal')) errors.push('difficulties: id "normal" が必要です');
   for (const s of raw.structures) {
     if (!s.linear && (!Array.isArray(s.size) || s.size.length !== 2)) errors.push(`structures/${s.id}: size は [w,h] にしてください`);
     if (!s.models?.length) errors.push(`structures/${s.id}: models がありません`);

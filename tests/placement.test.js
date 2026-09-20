@@ -7,7 +7,7 @@ import { chooseFacing, FACING } from '../src/sim/placement.js';
 
 async function fresh() {
   const reg = await getRegistry();
-  const world = createWorld({ seed: 1, cityId: 'daliang', reg, size: 64, money: 1e6 });
+  const world = createWorld({ seed: 1, cityId: 'daliang', reg, size: 64, money: 1e6 , village: false });
   applyCommand(world, reg, { type: 'road.remove', rect: { x0: 0, y0: 0, x1: 63, y1: 63 } });
   return { reg, world };
 }
@@ -46,7 +46,7 @@ test('2マス先の道路でも向く。3マス先は無視して南', async () 
 
 test('建った家は道路側を向いている', async () => {
   const reg = await getRegistry();
-  const world = createWorld({ seed: 5, cityId: 'xianyang', reg, size: 64, money: 1e6 });
+  const world = createWorld({ seed: 5, cityId: 'xianyang', reg, size: 64, money: 1e6 , village: false });
   world.services.water = new Uint8Array(64 * 64).fill(1);
   applyCommand(world, reg, { type: 'zone.set', rect: { x0: 33, y0: 33, x1: 38, y1: 33 }, zoneId: 'res_commoner' });  // 中央の横道(y=32, x=26..38)の南隣
   const { tick } = await import('../src/sim/world.js');
@@ -61,7 +61,7 @@ test('建った家は道路側を向いている', async () => {
 
 test('岸辺には区画を置けない', async () => {
   const reg = await getRegistry();
-  const world = createWorld({ seed: 7, cityId: 'chen', reg, size: 64 });
+  const world = createWorld({ seed: 7, cityId: 'chen', reg, size: 64 , village: false });
   const { w, h, waterDist } = world.map;
   let shore = -1;
   for (let i = 0; i < w * h; i++) if (waterDist[i] === 1 && reg.tiles[world.map.tile[i]].buildable) { shore = i; break; }

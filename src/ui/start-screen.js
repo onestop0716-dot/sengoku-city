@@ -5,6 +5,10 @@ export function showStartScreen(reg) {
   return new Promise((resolve) => {
     const el = document.getElementById('start');
     const nationSel = el.querySelector('#start-nation'), citySel = el.querySelector('#start-city'), seedIn = el.querySelector('#start-seed'), sizeSel = el.querySelector('#start-size'), note = el.querySelector('#start-note');
+    const diffSel = el.querySelector('#start-difficulty'), diffNote = el.querySelector('#start-diff-note');
+    diffSel.innerHTML = reg.difficulties.map((d) => `<option value="${d.id}" ${d.id === 'normal' ? 'selected' : ''}>${d.name}</option>`).join('');
+    const showDiff = () => { diffNote.textContent = reg.difficulties.find((d) => d.id === diffSel.value)?.desc || ''; };
+    diffSel.addEventListener('change', showDiff); showDiff();
     nationSel.innerHTML = reg.nations.map((n) => `<option value="${n.id}">${n.name}</option>`).join('');
     const fillCities = () => {
       const n = reg.nationById.get(nationSel.value);
@@ -20,7 +24,7 @@ export function showStartScreen(reg) {
       const seedText = seedIn.value.trim();
       const seed = /^\d+$/.test(seedText) ? Number(seedText) >>> 0 : hashString(seedText || 'seed');
       el.style.display = 'none';
-      resolve({ nationId: nationSel.value, cityId: citySel.value, seed, size: Number(sizeSel.value) });
+      resolve({ nationId: nationSel.value, cityId: citySel.value, seed, size: Number(sizeSel.value), difficulty: diffSel.value });
     });
   });
 }

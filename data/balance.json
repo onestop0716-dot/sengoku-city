@@ -17,8 +17,22 @@
     "mountainHeight": 2.4
   },
   "start": {
-    "money": 5000,
-    "grain": 1500
+    "money": 8000,
+    "grain": 1500,
+    "village": {
+      "_note": "開始時の小さな村。中央の十字路の周りに家と畑、井戸を置く",
+      "houses": 6,
+      "fields": 12,
+      "farmhouses": 2,
+      "population": 40,
+      "structures": [
+        {
+          "type": "well",
+          "dx": 3,
+          "dy": -2
+        }
+      ]
+    }
   },
   "road": {
     "costPerTile": 5,
@@ -31,9 +45,9 @@
   "prosperity": {
     "base": 50,
     "water": {
-      "bonus": 15,
-      "penalty": -20,
-      "range": 8
+      "bonus": 12,
+      "penalty": -8,
+      "range": 10
     },
     "market": {
       "bonusResidential": 10,
@@ -54,15 +68,16 @@
     "roadFar": -100
   },
   "growth": {
-    "buildThreshold": 50,
-    "buildChancePerDay": 0.12,
+    "_note": "buildThreshold: これ未満の繁栄度では新築しない。道路が届いて需要があれば基本的に建つ値にしてある",
+    "buildThreshold": 35,
+    "buildChancePerDay": 0.15,
     "maxBuildsPerDay": 4,
     "levelUp": {
       "threshold": 65,
       "days": 30
     },
     "levelDown": {
-      "threshold": 35,
+      "threshold": 30,
       "days": 60
     },
     "removeAfterDays": 60
@@ -89,10 +104,10 @@
       1.5,
       2.0
     ],
-    "farmJobsPerTile": 2,
+    "farmJobsPerTile": 3,
     "farmhouseBonus": 0.15,
     "headTaxPerPersonPerMonthAt10": 0.15,
-    "officialsSalaryPerMonth": 40,
+    "officialsSalaryPerMonth": 20,
     "tributeRate": 0.05,
     "granaryBaseCapacity": 800,
     "grainSpoilagePerMonth": 0.008,
@@ -100,23 +115,29 @@
     "historyMonths": 24
   },
   "population": {
-    "immigrationRate": 0.15,
-    "emigrationRate": 0.025,
+    "immigrationRate": 0.2,
+    "emigrationRate": 0.02,
     "naturalGrowthPerMonth": 0.0015,
+    "seedImmigrants": 4,
+    "attract": {
+      "loyaltyFloor": 30,
+      "loyaltySpan": 50,
+      "foodShortFactor": 0.3
+    },
     "loyalty": {
-      "base": 60,
-      "headTax": 150,
-      "landTax": 80,
+      "base": 64,
+      "headTax": 120,
+      "landTax": 60,
       "foodOk": 10,
       "foodShort": 25,
-      "unemployed": 30,
+      "unemployed": 8,
       "securityScale": 0.2,
       "smoothing": 0.2,
-      "emigrateBelow": 35
+      "emigrateBelow": 25
     },
     "security": {
       "base": 55,
-      "unemployed": 40,
+      "unemployed": 15,
       "crowdingPer1000": 2,
       "smoothing": 0.2
     },
@@ -132,7 +153,7 @@
       "loyalty": 1.0,
       "foodOk": 15,
       "foodShort": -30,
-      "vacancy": 80
+      "vacancy": 30
     },
     "farm": {
       "base": 20,

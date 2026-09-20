@@ -7,7 +7,7 @@ import { serializeWorld, deserializeWorld, migrate } from '../src/sim/save/seria
 
 test('保存→読込で同じ状態になり、その後の進行も一致する（マップの大きさを含む）', async () => {
   const reg = await getRegistry();
-  const world = createWorld({ seed: 11, cityId: 'handan', reg, size: 64, money: 1e5 });
+  const world = createWorld({ seed: 11, cityId: 'handan', reg, size: 64, money: 1e5 , village: false });
   world.services.water = new Uint8Array(64 * 64).fill(1);
   applyCommand(world, reg, { type: 'zone.set', rect: { x0: 33, y0: 33, x1: 40, y1: 36 }, zoneId: 'res_commoner' });
   for (let d = 0; d < 80; d++) tick(world, reg);
