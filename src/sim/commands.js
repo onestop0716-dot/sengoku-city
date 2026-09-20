@@ -8,6 +8,8 @@ import { startResearch, cancelResearch } from './research.js';
 import { sendCaravan } from './nation/trade.js';
 import { sendGift, propose } from './nation/diplomacy.js';
 import { fulfillOrder, setCityPolicy } from './nation/state.js';
+import { conscript, disband, setFormation } from './military/army.js';
+import { startCampaign } from './military/campaign.js';
 
 /**
  * @param {object} world @param {object} reg
@@ -69,6 +71,10 @@ export function applyCommand(world, reg, cmd) {
     case 'diplomacy.propose': return propose(world, reg, cmd.nationId, cmd.kind);
     case 'order.fulfill': return fulfillOrder(world, reg, cmd.orderId);
     case 'commandery.policy': return setCityPolicy(world, reg, cmd.cityId, cmd.policy);
+    case 'army.conscript': return conscript(world, reg, cmd.unitId, cmd.count);
+    case 'army.disband': return disband(world, reg, cmd.unitId, cmd.count);
+    case 'army.formation': return setFormation(world, reg, cmd.formation);
+    case 'army.campaign': return startCampaign(world, reg, cmd);
     default:
       return { ok: false, message: `不明なコマンド: ${cmd.type}` };
   }

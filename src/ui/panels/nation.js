@@ -39,13 +39,17 @@ export function createNationPanel(world, reg, tooltip, log) {
     river([[450, 430], [530, 450], [600, 440], [680, 450]]);                                                          // 淮水（簡略）
     ctx.fillStyle = '#5a6a80'; ctx.font = '11px sans-serif'; ctx.fillText('黄河', X(330), Y(350) - 6); ctx.fillText('長江', X(560), Y(510) + 14); ctx.fillText('淮水', X(610), Y(438) - 4);
     // 国の勢力圏: 都市を国ごとに凸包風に薄く塗る代わりに、都市の周りに色の円
-    for (const c of reg.cities) { const n = reg.nationById.get(c.nation); ctx.fillStyle = n.color + '22'; ctx.beginPath(); ctx.arc(X(c.mapPos[0]), Y(c.mapPos[1]), 34, 0, Math.PI * 2); ctx.fill(); }
+    const natOf = (c) => reg.nationById.get(N.cities[c.id]?.nation || c.nation);
+    for (const c of reg.cities) { const n = natOf(c); ctx.fillStyle = n.color + '22'; ctx.beginPath(); ctx.arc(X(c.mapPos[0]), Y(c.mapPos[1]), 34, 0, Math.PI * 2); ctx.fill(); }
     // 条約
     ctx.setLineDash([4, 4]); ctx.lineWidth = 1.5;
     for (const [key, kind] of Object.entries(N.treaties)) { const [a, b] = key.split(':'); const ca = reg.cityById.get(reg.nationById.get(a).capital), cb = reg.cityById.get(reg.nationById.get(b).capital); ctx.strokeStyle = kind === 'alliance' ? '#c0392b' : '#2e7d32'; ctx.beginPath(); ctx.moveTo(X(ca.mapPos[0]), Y(ca.mapPos[1])); ctx.lineTo(X(cb.mapPos[0]), Y(cb.mapPos[1])); ctx.stroke(); }
     ctx.setLineDash([]);
-    // 商隊の経路と位置
     const home = reg.cityById.get(world.cityId);
+    // 出陣中の軍
+    if (world.army?.campaign) { const cv = world.army.campaign; const d = reg.cityById.get(cv.target); const t = cv.progress / cv.days; const f = cv.phase === 'out' ? t : 1 - t; const px = X(home.mapPos[0] + (d.mapPos[0] - home.mapPos[0]) * f), py = Y(home.mapPos[1] + (d.mapPos[1] - home.mapPos[1]) * f); ctx.fillStyle = '#c0392b'; ctx.beginPath(); ctx.moveTo(px, py - 6); ctx.lineTo(px + 6, py + 5); ctx.lineTo(px - 6, py + 5); ctx.closePath(); ctx.fill(); ctx.fillStyle = '#3a2a1c'; ctx.font = '10px sans-serif'; ctx.fillText('軍', px + 8, py + 4); }
+    if (world.army?.invasion) { const inv = world.army.invasion; const f0 = reg.cityById.get(inv.from); const t = inv.progress / inv.days; const px = X(f0.mapPos[0] + (home.mapPos[0] - f0.mapPos[0]) * t), py = Y(f0.mapPos[1] + (home.mapPos[1] - f0.mapPos[1]) * t); ctx.fillStyle = '#c0392b'; ctx.beginPath(); ctx.arc(px, py, 5, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#7a1a10'; ctx.font = 'bold 11px sans-serif'; ctx.fillText('敵軍！', px + 8, py + 4); }
+    // 商隊の経路と位置
     for (const cv of N.caravans) {
       const d = reg.cityById.get(cv.to); const t = cv.progress / cv.days; const f = cv.phase === 'out' ? t : 1 - t;
       ctx.strokeStyle = '#8b5a2b'; ctx.lineWidth = 1; ctx.setLineDash([2, 3]); ctx.beginPath(); ctx.moveTo(X(home.mapPos[0]), Y(home.mapPos[1])); ctx.lineTo(X(d.mapPos[0]), Y(d.mapPos[1])); ctx.stroke(); ctx.setLineDash([]);
@@ -55,7 +59,7 @@ export function createNationPanel(world, reg, tooltip, log) {
     // 都市
     ctx.font = '11px sans-serif';
     for (const c of reg.cities) {
-      const n = reg.nationById.get(c.nation), s = N.cities[c.id];
+      const n = natOf(c), s = N.cities[c.id];
       const x = X(c.mapPos[0]), y = Y(c.mapPos[1]);
       const rad = c.isCapital ? 7 : 4 + Math.min(3, s.population / 15000);
       ctx.fillStyle = n.color; ctx.beginPath(); if (c.isCapital) ctx.rect(x - rad, y - rad, rad * 2, rad * 2); else ctx.arc(x, y, rad, 0, Math.PI * 2); ctx.fill();

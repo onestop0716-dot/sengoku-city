@@ -1,0 +1,150 @@
+{
+ "_comment": "軍事。兵種・陣形（『孫臏兵法』十陣より）・均衡値。戦闘の判定は src/sim/military/battle.js",
+ "units": [
+  {
+   "id": "infantry",
+   "name": "歩兵",
+   "cost": 20,
+   "upkeep": 2,
+   "attack": 1.0,
+   "defense": 1.0,
+   "requires": {},
+   "note": "戈・矛と盾。皮甲"
+  },
+  {
+   "id": "crossbow",
+   "name": "弩兵",
+   "cost": 35,
+   "upkeep": 3,
+   "attack": 1.3,
+   "defense": 0.8,
+   "requires": {
+    "tech": "crossbow"
+   },
+   "note": "韓の弩は六百歩の外に及ぶ（『戦国策』）"
+  },
+  {
+   "id": "cavalry",
+   "name": "騎兵",
+   "cost": 80,
+   "upkeep": 6,
+   "attack": 1.6,
+   "defense": 0.9,
+   "requires": {
+    "building": "stable"
+   },
+   "note": "鐙なし。趙の胡服騎射"
+  },
+  {
+   "id": "chariot",
+   "name": "戦車兵",
+   "cost": 120,
+   "upkeep": 8,
+   "attack": 1.8,
+   "defense": 1.2,
+   "requires": {
+    "building": "ws_vehicle"
+   },
+   "note": "四頭立ての戦車。戦国後期には衰退傾向"
+  }
+ ],
+ "formations": [
+  {
+   "id": "square",
+   "name": "方陣",
+   "attack": 0.95,
+   "defense": 1.2,
+   "note": "四方を固める基本の陣。守りに堅い"
+  },
+  {
+   "id": "circle",
+   "name": "円陣",
+   "attack": 0.8,
+   "defense": 1.35,
+   "note": "囲まれたとき・守城に向く"
+  },
+  {
+   "id": "wedge",
+   "name": "錐行",
+   "attack": 1.35,
+   "defense": 0.8,
+   "note": "先端を鋭くして敵陣を突き破る"
+  },
+  {
+   "id": "goose",
+   "name": "雁行",
+   "attack": 1.1,
+   "defense": 1.0,
+   "ranged": 1.25,
+   "note": "斜めに広がり弩の射線を確保する"
+  },
+  {
+   "id": "hook",
+   "name": "鉤行",
+   "attack": 1.05,
+   "defense": 1.1,
+   "cavalry": 1.2,
+   "note": "側面を曲げて騎兵で回り込む"
+  }
+ ],
+ "balance": {
+  "barracksCapacityPerLevel": 40,
+  "stableCavalryPerLevel": 30,
+  "maxConscriptRatio": 0.15,
+  "trainingPerMonth": 3,
+  "trainingDecayPerMonth": 1,
+  "trainingCostPerSoldier": 0.3,
+  "trainingMax": 100,
+  "experiencePerBattle": 6,
+  "moraleBase": 50,
+  "moraleLoyaltyScale": 0.3,
+  "moraleDeficit": -20,
+  "moraleSmoothing": 0.25,
+  "grainPerSoldierPerMonth": 0.15,
+  "militiaRatio": 0.02,
+  "wallDefensePerPoint": 0.03,
+  "granaryDefense": 0.1,
+  "capitalDefense": 0.3,
+  "rounds": 5,
+  "routLossRatio": 0.4,
+  "casualtyScale": 0.12,
+  "campaign": {
+   "speedPerDay": 10,
+   "maxDistance": {
+    "magistrate": 220,
+    "governor": 420,
+    "chancellor": 9999,
+    "general": 9999
+   },
+   "lootRate": 0.1,
+   "meritWin": 300,
+   "meritCapital": 500,
+   "meritLose": -50,
+   "relationOnAttack": -60,
+   "conquerMinRank": "governor",
+   "capitalConquerMinRank": "chancellor"
+  },
+  "invasion": {
+   "baseChance": 0.015,
+   "relationBelow": -30,
+   "sizeRatio": 0.5,
+   "minSize": 150,
+   "warningDays": 30,
+   "noWarningDays": 5,
+   "meritDefend": 200,
+   "lootRate": 0.2,
+   "destroyRatio": 0.08,
+   "loyaltyLoss": 10,
+   "populationLoss": 0.03
+  },
+  "aiArmy": {
+   "training": 40,
+   "aggressionTraining": 25,
+   "composition": {
+    "infantry": 0.7,
+    "crossbow": 0.2,
+    "cavalry": 0.1
+   }
+  }
+ }
+}

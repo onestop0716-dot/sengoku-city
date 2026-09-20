@@ -275,7 +275,7 @@
   "id": "military",
   "name": "軍営",
   "category": "military",
-  "demandKey": "workshop",
+  "demandKey": "military",
   "color": "#a33a3a",
   "buildings": [
    {
@@ -290,6 +290,6 @@
   "roadDistance": 3,
   "prosperity": {},
   "term": "junying",
-  "note": "兵舎と馬厩（フェーズ6で徴兵）"
+  "note": "兵舎と馬厩。需要は常にあり（県令の判断で置く）"
  }
 ]

@@ -735,6 +735,45 @@
       "title": "商隊を出してみよう",
       "text": "工房の品がたまってるね。「全国」の貿易で商隊を送ると、首都では高く売れて、特産地では安く買える。利益は功績にもなるよ。",
       "todo": "商隊を送る（全国 › 貿易）"
+    },
+    {
+      "id": "invasion",
+      "priority": 5,
+      "expression": "warning",
+      "cooldownDays": 10,
+      "when": {
+        "metric": "invasion",
+        "truthy": true
+      },
+      "title": "敵軍が来るよ！",
+      "text": "敵の軍が迫っている。到着まであと {invasionDays} 日。「軍」で兵を確かめて、銭があるなら急いで徴兵を。城壁と望楼があれば守りが堅くなるよ。",
+      "todo": "守りを固める（軍 › 徴兵、城壁）",
+      "view": "security"
+    },
+    {
+      "id": "no_army",
+      "priority": 2,
+      "expression": "troubled",
+      "cooldownDays": 120,
+      "when": {
+        "all": [
+          {
+            "metric": "soldiers",
+            "eq": 0
+          },
+          {
+            "metric": "hostileNations",
+            "gte": 1
+          },
+          {
+            "metric": "population",
+            "gte": 300
+          }
+        ]
+      },
+      "title": "兵がいないよ",
+      "text": "仲の悪い国があるのに兵が一人もいない。軍事区画に兵舎を置いて、「軍」から少しずつ徴兵しておこう。城壁も効くよ。",
+      "todo": "兵舎を置いて徴兵する"
     }
   ],
   "tutorial": [

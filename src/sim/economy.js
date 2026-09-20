@@ -3,6 +3,7 @@ import { structureUpkeep } from './structures.js';
 import { modsOf } from './modifiers.js';
 import { tickPersonsMonthly } from './persons.js';
 import { researchCostMonthly } from './research.js';
+import { tickArmyMonthly } from './military/army.js';
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
 export function emptyMonth() {
@@ -30,6 +31,9 @@ export function tickEconomyMonthly(world, reg) {
   // 配下の人材の俸禄と官職の手当
   const personSalary = tickPersonsMonthly(world, reg);
   world.money -= personSalary; cur.expense['俸禄'] += personSalary;
+  // 軍の維持費と練兵
+  const armyCost = tickArmyMonthly(world, reg);
+  world.money -= armyCost; cur.expense['維持費'] += armyCost;
   // 研究費
   const research = researchCostMonthly(world, reg);
   world.money -= research; cur.expense['研究費'] = (cur.expense['研究費'] || 0) + research;
@@ -92,5 +96,6 @@ export function updateDemand(world, reg) {
   const marketNeed = pop.total * D.market.perPerson;
   world.demand.market = clamp(D.market.base + marketNeed - (st.marketJobs || 0) * 0.5, -100, 100);
   // 工: 失業者と資源があれば高い。工房の仕事が余っていれば下がる
+  world.demand.military = 50;   // 軍営は県令の判断で置くので需要は常にある
   world.demand.workshop = clamp(D.workshop.base + pop.unemployed * 0.5 + (pop.total > 200 ? 20 : 0) - Math.max(0, (st.workshopJobs || 0) - pop.artisans) * 0.5, -100, 100);
 }

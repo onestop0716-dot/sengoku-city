@@ -46,7 +46,7 @@ export function cityPrice(world, reg, cityId, goodsId) {
 /** 国力 = 都市の人口・富・兵の合計（表示用） */
 export function nationPower(world, reg, nationId) {
   let p = 0;
-  for (const c of reg.cities) if (c.nation === nationId) { const s = world.nation.cities[c.id]; p += s.population / 1000 + s.wealth / 1000 + s.army / 500; }
+  for (const c of reg.cities) { const s = world.nation.cities[c.id]; if (s.nation !== nationId) continue; p += s.population / 1000 + s.wealth / 1000 + s.army / 500; }
   return Math.round(p);
 }
 export function powerRanking(world, reg) {
@@ -58,7 +58,8 @@ export function reachableCities(world, reg) {
   const B = reg.balance.nation.caravan;
   const home = reg.cityById.get(world.cityId);
   const reach = B.reach[world.rank || 'magistrate'] ?? 220;
-  return reg.cities.filter((c) => c.id !== world.cityId && (c.nation === world.nationId ? (world.rank === 'magistrate' ? dist(home, c) <= reach : true) : dist(home, c) <= reach) && (c.nation === world.nationId || (world.nation.relations[world.nationId][c.nation] >= B.minRelation)));
+  const nat = (c) => world.nation?.cities?.[c.id]?.nation || c.nation;   // 征服で所属が変わることがある
+  return reg.cities.filter((c) => c.id !== world.cityId && (nat(c) === world.nationId ? (world.rank === 'magistrate' ? dist(home, c) <= reach : true) : dist(home, c) <= reach) && (nat(c) === world.nationId || (world.nation.relations[world.nationId][nat(c)] >= B.minRelation)));
 }
 
 function spawnOrder(world, reg) {
@@ -95,6 +96,7 @@ export function tickNationMonthly(world, reg) {
   for (const c of reg.cities) {
     if (c.id === world.cityId) { const s = N.cities[c.id]; s.population = world.population.total; s.wealth = Math.max(0, Math.round(world.money)); continue; }
     const s = N.cities[c.id];
+    if (s.nation === world.nationId && N.commandery.includes(c.id) && c.nation !== world.nationId) { /* 征服した都市も同じ式で成長 */ }
     const g = C.growthBase + (s.policy === 'farm' ? C.growthFarm : 0) + (s.policy === 'commerce' ? C.growthCommerce : 0);
     s.population = Math.round(s.population * (1 + g + (world.rng.next() - 0.5) * 0.002));
     s.wealth = Math.round(s.wealth * (1 + C.wealthBase + (s.policy === 'commerce' ? C.wealthCommerce : 0)) + s.population * 0.002);
@@ -137,13 +139,16 @@ export function tickNationMonthly(world, reg) {
 export function checkPromotion(world, reg) {
   const N = ensureNationState(world, reg);
   const cur = world.rank || 'magistrate';
-  const next = { magistrate: 'governor', governor: 'chancellor' }[cur];
+  let next = { magistrate: 'governor', governor: 'chancellor' }[cur];
   if (!next) return false;
+  // 郡守からは 相邦（文官）と 大将軍（武官）のどちらか、先に条件を満たした方へ
+  if (cur === 'governor') { const g = reg.rankById.get('general').promotion || {}; if (N.merit >= (g.merit || 0) && (world.army?.victories || 0) >= (g.victories || 0)) next = 'general'; }
   const r = reg.rankById.get(next);
   const p = r?.promotion || {};
   if (p.merit && N.merit < p.merit) return false;
   if (p.population && world.population.total < p.population) return false;
   if (p.favor && N.favor < p.favor) return false;
+  if (p.victories && (world.army?.victories || 0) < p.victories) return false;
   if (N.orders.some((o) => o.state === 'open' && world.day > o.deadlineDay)) return false;
   world.rank = next;
   if (next === 'governor') {
@@ -167,7 +172,9 @@ export function promotionStatus(world, reg) {
   if (p.merit) items.push({ label: '功績', now: Math.round(N.merit), need: p.merit, ok: N.merit >= p.merit });
   if (p.population) items.push({ label: '人口', now: world.population.total, need: p.population, ok: world.population.total >= p.population });
   if (p.favor) items.push({ label: '王の信任', now: Math.round(N.favor), need: p.favor, ok: N.favor >= p.favor });
-  return { next, nextName: reg.rankById.get(next).name, items };
+  const alt = cur === 'governor' ? reg.rankById.get('general') : null;
+  const altItems = alt ? [{ label: '功績', now: Math.round(N.merit), need: alt.promotion.merit, ok: N.merit >= alt.promotion.merit }, { label: '戦勝', now: world.army?.victories || 0, need: alt.promotion.victories, ok: (world.army?.victories || 0) >= alt.promotion.victories }] : [];
+  return { next, nextName: reg.rankById.get(next).name, items, alt: alt ? { name: alt.name, items: altItems } : null };
 }
 
 /** 郡内の都市に方針を指示（郡守以上） */

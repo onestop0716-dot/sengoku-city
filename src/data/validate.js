@@ -9,7 +9,7 @@ const FORBIDDEN_WORDS = ['紙', '椅子', '茶', '綿', '仏', '寺院', '火薬
 export function validateData(raw) {
   const errors = [], warnings = [];
   const req = (name) => { if (!raw[name]) errors.push(`${name}.json がありません`); };
-  ['nations', 'cities', 'terrain', 'zones', 'buildings', 'crops', 'assets', 'balance', 'terms', 'structures', 'difficulties', 'advice', 'persons', 'offices', 'ranks', 'techs', 'goods'].forEach(req);
+  ['nations', 'cities', 'terrain', 'zones', 'buildings', 'crops', 'assets', 'balance', 'terms', 'structures', 'difficulties', 'advice', 'persons', 'offices', 'ranks', 'techs', 'goods', 'military'].forEach(req);
   if (errors.length) return { errors, warnings };
 
   const ids = (arr, name) => {
@@ -104,6 +104,7 @@ export function validateData(raw) {
     for (const s of raw.structures) if (s.unlock?.tech && !techIds.has(s.unlock.tech)) errors.push(`structures/${s.id}: unlock.tech "${s.unlock.tech}" が techs にありません`);
   }
 
+  if (raw.military) { ids(raw.military.units || [], 'military/units'); ids(raw.military.formations || [], 'military/formations'); for (const u of raw.military.units || []) if (u.requires?.tech && !raw.techs.some((t) => t.id === u.requires.tech)) errors.push(`military/${u.id}: requires.tech が techs にありません`); }
   if (raw.goods) { ids(raw.goods, 'goods'); for (const g of raw.goods) if (typeof g.basePrice !== 'number') errors.push(`goods/${g.id}: basePrice がありません`); }
 
   // 案内役の助言
@@ -136,7 +137,7 @@ export function validateData(raw) {
       for (const w of FORBIDDEN_WORDS) if (text.includes(w) && !allow.includes(w)) warnings.push(`${file}/${e.id}: ${key} に禁止語「${w}」が含まれています`);
     }
   };
-  for (const [file, arr] of [['nations', raw.nations], ['cities', raw.cities], ['zones', raw.zones], ['buildings', raw.buildings], ['crops', raw.crops], ['terms', raw.terms], ['structures', raw.structures], ['advice', raw.advice?.advices || []], ['advice/tutorial', raw.advice?.tutorial || []], ['persons', raw.persons || []], ['offices', raw.offices || []], ['techs', raw.techs || []], ['goods', raw.goods || []]]) arr.forEach((e) => check(file, e));
+  for (const [file, arr] of [['nations', raw.nations], ['cities', raw.cities], ['zones', raw.zones], ['buildings', raw.buildings], ['crops', raw.crops], ['terms', raw.terms], ['structures', raw.structures], ['advice', raw.advice?.advices || []], ['advice/tutorial', raw.advice?.tutorial || []], ['persons', raw.persons || []], ['offices', raw.offices || []], ['techs', raw.techs || []], ['goods', raw.goods || []], ['military/units', raw.military?.units || []], ['military/formations', raw.military?.formations || []]]) arr.forEach((e) => check(file, e));
 
   return { errors, warnings };
 }

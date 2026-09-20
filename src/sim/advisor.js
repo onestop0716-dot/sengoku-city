@@ -104,6 +104,7 @@ export function computeMetrics(world, reg, opts = {}) {
     daysSinceStep: world.day - st.stepStartDay,
     newUnlock, rank: world.rank, disaster: world.disaster || null, fine,
     cityName: reg.cityById.get(world.cityId)?.name || '',
+    invasion: !!world.army?.invasion, invasionDays: world.army?.invasion ? world.army.invasion.days - world.army.invasion.progress : 0, soldiers: Object.values(world.army?.units || {}).reduce((a, b) => a + b, 0), walls: S.wall, hostileNations: reg.nations.filter((n) => n.id !== world.nationId && (world.nation?.relations?.[n.id]?.[world.nationId] ?? 0) < -30).length,
     openOrders: (world.nation?.orders || []).filter((o) => o.state === 'open').length, orderDaysLeft: Math.min(9999, ...(world.nation?.orders || []).filter((o) => o.state === 'open').map((o) => o.deadlineDay - world.day)),
     caravans: world.nation?.caravans.length || 0, goodsStock: Object.values(world.goods || {}).reduce((a, b) => a + b, 0), rankName: reg.rankById?.get(world.rank || 'magistrate')?.name || '', promotionReady: false,
     researching: !!world.research?.current, techAvailable: reg.techs.filter((t) => canResearch(world, reg, t.id).ok).length,

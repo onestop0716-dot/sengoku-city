@@ -15,6 +15,8 @@ import { ensureResearchState, tickResearchDaily } from './research.js';
 import { refreshModifiers } from './modifiers.js';
 import { ensureNationState, tickNationMonthly } from './nation/state.js';
 import { tickCaravansDaily } from './nation/trade.js';
+import { ensureArmy } from './military/army.js';
+import { tickCampaignDaily, tickInvasionMonthly } from './military/campaign.js';
 
 /**
  * @param {{seed:number, cityId:string, reg:object, size?:number, money?:number}} opts
@@ -46,7 +48,7 @@ export function createWorld({ seed, cityId, reg, size, money, village = true }) 
     loyalty: 60, security: reg.balance.placeholders.security, hygiene: 70,
     foodSufficiency: 1, foodSufficient: true,
     finance: { month: emptyMonth(), history: [], yearIncome: 0, recordYear: reg.balance.time.startYear, recordMonth: 1, lastHarvest: null, lastTribute: 0 },
-    demand: { residential: 40, farm: 50, market: 0, workshop: 0 },
+    demand: { residential: 40, farm: 50, market: 0, workshop: 0, military: 50 },
     services: { water: null, marketDist: null, marketAdmin: null, irrigation: null, securityBonus: 0, loyaltyBonus: 0, hygieneBonus: 0, granaryCap: 0, defense: 0, wells: 0, docks: 0, farmDemand: 0, insideWall: null, insideCount: 0 },
     stats: { housingCapacity: 0, jobs: 0, farmJobs: 0, farmTiles: 0, farmWorkerRatio: 1, capacity: { commoner: 0, shi: 0, noble: 0 } },
     log: [],
@@ -63,7 +65,7 @@ export function createWorld({ seed, cityId, reg, size, money, village = true }) 
   if (village) placeStartingVillage(world, reg);
   ensureRoadDist(world, reg);
   recomputeServices(world, reg);
-  ensurePersonsState(world, reg); ensureResearchState(world); ensureNationState(world, reg); refreshModifiers(world, reg);
+  ensurePersonsState(world, reg); ensureResearchState(world); ensureNationState(world, reg); ensureArmy(world, reg); refreshModifiers(world, reg);
   world.log.push({ day: 0, text: `${reg.nationById.get(city.nation).name}の${city.name}に県令として着任しました` });
   return world;
 }
@@ -80,6 +82,7 @@ export function tick(world, reg) {
   tickFoodDaily(world, reg);
   tickResearchDaily(world, reg);
   tickCaravansDaily(world, reg);
+  tickCampaignDaily(world, reg);
   if (flags.newMonth) {
     if (flags.newYear) { tickEconomyYearly(world, reg); tickPersonsYearly(world, reg); }
     refreshModifiers(world, reg);
@@ -88,6 +91,7 @@ export function tick(world, reg) {
     tickPopulationMonthly(world, reg);
     updateDemand(world, reg);
     tickNationMonthly(world, reg);
+    tickInvasionMonthly(world, reg);
   }
   if (world.log.length > 200) world.log.splice(0, world.log.length - 200);
   return flags;
