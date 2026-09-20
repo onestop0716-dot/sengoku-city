@@ -18,6 +18,8 @@ export function createHud(world, reg, loop, tooltip, { onSettings, onPanel } = {
     <div class="spacer"></div>
     <button data-panel="finance">財政</button>
     <button data-panel="population">人口</button>
+    <button data-panel="persons">人材</button>
+    <button data-panel="research">研究</button>
     <button id="hud-view" title="表示モード（Tab で順送り、Esc で通常）">表示</button>
     <button id="hud-settings" title="設定">設定</button>
     <div id="hud-speed">${speeds.map((s, i) => `<button data-speed="${i}" title="${s === 0 ? '一時停止 (Space)' : s + '倍速'}">${s === 0 ? '❚❚' : '▶'.repeat(Math.log2(s) + 1)}</button>`).join('')}</div>

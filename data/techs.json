@@ -1,0 +1,571 @@
+[
+ {
+  "id": "iron_plow",
+  "name": "鉄製農具",
+  "field": "agriculture",
+  "tags": [
+   "iron"
+  ],
+  "cost": 40,
+  "days": 180,
+  "requires": [],
+  "effects": [
+   {
+    "type": "farm_yield",
+    "value": 0.15
+   }
+  ],
+  "desc": "鉄の鋤・鍬で深く耕せるようになり、収量が増える",
+  "note": "戦国期に鉄製農具が広く普及。燕下都などから出土"
+ },
+ {
+  "id": "ox_plow",
+  "name": "牛耕",
+  "field": "agriculture",
+  "tags": [],
+  "cost": 40,
+  "days": 200,
+  "requires": [
+   "iron_plow"
+  ],
+  "effects": [
+   {
+    "type": "farm_yield",
+    "value": 0.1
+   }
+  ],
+  "desc": "牛に犂を引かせて広い畑を耕す",
+  "note": "春秋末〜戦国に普及。『国語』晋語に牛耕の記述"
+ },
+ {
+  "id": "irrigation_works",
+  "name": "大規模灌漑",
+  "field": "agriculture",
+  "tags": [
+   "irrigation"
+  ],
+  "cost": 60,
+  "days": 240,
+  "requires": [
+   "ox_plow"
+  ],
+  "effects": [
+   {
+    "type": "irrigation_bonus",
+    "value": 0.3
+   }
+  ],
+  "desc": "水路を整えて畑に引く。灌漑水路の効果が大きくなる",
+  "note": "鄭国渠（前246）、都江堰（前256頃）、魏の漳水十二渠"
+ },
+ {
+  "id": "crop_rotation",
+  "name": "輪作と施肥",
+  "field": "agriculture",
+  "tags": [],
+  "cost": 50,
+  "days": 240,
+  "requires": [
+   "ox_plow"
+  ],
+  "effects": [
+   {
+    "type": "farm_yield",
+    "value": 0.1
+   }
+  ],
+  "desc": "作物を替え、糞肥を施して地力を保つ",
+  "note": "『呂氏春秋』任地・弁土篇、『荀子』富国篇。要確認: 輪作の普及度"
+ },
+ {
+  "id": "rice_farming",
+  "name": "稲作の改良",
+  "field": "agriculture",
+  "tags": [],
+  "cost": 30,
+  "days": 150,
+  "requires": [],
+  "effects": [
+   {
+    "type": "crop_yield",
+    "crop": "rice",
+    "value": 0.25
+   }
+  ],
+  "desc": "水田の管理を改良し、稲の収量を増やす",
+  "note": "楚・呉越の水田稲作"
+ },
+ {
+  "id": "cavalry_tactics",
+  "name": "騎兵戦術（胡服騎射）",
+  "field": "military",
+  "tags": [
+   "cavalry"
+  ],
+  "cost": 50,
+  "days": 240,
+  "requires": [],
+  "effects": [
+   {
+    "type": "military",
+    "branch": "cavalry",
+    "value": 0.2
+   }
+  ],
+  "desc": "馬上で弓を射る騎兵を組織する（戦闘はフェーズ6）",
+  "note": "趙の武霊王（前307）"
+ },
+ {
+  "id": "heavy_infantry",
+  "name": "重装歩兵（武卒）",
+  "field": "military",
+  "tags": [
+   "infantry"
+  ],
+  "cost": 50,
+  "days": 240,
+  "requires": [],
+  "effects": [
+   {
+    "type": "military",
+    "branch": "infantry",
+    "value": 0.2
+   }
+  ],
+  "desc": "鎧と弩を備えた精鋭歩兵（戦闘はフェーズ6）",
+  "note": "魏の武卒。『荀子』議兵篇"
+ },
+ {
+  "id": "crossbow",
+  "name": "弩の改良",
+  "field": "craft",
+  "tags": [
+   "crossbow"
+  ],
+  "cost": 40,
+  "days": 200,
+  "requires": [],
+  "effects": [
+   {
+    "type": "military",
+    "branch": "ranged",
+    "value": 0.2
+   }
+  ],
+  "desc": "引き金で放つ弩を量産する（戦闘はフェーズ6）",
+  "note": "韓の弩は『戦国策』に名高い"
+ },
+ {
+  "id": "siege_engines",
+  "name": "攻城兵器",
+  "field": "military",
+  "tags": [
+   "siege"
+  ],
+  "cost": 70,
+  "days": 300,
+  "requires": [
+   "crossbow"
+  ],
+  "effects": [
+   {
+    "type": "military",
+    "branch": "siege",
+    "value": 0.3
+   }
+  ],
+  "desc": "雲梯・衝車・投石機（戦闘はフェーズ6）",
+  "note": "『墨子』備城門ほか"
+ },
+ {
+  "id": "shiwu_system",
+  "name": "什伍制",
+  "field": "politics",
+  "tags": [
+   "law",
+   "military"
+  ],
+  "cost": 50,
+  "days": 200,
+  "requires": [],
+  "effects": [
+   {
+    "type": "security",
+    "value": 6
+   }
+  ],
+  "desc": "五家・十家を組にして互いに監視させ、治安を保つ",
+  "note": "秦の商鞅変法（前356）。連坐制"
+ },
+ {
+  "id": "merit_rank",
+  "name": "軍功爵位制",
+  "field": "military",
+  "tags": [
+   "law"
+  ],
+  "cost": 60,
+  "days": 240,
+  "requires": [
+   "shiwu_system"
+  ],
+  "effects": [
+   {
+    "type": "military",
+    "branch": "morale",
+    "value": 0.2
+   },
+   {
+    "type": "loyalty",
+    "value": -2
+   }
+  ],
+  "desc": "戦功で爵位を与え、兵の士気を高める（戦闘はフェーズ6）",
+  "note": "秦の二十等爵。商鞅変法"
+ },
+ {
+  "id": "horse_breeding",
+  "name": "馬の飼育",
+  "field": "military",
+  "tags": [
+   "cavalry"
+  ],
+  "cost": 40,
+  "days": 200,
+  "requires": [],
+  "effects": [
+   {
+    "type": "military",
+    "branch": "cavalry",
+    "value": 0.1
+   }
+  ],
+  "desc": "良馬を育てる牧を整える",
+  "note": "燕・趙・秦の馬産"
+ },
+ {
+  "id": "iron_weapons",
+  "name": "鉄製武器",
+  "field": "craft",
+  "tags": [
+   "iron"
+  ],
+  "cost": 40,
+  "days": 200,
+  "requires": [],
+  "effects": [
+   {
+    "type": "military",
+    "branch": "equipment",
+    "value": 0.15
+   }
+  ],
+  "desc": "鉄の剣・矛を作る（戦闘はフェーズ6）",
+  "note": "韓の鉄剣、燕下都の鉄兵器"
+ },
+ {
+  "id": "iron_smelting",
+  "name": "製鉄の改良",
+  "field": "craft",
+  "tags": [
+   "iron"
+  ],
+  "cost": 60,
+  "days": 240,
+  "requires": [
+   "iron_weapons"
+  ],
+  "effects": [
+   {
+    "type": "workshop_output",
+    "value": 0.2
+   }
+  ],
+  "desc": "炉と鋳型を改良し、工房の生産が増える",
+  "note": "戦国期の鋳鉄・鋳型（河北興隆の鉄範）"
+ },
+ {
+  "id": "bronze_casting",
+  "name": "青銅鋳造",
+  "field": "craft",
+  "tags": [],
+  "cost": 30,
+  "days": 150,
+  "requires": [],
+  "effects": [
+   {
+    "type": "workshop_output",
+    "value": 0.1,
+    "goods": "bronze"
+   }
+  ],
+  "desc": "青銅器の鋳造を改良する",
+  "note": "楚・蜀の青銅器"
+ },
+ {
+  "id": "lacquerware",
+  "name": "漆器",
+  "field": "craft",
+  "tags": [],
+  "cost": 40,
+  "days": 180,
+  "requires": [],
+  "effects": [
+   {
+    "type": "workshop_output",
+    "value": 0.2,
+    "goods": "lacquer"
+   }
+  ],
+  "desc": "漆器の工房を改良する",
+  "note": "楚墓の漆器（曾侯乙墓・包山）"
+ },
+ {
+  "id": "wheeled_transport",
+  "name": "車両の改良",
+  "field": "craft",
+  "tags": [
+   "trade"
+  ],
+  "cost": 50,
+  "days": 220,
+  "requires": [],
+  "effects": [
+   {
+    "type": "market_range",
+    "value": 4
+   },
+   {
+    "type": "trade",
+    "value": 0.1
+   }
+  ],
+  "desc": "車輪と車体を改良し、市の届く範囲が広がる",
+  "note": "戦国の二輪車。一輪車は漢代以降"
+ },
+ {
+  "id": "salt_making",
+  "name": "製塩",
+  "field": "craft",
+  "tags": [
+   "commerce"
+  ],
+  "cost": 30,
+  "days": 150,
+  "requires": [],
+  "effects": [
+   {
+    "type": "workshop_output",
+    "value": 0.2,
+    "goods": "salt"
+   }
+  ],
+  "desc": "海水・塩池から効率よく塩を採る",
+  "note": "斉の海塩、河東の池塩"
+ },
+ {
+  "id": "weights_measures",
+  "name": "度量衡の整備",
+  "field": "politics",
+  "tags": [
+   "law"
+  ],
+  "cost": 50,
+  "days": 240,
+  "requires": [],
+  "effects": [
+   {
+    "type": "tax_income",
+    "value": 0.1
+   }
+  ],
+  "desc": "升・尺・衡を統一して徴税を正確にする",
+  "note": "商鞅の方升（前344）"
+ },
+ {
+  "id": "commandery_system",
+  "name": "郡県制",
+  "field": "politics",
+  "tags": [
+   "law"
+  ],
+  "cost": 60,
+  "days": 300,
+  "requires": [
+   "weights_measures"
+  ],
+  "effects": [
+   {
+    "type": "tax_income",
+    "value": 0.1
+   },
+   {
+    "type": "office_slots",
+    "value": 1
+   }
+  ],
+  "desc": "県を郡の下に置き、中央から官吏を派遣する。任命枠が増える",
+  "note": "秦の郡県制。商鞅変法で三十一県"
+ },
+ {
+  "id": "legalism",
+  "name": "法治・変法",
+  "field": "politics",
+  "tags": [
+   "law"
+  ],
+  "cost": 80,
+  "days": 360,
+  "requires": [
+   "commandery_system"
+  ],
+  "effects": [
+   {
+    "type": "security",
+    "value": 8
+   },
+   {
+    "type": "tax_income",
+    "value": 0.1
+   },
+   {
+    "type": "loyalty",
+    "value": -3
+   }
+  ],
+  "desc": "法を公布し、賞罰を厳しくする。治安と税収が上がるが民忠は下がる",
+  "note": "商鞅・韓非の法家思想"
+ },
+ {
+  "id": "post_network",
+  "name": "伝舎網",
+  "field": "politics",
+  "tags": [
+   "trade"
+  ],
+  "cost": 40,
+  "days": 200,
+  "requires": [],
+  "effects": [
+   {
+    "type": "build_speed",
+    "value": 0.2
+   }
+  ],
+  "desc": "街道に伝舎を置いて文書と物資を速く運ぶ。建設が早くなる",
+  "note": "秦の伝舎・郵。睡虎地秦簡"
+ },
+ {
+  "id": "market_system",
+  "name": "市の制度",
+  "field": "commerce",
+  "tags": [],
+  "cost": 40,
+  "days": 200,
+  "requires": [],
+  "effects": [
+   {
+    "type": "market_tax",
+    "value": 0.25
+   }
+  ],
+  "desc": "市を官が管理し、市租を確実に集める",
+  "note": "斉の市制。『管子』"
+ },
+ {
+  "id": "salt_iron_monopoly",
+  "name": "塩鉄専売",
+  "field": "commerce",
+  "tags": [
+   "law"
+  ],
+  "cost": 80,
+  "days": 360,
+  "requires": [
+   "market_system",
+   "iron_smelting"
+  ],
+  "effects": [
+   {
+    "type": "tax_income",
+    "value": 0.15
+   },
+   {
+    "type": "loyalty",
+    "value": -2
+   }
+  ],
+  "desc": "塩と鉄を官が売り、大きな収入を得る",
+  "note": "『管子』海王篇に塩の官売"
+ },
+ {
+  "id": "hospitality",
+  "name": "賓客の招致",
+  "field": "commerce",
+  "tags": [
+   "scholarship"
+  ],
+  "cost": 50,
+  "days": 200,
+  "requires": [],
+  "effects": [
+   {
+    "type": "research_speed",
+    "value": 0.1
+   }
+  ],
+  "desc": "諸国の賢者を迎える館を設ける。客館（斉では学宮）が建てられる",
+  "note": "戦国四君の食客、稷下学宮",
+  "unlocks": [
+   "academy"
+  ]
+ },
+ {
+  "id": "scholarship",
+  "name": "学問の奨励",
+  "field": "politics",
+  "tags": [
+   "scholarship"
+  ],
+  "cost": 60,
+  "days": 240,
+  "requires": [
+   "hospitality"
+  ],
+  "effects": [
+   {
+    "type": "research_speed",
+    "value": 0.2
+   },
+   {
+    "type": "visitor",
+    "value": 0.1
+   }
+  ],
+  "desc": "学者を厚遇し、研究が速くなる",
+  "note": "稷下の先生に列大夫の待遇"
+ },
+ {
+  "id": "northern_trade",
+  "name": "北方交易",
+  "field": "commerce",
+  "tags": [
+   "trade"
+  ],
+  "cost": 40,
+  "days": 200,
+  "requires": [],
+  "effects": [
+   {
+    "type": "trade",
+    "value": 0.2
+   },
+   {
+    "type": "market_tax",
+    "value": 0.05
+   }
+  ],
+  "desc": "北方の馬・毛皮と交易する（貿易はフェーズ5）",
+  "note": "燕の遼東・胡との交易"
+ }
+]

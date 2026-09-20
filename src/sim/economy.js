@@ -1,9 +1,12 @@
 // 税・支出・財政記録・需要メーター。
 import { structureUpkeep } from './structures.js';
+import { modsOf } from './modifiers.js';
+import { tickPersonsMonthly } from './persons.js';
+import { researchCostMonthly } from './research.js';
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
 export function emptyMonth() {
-  return { income: { '田租': 0, '口賦': 0, '市租': 0, '関税': 0 }, expense: { '俸禄': 0, '維持費': 0, '上納': 0, '建設費': 0 } };
+  return { income: { '田租': 0, '口賦': 0, '市租': 0, '関税': 0 }, expense: { '俸禄': 0, '維持費': 0, '上納': 0, '建設費': 0, '研究費': 0 } };
 }
 
 /** 月初: 口賦・俸禄・維持費を処理し、先月の記録を履歴へ */
@@ -18,11 +21,18 @@ export function tickEconomyMonthly(world, reg) {
   world.finance.month = emptyMonth();
   world.finance.recordYear = world.calendar.year; world.finance.recordMonth = world.calendar.month;
   const cur = world.finance.month;
-  // 口賦（人頭税）
-  const head = world.population.total * E.headTaxPerPersonPerMonthAt10 * (world.policy.taxHead / 0.1);
+  const M = modsOf(world);
+  // 口賦（人頭税）。県丞や度量衡などの補正がかかる
+  const head = world.population.total * E.headTaxPerPersonPerMonthAt10 * (world.policy.taxHead / 0.1) * M.taxIncome;
   world.money += head; cur.income['口賦'] += head;
   // 俸禄（県廷の官吏）
   world.money -= E.officialsSalaryPerMonth; cur.expense['俸禄'] += E.officialsSalaryPerMonth;
+  // 配下の人材の俸禄と官職の手当
+  const personSalary = tickPersonsMonthly(world, reg);
+  world.money -= personSalary; cur.expense['俸禄'] += personSalary;
+  // 研究費
+  const research = researchCostMonthly(world, reg);
+  world.money -= research; cur.expense['研究費'] = (cur.expense['研究費'] || 0) + research;
   // 特殊建築の維持費
   const upkeep = structureUpkeep(world, reg);
   world.money -= upkeep; cur.expense['維持費'] += upkeep;
@@ -33,7 +43,7 @@ export function tickEconomyMonthly(world, reg) {
   for (const b of world.buildings.values()) {
     if (b.category !== 'workshop' || b.state !== 'built') continue;
     const def = reg.buildingById.get(b.buildingType);
-    const units = (G.unitsPerWorkshop || 4) * (1 + 0.5 * (b.level - 1)) * artisanRatio;
+    const units = (G.unitsPerWorkshop || 4) * (1 + 0.5 * (b.level - 1)) * artisanRatio * M.workshopOutput * (1 + (M.workshopGoods[def.produces] || 0));
     world.goods[def.produces] = (world.goods[def.produces] || 0) + units;
     produced += units * (G.prices?.[def.produces] || 10);
   }
@@ -43,7 +53,7 @@ export function tickEconomyMonthly(world, reg) {
     let sold = 0;
     for (const [g, n] of Object.entries(world.goods)) { const s = n * (G.soldShare || 0.6) * merchantRatio; world.goods[g] = n - s; sold += s * (G.prices?.[g] || 10); }
     const transactions = world.population.total * (G.tradePerPersonPerMonth || 0.3) * merchantRatio + sold;
-    const tax = transactions * world.policy.taxMarket;
+    const tax = transactions * world.policy.taxMarket * M.marketTax * M.taxIncome;
     world.money += tax; cur.income['市租'] += tax;
     world.finance.lastMarket = { transactions: Math.round(transactions), sold: Math.round(sold), tax: Math.round(tax) };
   }

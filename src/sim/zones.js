@@ -74,7 +74,7 @@ export function computeProsperity(world, reg, x, y, zoneDef, building = null) {
 
   const isFarm = zoneDef.category === 'farm';
   const md = world.services.marketDist ? world.services.marketDist[i] : 0xffff;
-  const mRange = isFarm ? P.market.rangeFarm : P.market.rangeResidential;
+  const mRange = (isFarm ? P.market.rangeFarm : P.market.rangeResidential) + (world.mods?.marketRange || 0);
   parts['市'] = md <= mRange ? (isFarm ? P.market.bonusFarm : P.market.bonusResidential) : 0;
 
   parts['治安'] = clamp((world.security - P.security.neutral) / P.security.scale, -P.security.clamp, P.security.clamp);

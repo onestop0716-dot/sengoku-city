@@ -1,38 +1,192 @@
 [
-  { "id": "qin", "name": "秦", "capital": "xianyang", "currencyName": "半両銭", "color": "#8b1a1a",
-    "chiefMinisterTitle": "相邦", "startTechs": ["merit_rank", "shiwu_system", "commandery_system"],
-    "techBonus": { "law": 1.3, "military": 1.3 }, "aiTraits": { "aggression": 0.9, "diplomacy": 0.4 },
-    "startCities": ["xianyang", "yong", "yueyang", "nanzheng", "chengdu", "wan"],
-    "note": "相邦: 『史記』呂不韋列伝。半両銭: 恵文君二年（前336）初行銭" },
-  { "id": "zhao", "name": "趙", "capital": "handan", "currencyName": "布銭", "color": "#1f4e9c",
-    "chiefMinisterTitle": "相", "startTechs": ["cavalry_tactics"],
-    "techBonus": { "cavalry": 1.3 }, "aiTraits": { "aggression": 0.6, "diplomacy": 0.6 },
-    "startCities": ["handan", "wuan", "dai", "lingshou"],
-    "note": "胡服騎射: 武霊王（前307）" },
-  { "id": "wei", "name": "魏", "capital": "daliang", "currencyName": "布銭", "color": "#2e7d32",
-    "chiefMinisterTitle": "相", "startTechs": ["heavy_infantry"],
-    "techBonus": { "infantry": 1.3, "irrigation": 1.3 }, "aiTraits": { "aggression": 0.4, "diplomacy": 0.7 },
-    "startCities": ["daliang", "suanzao", "shanyang"],
-    "note": "武卒: 『荀子』議兵篇。鴻溝・漳水十二渠" },
-  { "id": "han", "name": "韓", "capital": "xinzheng", "currencyName": "布銭", "color": "#6a1b9a",
-    "chiefMinisterTitle": "相", "startTechs": ["crossbow", "iron_weapons"],
-    "techBonus": { "crossbow": 1.3, "iron": 1.3 }, "aiTraits": { "aggression": 0.2, "diplomacy": 0.8 },
-    "startCities": ["xinzheng", "yangdi"],
-    "note": "弩と鉄剣: 『戦国策』韓策 蘇秦説韓王" },
-  { "id": "chu", "name": "楚", "capital": "chen", "currencyName": "蟻鼻銭", "color": "#e65100",
-    "chiefMinisterTitle": "令尹", "startTechs": ["rice_farming", "lacquerware", "bronze_casting"],
-    "techBonus": { "agriculture": 1.3, "craft": 1.3 }, "aiTraits": { "aggression": 0.5, "diplomacy": 0.5 },
-    "startCities": ["chen", "shouchun", "lanling", "wu", "shangcai"],
-    "note": "前247年の首都は陳（陳郢）。前241年に寿春へ遷都（史実イベント）" },
-  { "id": "qi", "name": "斉", "capital": "linzi", "currencyName": "刀銭", "color": "#f9a825",
-    "chiefMinisterTitle": "相", "startTechs": ["salt_making", "market_system", "academy"],
-    "techBonus": { "commerce": 1.3, "scholarship": 1.3 }, "aiTraits": { "aggression": 0.1, "diplomacy": 0.6 },
-    "startCities": ["linzi", "jimo", "ju", "gaotang", "pinglu"],
-    "commanderyLabel": "都",
-    "note": "五都制。稷下学宮" },
-  { "id": "yan", "name": "燕", "capital": "ji", "currencyName": "刀銭", "color": "#00695c",
-    "chiefMinisterTitle": "相", "startTechs": ["horse_breeding", "northern_trade"],
-    "techBonus": { "cavalry": 1.2, "trade": 1.2 }, "aiTraits": { "aggression": 0.3, "diplomacy": 0.5 },
-    "startCities": ["ji", "wuyang", "xiangping"],
-    "note": "明刀。下都は武陽" }
+ {
+  "id": "qin",
+  "name": "秦",
+  "capital": "xianyang",
+  "currencyName": "半両銭",
+  "color": "#8b1a1a",
+  "chiefMinisterTitle": "相邦",
+  "startTechs": [
+   "merit_rank",
+   "shiwu_system",
+   "commandery_system"
+  ],
+  "techBonus": {
+   "law": 1.3,
+   "military": 1.3
+  },
+  "aiTraits": {
+   "aggression": 0.9,
+   "diplomacy": 0.4
+  },
+  "startCities": [
+   "xianyang",
+   "yong",
+   "yueyang",
+   "nanzheng",
+   "chengdu",
+   "wan"
+  ],
+  "note": "相邦: 『史記』呂不韋列伝。半両銭: 恵文君二年（前336）初行銭"
+ },
+ {
+  "id": "zhao",
+  "name": "趙",
+  "capital": "handan",
+  "currencyName": "布銭",
+  "color": "#1f4e9c",
+  "chiefMinisterTitle": "相",
+  "startTechs": [
+   "cavalry_tactics"
+  ],
+  "techBonus": {
+   "cavalry": 1.3
+  },
+  "aiTraits": {
+   "aggression": 0.6,
+   "diplomacy": 0.6
+  },
+  "startCities": [
+   "handan",
+   "wuan",
+   "dai",
+   "lingshou"
+  ],
+  "note": "胡服騎射: 武霊王（前307）"
+ },
+ {
+  "id": "wei",
+  "name": "魏",
+  "capital": "daliang",
+  "currencyName": "布銭",
+  "color": "#2e7d32",
+  "chiefMinisterTitle": "相",
+  "startTechs": [
+   "heavy_infantry"
+  ],
+  "techBonus": {
+   "infantry": 1.3,
+   "irrigation": 1.3
+  },
+  "aiTraits": {
+   "aggression": 0.4,
+   "diplomacy": 0.7
+  },
+  "startCities": [
+   "daliang",
+   "suanzao",
+   "shanyang"
+  ],
+  "note": "武卒: 『荀子』議兵篇。鴻溝・漳水十二渠"
+ },
+ {
+  "id": "han",
+  "name": "韓",
+  "capital": "xinzheng",
+  "currencyName": "布銭",
+  "color": "#6a1b9a",
+  "chiefMinisterTitle": "相",
+  "startTechs": [
+   "crossbow",
+   "iron_weapons"
+  ],
+  "techBonus": {
+   "crossbow": 1.3,
+   "iron": 1.3
+  },
+  "aiTraits": {
+   "aggression": 0.2,
+   "diplomacy": 0.8
+  },
+  "startCities": [
+   "xinzheng",
+   "yangdi"
+  ],
+  "note": "弩と鉄剣: 『戦国策』韓策 蘇秦説韓王"
+ },
+ {
+  "id": "chu",
+  "name": "楚",
+  "capital": "chen",
+  "currencyName": "蟻鼻銭",
+  "color": "#e65100",
+  "chiefMinisterTitle": "令尹",
+  "startTechs": [
+   "rice_farming",
+   "lacquerware",
+   "bronze_casting"
+  ],
+  "techBonus": {
+   "agriculture": 1.3,
+   "craft": 1.3
+  },
+  "aiTraits": {
+   "aggression": 0.5,
+   "diplomacy": 0.5
+  },
+  "startCities": [
+   "chen",
+   "shouchun",
+   "lanling",
+   "wu",
+   "shangcai"
+  ],
+  "note": "前247年の首都は陳（陳郢）。前241年に寿春へ遷都（史実イベント）"
+ },
+ {
+  "id": "qi",
+  "name": "斉",
+  "capital": "linzi",
+  "currencyName": "刀銭",
+  "color": "#f9a825",
+  "chiefMinisterTitle": "相",
+  "startTechs": [
+   "salt_making",
+   "market_system",
+   "hospitality"
+  ],
+  "techBonus": {
+   "commerce": 1.3,
+   "scholarship": 1.3
+  },
+  "aiTraits": {
+   "aggression": 0.1,
+   "diplomacy": 0.6
+  },
+  "startCities": [
+   "linzi",
+   "jimo",
+   "ju",
+   "gaotang",
+   "pinglu"
+  ],
+  "commanderyLabel": "都",
+  "note": "五都制。稷下学宮"
+ },
+ {
+  "id": "yan",
+  "name": "燕",
+  "capital": "ji",
+  "currencyName": "刀銭",
+  "color": "#00695c",
+  "chiefMinisterTitle": "相",
+  "startTechs": [
+   "horse_breeding",
+   "northern_trade"
+  ],
+  "techBonus": {
+   "cavalry": 1.2,
+   "trade": 1.2
+  },
+  "aiTraits": {
+   "aggression": 0.3,
+   "diplomacy": 0.5
+  },
+  "startCities": [
+   "ji",
+   "wuyang",
+   "xiangping"
+  ],
+  "note": "明刀。下都は武陽"
+ }
 ]

@@ -1,0 +1,921 @@
+[
+ {
+  "id": "lu_buwei",
+  "name": "呂不韋",
+  "nation": "qin",
+  "born": null,
+  "died": -235,
+  "appears": -247,
+  "role": "patron",
+  "stats": {
+   "lead": 60,
+   "valor": 30,
+   "wit": 88,
+   "politics": 92,
+   "charm": 85
+  },
+  "skills": [
+   "merchant",
+   "patron"
+  ],
+  "bio": "陽翟の大商人から秦の相邦へ。荘襄王・始皇帝の初期を支え、『呂氏春秋』を編纂。食客三千。前237年に罷免、前235年に自殺。",
+  "source": "『史記』呂不韋列伝",
+  "note": "要確認: 生年不詳。県令の後ろ盾（登用対象外）",
+  "recruitable": false
+ },
+ {
+  "id": "li_si",
+  "name": "李斯",
+  "nation": "qin",
+  "born": -284,
+  "died": -208,
+  "appears": -247,
+  "role": "minister",
+  "stats": {
+   "lead": 50,
+   "valor": 20,
+   "wit": 90,
+   "politics": 95,
+   "charm": 70
+  },
+  "skills": [
+   "legalist",
+   "administrator"
+  ],
+  "bio": "楚の上蔡の人。荀子に学び、前247年頃に秦へ来て呂不韋の舎人となる。のち客卿・廷尉・丞相。郡県制・文字統一を推進。",
+  "source": "『史記』李斯列伝",
+  "note": "要確認: 生年は前284年頃の推定。楚出身だが秦で仕官するため秦の人材とする",
+  "homeNation": "chu"
+ },
+ {
+  "id": "wang_jian",
+  "name": "王翦",
+  "nation": "qin",
+  "born": null,
+  "died": null,
+  "appears": -240,
+  "role": "general",
+  "stats": {
+   "lead": 96,
+   "valor": 82,
+   "wit": 85,
+   "politics": 55,
+   "charm": 65
+  },
+  "skills": [
+   "strategist",
+   "siege"
+  ],
+  "bio": "頻陽の人。趙・燕を滅ぼし、六十万の兵で楚を滅ぼした秦の名将。",
+  "source": "『史記』白起王翦列伝",
+  "note": "要確認: 生没年不詳。前236年の閼与攻めが初見のため登場を前240年とした"
+ },
+ {
+  "id": "wang_ben",
+  "name": "王賁",
+  "nation": "qin",
+  "born": null,
+  "died": null,
+  "appears": -228,
+  "role": "general",
+  "stats": {
+   "lead": 88,
+   "valor": 84,
+   "wit": 75,
+   "politics": 45,
+   "charm": 55
+  },
+  "skills": [
+   "siege"
+  ],
+  "bio": "王翦の子。魏を水攻めで滅ぼし、遼東で燕を、続いて斉を降した。",
+  "source": "『史記』白起王翦列伝",
+  "note": "要確認: 生没年不詳。登場年は推定"
+ },
+ {
+  "id": "meng_ao",
+  "name": "蒙驁",
+  "nation": "qin",
+  "born": null,
+  "died": -240,
+  "appears": -247,
+  "role": "general",
+  "stats": {
+   "lead": 88,
+   "valor": 80,
+   "wit": 70,
+   "politics": 50,
+   "charm": 60
+  },
+  "skills": [
+   "siege"
+  ],
+  "bio": "斉の人。昭王のとき秦に仕え、韓・魏・趙の城を多数攻略。前240年に没。",
+  "source": "『史記』蒙恬列伝",
+  "note": "要確認: 生年不詳",
+  "homeNation": "qi"
+ },
+ {
+  "id": "meng_wu",
+  "name": "蒙武",
+  "nation": "qin",
+  "born": null,
+  "died": null,
+  "appears": -235,
+  "role": "general",
+  "stats": {
+   "lead": 82,
+   "valor": 80,
+   "wit": 65,
+   "politics": 45,
+   "charm": 55
+  },
+  "skills": [],
+  "bio": "蒙驁の子、蒙恬の父。王翦の副将として楚を攻め、項燕を破った。",
+  "source": "『史記』蒙恬列伝",
+  "note": "要確認: 生没年不詳。登場年は推定"
+ },
+ {
+  "id": "meng_tian",
+  "name": "蒙恬",
+  "nation": "qin",
+  "born": null,
+  "died": -210,
+  "appears": -225,
+  "role": "general",
+  "stats": {
+   "lead": 90,
+   "valor": 85,
+   "wit": 80,
+   "politics": 60,
+   "charm": 65
+  },
+  "skills": [
+   "builder",
+   "cavalry"
+  ],
+  "bio": "蒙武の子。斉攻めで功を挙げ、統一後は三十万の兵で匈奴を退け長城を築く。前210年に自害。",
+  "source": "『史記』蒙恬列伝",
+  "note": "要確認: 生年不詳。前247年時点では若年のため登場を前225年とした"
+ },
+ {
+  "id": "huan_yi",
+  "name": "桓齮",
+  "nation": "qin",
+  "born": null,
+  "died": null,
+  "appears": -237,
+  "role": "general",
+  "stats": {
+   "lead": 80,
+   "valor": 82,
+   "wit": 60,
+   "politics": 35,
+   "charm": 45
+  },
+  "skills": [],
+  "bio": "前237年に将軍となり、趙の平陽・武城で扈輒を破る。前233年に李牧に敗れた。",
+  "source": "『史記』秦始皇本紀",
+  "note": "要確認: 生没年不詳。敗戦後の消息は諸説あり"
+ },
+ {
+  "id": "changping_jun",
+  "name": "昌平君",
+  "nation": "qin",
+  "born": null,
+  "died": -223,
+  "appears": -240,
+  "role": "minister",
+  "stats": {
+   "lead": 75,
+   "valor": 60,
+   "wit": 78,
+   "politics": 85,
+   "charm": 80
+  },
+  "skills": [
+   "administrator"
+  ],
+  "bio": "楚の公子。秦の相となり嫪毐の乱を鎮圧。のち楚に戻って王を称し、項燕とともに秦に抗して戦死。",
+  "source": "『史記』秦始皇本紀",
+  "note": "要確認: 生年不詳。相となった前238年に近い前240年から登場",
+  "homeNation": "chu"
+ },
+ {
+  "id": "changwen_jun",
+  "name": "昌文君",
+  "nation": "qin",
+  "born": null,
+  "died": null,
+  "appears": -240,
+  "role": "minister",
+  "stats": {
+   "lead": 65,
+   "valor": 55,
+   "wit": 70,
+   "politics": 75,
+   "charm": 70
+  },
+  "skills": [],
+  "bio": "昌平君とともに嫪毐の乱の鎮圧にあたった秦の重臣。",
+  "source": "『史記』秦始皇本紀",
+  "note": "要確認: 事績が少なく、生没年・出自は不詳"
+ },
+ {
+  "id": "li_xin",
+  "name": "李信",
+  "nation": "qin",
+  "born": null,
+  "died": null,
+  "appears": -228,
+  "role": "general",
+  "stats": {
+   "lead": 78,
+   "valor": 88,
+   "wit": 55,
+   "politics": 40,
+   "charm": 60
+  },
+  "skills": [
+   "cavalry"
+  ],
+  "bio": "燕の太子丹を追討して功を挙げる。二十万で楚を攻めて項燕に大敗したが、のち燕・斉攻めに参加。",
+  "source": "『史記』白起王翦列伝",
+  "note": "要確認: 生没年不詳。登場年は推定"
+ },
+ {
+  "id": "zheng_guo",
+  "name": "鄭国",
+  "nation": "qin",
+  "born": null,
+  "died": null,
+  "appears": -246,
+  "role": "engineer",
+  "stats": {
+   "lead": 30,
+   "valor": 20,
+   "wit": 85,
+   "politics": 60,
+   "charm": 50
+  },
+  "skills": [
+   "hydraulics"
+  ],
+  "bio": "韓の水工。秦の国力を削ぐ計略として派遣されたが、涇水から洛水へ引く大水路（鄭国渠）を完成させ、関中を沃野に変えた。",
+  "source": "『史記』河渠書",
+  "note": "要確認: 生没年不詳。前246年に工事開始",
+  "homeNation": "han"
+ },
+ {
+  "id": "wei_liao",
+  "name": "尉繚",
+  "nation": "qin",
+  "born": null,
+  "died": null,
+  "appears": -237,
+  "role": "strategist",
+  "stats": {
+   "lead": 85,
+   "valor": 50,
+   "wit": 90,
+   "politics": 70,
+   "charm": 60
+  },
+  "skills": [
+   "strategist"
+  ],
+  "bio": "魏の大梁の人。秦王政に諸侯の重臣を買収する策を献じ、国尉となった。兵法書『尉繚子』の著者とされる。",
+  "source": "『史記』秦始皇本紀",
+  "note": "要確認: 来訪年（前237年頃）と『尉繚子』の作者について諸説あり",
+  "homeNation": "wei"
+ },
+ {
+  "id": "yao_jia",
+  "name": "姚賈",
+  "nation": "qin",
+  "born": null,
+  "died": null,
+  "appears": -235,
+  "role": "envoy",
+  "stats": {
+   "lead": 40,
+   "valor": 30,
+   "wit": 80,
+   "politics": 70,
+   "charm": 85
+  },
+  "skills": [
+   "diplomat"
+  ],
+  "bio": "魏の大梁の門番の子。四国合従の企てを重賂で切り崩し、上卿となった。韓非と対立。",
+  "source": "『戦国策』秦策",
+  "note": "要確認: 生没年不詳。事績は『戦国策』に依る",
+  "homeNation": "wei"
+ },
+ {
+  "id": "dun_ruo",
+  "name": "頓弱",
+  "nation": "qin",
+  "born": null,
+  "died": null,
+  "appears": -235,
+  "role": "envoy",
+  "stats": {
+   "lead": 30,
+   "valor": 25,
+   "wit": 78,
+   "politics": 65,
+   "charm": 82
+  },
+  "skills": [
+   "diplomat"
+  ],
+  "bio": "秦王政に「三晋を買収し、韓・魏を脅す」策を献じ、金を持って諸国を遊説した。",
+  "source": "『戦国策』秦策",
+  "note": "要確認: 生没年不詳。頓弱の名は『戦国策』のみに見える"
+ },
+ {
+  "id": "yang_duanhe",
+  "name": "楊端和",
+  "nation": "qin",
+  "born": null,
+  "died": null,
+  "appears": -238,
+  "role": "general",
+  "stats": {
+   "lead": 80,
+   "valor": 78,
+   "wit": 60,
+   "politics": 40,
+   "charm": 50
+  },
+  "skills": [],
+  "bio": "前238年に魏の衍氏を、前236年に鄴を、前229年に趙を攻めた秦の将軍。",
+  "source": "『史記』秦始皇本紀",
+  "note": "要確認: 事績が少なく、生没年不詳"
+ },
+ {
+  "id": "neishi_teng",
+  "name": "内史騰",
+  "nation": "qin",
+  "born": null,
+  "died": null,
+  "appears": -231,
+  "role": "general",
+  "stats": {
+   "lead": 75,
+   "valor": 70,
+   "wit": 65,
+   "politics": 70,
+   "charm": 50
+  },
+  "skills": [
+   "administrator"
+  ],
+  "bio": "前230年に韓を滅ぼして韓王安を捕らえ、潁川郡を置いた。のち南郡の守。",
+  "source": "『史記』秦始皇本紀",
+  "note": "要確認: 「内史」は官名の可能性。生没年不詳"
+ },
+ {
+  "id": "wang_wan",
+  "name": "王綰",
+  "nation": "qin",
+  "born": null,
+  "died": null,
+  "appears": -232,
+  "role": "minister",
+  "stats": {
+   "lead": 45,
+   "valor": 25,
+   "wit": 74,
+   "politics": 82,
+   "charm": 65
+  },
+  "skills": [
+   "administrator"
+  ],
+  "bio": "統一後の丞相。封建の復活を主張して李斯の郡県制と対立した。",
+  "source": "『史記』秦始皇本紀",
+  "note": "要確認: 統一前の事績と生没年は不詳。登場年は推定"
+ },
+ {
+  "id": "li_mu",
+  "name": "李牧",
+  "nation": "zhao",
+  "born": null,
+  "died": -229,
+  "appears": -247,
+  "role": "general",
+  "stats": {
+   "lead": 96,
+   "valor": 85,
+   "wit": 88,
+   "politics": 60,
+   "charm": 75
+  },
+  "skills": [
+   "cavalry_master",
+   "defender"
+  ],
+  "bio": "趙の名将。北辺で匈奴十余万騎を大破し、前233年の肥、前232年の番吾で秦軍を撃退。郭開の讒言で誅殺された。",
+  "source": "『史記』廉頗藺相如列伝",
+  "note": "要確認: 生年不詳。前247年時点は北辺（雁門・代）にいたとみられる"
+ },
+ {
+  "id": "pang_nuan",
+  "name": "龐煖",
+  "nation": "zhao",
+  "born": null,
+  "died": null,
+  "appears": -247,
+  "role": "general",
+  "stats": {
+   "lead": 85,
+   "valor": 75,
+   "wit": 78,
+   "politics": 50,
+   "charm": 60
+  },
+  "skills": [
+   "strategist"
+  ],
+  "bio": "前242年に燕の劇辛を破り、前241年には五国合従軍の将として秦を攻めた。",
+  "source": "『史記』趙世家・『戦国策』趙策",
+  "note": "要確認: 生没年不詳。高齢だったとする説がある"
+ },
+ {
+  "id": "hu_zhe",
+  "name": "扈輒",
+  "nation": "zhao",
+  "born": null,
+  "died": -234,
+  "appears": -247,
+  "role": "general",
+  "stats": {
+   "lead": 70,
+   "valor": 72,
+   "wit": 55,
+   "politics": 35,
+   "charm": 45
+  },
+  "skills": [],
+  "bio": "趙の将軍。前234年、平陽で桓齮に敗れて戦死。",
+  "source": "『史記』秦始皇本紀",
+  "note": "要確認: 生年不詳、事績少"
+ },
+ {
+  "id": "sima_shang",
+  "name": "司馬尚",
+  "nation": "zhao",
+  "born": null,
+  "died": null,
+  "appears": -232,
+  "role": "general",
+  "stats": {
+   "lead": 78,
+   "valor": 75,
+   "wit": 65,
+   "politics": 40,
+   "charm": 50
+  },
+  "skills": [
+   "defender"
+  ],
+  "bio": "李牧とともに秦軍を防いだが、郭開の讒言で罷免された。",
+  "source": "『史記』廉頗藺相如列伝",
+  "note": "要確認: 生没年不詳、事績少"
+ },
+ {
+  "id": "guo_kai",
+  "name": "郭開",
+  "nation": "zhao",
+  "born": null,
+  "died": null,
+  "appears": -247,
+  "role": "minister",
+  "stats": {
+   "lead": 20,
+   "valor": 15,
+   "wit": 60,
+   "politics": 70,
+   "charm": 70
+  },
+  "skills": [
+   "schemer"
+  ],
+  "bio": "趙王の寵臣。廉頗・李牧を讒言で退け、のち秦の買収に応じたとされる。",
+  "source": "『史記』廉頗藺相如列伝",
+  "note": "要確認: 生没年不詳。イベント用の人物（忠誠が低い）",
+  "loyaltyBase": 30
+ },
+ {
+  "id": "wei_wuji",
+  "name": "信陵君（魏無忌）",
+  "nation": "wei",
+  "born": null,
+  "died": -243,
+  "appears": -247,
+  "role": "patron",
+  "stats": {
+   "lead": 90,
+   "valor": 70,
+   "wit": 85,
+   "politics": 80,
+   "charm": 95
+  },
+  "skills": [
+   "patron",
+   "strategist"
+  ],
+  "bio": "魏の公子。邯鄲を救い、前247年には五国の兵を率いて秦軍を河外で破った。讒言で兵権を奪われ、酒色に溺れて没した。",
+  "source": "『史記』魏公子列伝",
+  "note": "要確認: 生年不詳。後ろ盾（登用対象外）",
+  "recruitable": false
+ },
+ {
+  "id": "lian_po",
+  "name": "廉頗",
+  "nation": "wei",
+  "born": -327,
+  "died": -243,
+  "appears": -247,
+  "role": "general",
+  "stats": {
+   "lead": 92,
+   "valor": 90,
+   "wit": 70,
+   "politics": 45,
+   "charm": 70
+  },
+  "skills": [
+   "defender",
+   "veteran"
+  ],
+  "bio": "趙の名将。長平の守りで知られる。前245年に趙を追われて魏の大梁に身を寄せ、のち楚へ行き寿春で没した。",
+  "source": "『史記』廉頗藺相如列伝",
+  "note": "要確認: 生年（前327年頃）・没年（前243年頃）はともに推定。前247年時点は魏にいるため魏の人材とし、高齢で能力が衰える",
+  "homeNation": "zhao"
+ },
+ {
+  "id": "han_fei",
+  "name": "韓非",
+  "nation": "han",
+  "born": -280,
+  "died": -233,
+  "appears": -247,
+  "role": "scholar",
+  "stats": {
+   "lead": 40,
+   "valor": 20,
+   "wit": 96,
+   "politics": 85,
+   "charm": 45
+  },
+  "skills": [
+   "legalist",
+   "author"
+  ],
+  "bio": "韓の公子。荀子に学び、法・術・勢を説く『韓非子』を著す。秦王政に重んじられたが、李斯・姚賈の讒言で獄死。",
+  "source": "『史記』老子韓非列伝",
+  "note": "要確認: 生年は前280年頃の推定。吃音のため弁論は不得手"
+ },
+ {
+  "id": "huang_xie",
+  "name": "春申君（黄歇）",
+  "nation": "chu",
+  "born": null,
+  "died": -238,
+  "appears": -247,
+  "role": "patron",
+  "stats": {
+   "lead": 75,
+   "valor": 50,
+   "wit": 85,
+   "politics": 90,
+   "charm": 90
+  },
+  "skills": [
+   "patron"
+  ],
+  "bio": "楚の令尹。考烈王を擁立し、食客三千。前241年の合従軍を主導。前238年に李園に暗殺された。",
+  "source": "『史記』春申君列伝",
+  "note": "要確認: 生年不詳。後ろ盾（登用対象外）",
+  "recruitable": false
+ },
+ {
+  "id": "xiang_yan",
+  "name": "項燕",
+  "nation": "chu",
+  "born": null,
+  "died": -223,
+  "appears": -247,
+  "role": "general",
+  "stats": {
+   "lead": 92,
+   "valor": 85,
+   "wit": 75,
+   "politics": 50,
+   "charm": 75
+  },
+  "skills": [
+   "defender"
+  ],
+  "bio": "楚の大将軍。李信の二十万を破ったが、翌年王翦の六十万に敗れて戦死。項羽の祖父。",
+  "source": "『史記』項羽本紀",
+  "note": "要確認: 生年不詳。前225年以前の事績は伝わらない"
+ },
+ {
+  "id": "xun_zi",
+  "name": "荀子（荀況）",
+  "nation": "chu",
+  "born": -313,
+  "died": -238,
+  "appears": -247,
+  "role": "scholar",
+  "stats": {
+   "lead": 40,
+   "valor": 15,
+   "wit": 95,
+   "politics": 80,
+   "charm": 70
+  },
+  "skills": [
+   "confucian",
+   "teacher"
+  ],
+  "bio": "趙の人。稷下学宮の祭酒を務め、のち春申君に招かれて蘭陵の令となる。性悪説と礼治を説き、李斯・韓非の師。",
+  "source": "『史記』孟子荀卿列伝",
+  "note": "要確認: 生没年はいずれも推定（前313頃〜前238頃）。蘭陵は楚領のため楚の人材とする",
+  "homeNation": "zhao"
+ },
+ {
+  "id": "li_yuan",
+  "name": "李園",
+  "nation": "chu",
+  "born": null,
+  "died": null,
+  "appears": -247,
+  "role": "minister",
+  "stats": {
+   "lead": 30,
+   "valor": 30,
+   "wit": 75,
+   "politics": 70,
+   "charm": 75
+  },
+  "skills": [
+   "schemer"
+  ],
+  "bio": "趙の人。春申君の舎人から身を起こし、妹を楚王に入れて外戚となる。前238年に春申君を殺して令尹となった。",
+  "source": "『史記』春申君列伝",
+  "note": "要確認: 生没年不詳。イベント用の人物",
+  "homeNation": "zhao",
+  "loyaltyBase": 35
+ },
+ {
+  "id": "zhu_ying",
+  "name": "朱英",
+  "nation": "chu",
+  "born": null,
+  "died": null,
+  "appears": -242,
+  "role": "strategist",
+  "stats": {
+   "lead": 45,
+   "valor": 35,
+   "wit": 82,
+   "politics": 60,
+   "charm": 60
+  },
+  "skills": [
+   "strategist"
+  ],
+  "bio": "春申君の食客。李園の危険を説いて先手を打つよう勧めたが容れられず、去った。",
+  "source": "『史記』春申君列伝",
+  "note": "要確認: 生没年不詳。登場年は推定"
+ },
+ {
+  "id": "hou_sheng",
+  "name": "后勝",
+  "nation": "qi",
+  "born": null,
+  "died": null,
+  "appears": -247,
+  "role": "minister",
+  "stats": {
+   "lead": 30,
+   "valor": 20,
+   "wit": 55,
+   "politics": 65,
+   "charm": 70
+  },
+  "skills": [
+   "schemer"
+  ],
+  "bio": "斉王建の相。秦の賄賂を受けて戦備を怠らせ、斉の無血降伏を招いたとされる。",
+  "source": "『史記』田敬仲完世家",
+  "note": "要確認: 相となった年は不詳。イベント用の人物",
+  "loyaltyBase": 35
+ },
+ {
+  "id": "lu_zhonglian",
+  "name": "魯仲連",
+  "nation": "qi",
+  "born": null,
+  "died": -245,
+  "appears": -247,
+  "role": "scholar",
+  "stats": {
+   "lead": 45,
+   "valor": 30,
+   "wit": 90,
+   "politics": 70,
+   "charm": 90
+  },
+  "skills": [
+   "debater",
+   "diplomat"
+  ],
+  "bio": "斉の高士。趙で「秦を帝としない」と説いて新垣衍を退け、燕の将に書を送って聊城を降した。爵禄を辞退して隠れた。",
+  "source": "『史記』魯仲連鄒陽列伝",
+  "note": "要確認: 生没年は不詳（前245年頃没の説）。前247年時点で存命かは要確認"
+ },
+ {
+  "id": "zou_yan",
+  "name": "鄒衍",
+  "nation": "qi",
+  "born": null,
+  "died": -240,
+  "appears": -247,
+  "role": "scholar",
+  "stats": {
+   "lead": 35,
+   "valor": 15,
+   "wit": 88,
+   "politics": 60,
+   "charm": 75
+  },
+  "skills": [
+   "yinyang",
+   "scholar"
+  ],
+  "bio": "斉の陰陽家。五徳終始説を唱え、稷下から燕の昭王にも招かれた。",
+  "source": "『史記』孟子荀卿列伝",
+  "note": "要確認: 生没年は前305年頃〜前240年頃の推定"
+ },
+ {
+  "id": "chunyu_yue",
+  "name": "淳于越",
+  "nation": "qi",
+  "born": null,
+  "died": null,
+  "appears": -232,
+  "role": "scholar",
+  "stats": {
+   "lead": 35,
+   "valor": 15,
+   "wit": 75,
+   "politics": 65,
+   "charm": 55
+  },
+  "skills": [
+   "confucian"
+  ],
+  "bio": "斉の博士。統一後、封建の復活を進言して李斯と対立し、焚書のきっかけとなった。",
+  "source": "『史記』秦始皇本紀",
+  "note": "要確認: 統一前の事績は不詳。登場年は推定"
+ },
+ {
+  "id": "taizi_dan",
+  "name": "太子丹",
+  "nation": "yan",
+  "born": null,
+  "died": -226,
+  "appears": -247,
+  "role": "patron",
+  "stats": {
+   "lead": 60,
+   "valor": 55,
+   "wit": 65,
+   "politics": 70,
+   "charm": 80
+  },
+  "skills": [
+   "patron"
+  ],
+  "bio": "燕王喜の太子。秦に人質となり、帰国後に荊軻を送って秦王政を刺そうとした。秦軍の追撃を受け、父王に斬られた。",
+  "source": "『史記』刺客列伝",
+  "note": "要確認: 生年不詳。前232年までは秦に人質。後ろ盾（登用対象外）",
+  "recruitable": false
+ },
+ {
+  "id": "ju_wu",
+  "name": "鞠武",
+  "nation": "yan",
+  "born": null,
+  "died": null,
+  "appears": -247,
+  "role": "minister",
+  "stats": {
+   "lead": 50,
+   "valor": 40,
+   "wit": 72,
+   "politics": 75,
+   "charm": 60
+  },
+  "skills": [
+   "administrator"
+  ],
+  "bio": "太子丹の太傅。秦を刺激せぬよう匈奴と結ぶ策を勧め、田光を推薦した。",
+  "source": "『史記』刺客列伝",
+  "note": "要確認: 生没年不詳"
+ },
+ {
+  "id": "ju_xin",
+  "name": "劇辛",
+  "nation": "yan",
+  "born": null,
+  "died": -242,
+  "appears": -247,
+  "role": "general",
+  "stats": {
+   "lead": 72,
+   "valor": 70,
+   "wit": 60,
+   "politics": 45,
+   "charm": 50
+  },
+  "skills": [],
+  "bio": "趙の人。燕の昭王に仕え、前242年に趙を攻めて龐煖に敗れ戦死。",
+  "source": "『史記』燕召公世家",
+  "note": "要確認: 生年不詳。高齢だった",
+  "homeNation": "zhao"
+ },
+ {
+  "id": "tian_guang",
+  "name": "田光",
+  "nation": "yan",
+  "born": null,
+  "died": -227,
+  "appears": -235,
+  "role": "strategist",
+  "stats": {
+   "lead": 50,
+   "valor": 60,
+   "wit": 80,
+   "politics": 55,
+   "charm": 75
+  },
+  "skills": [
+   "strategist"
+  ],
+  "bio": "燕の処士。太子丹に荊軻を推薦し、秘密を守るため自刎した。",
+  "source": "『史記』刺客列伝",
+  "note": "要確認: 生年不詳。登場年は推定"
+ },
+ {
+  "id": "jing_ke",
+  "name": "荊軻",
+  "nation": "yan",
+  "born": null,
+  "died": -227,
+  "appears": -232,
+  "role": "warrior",
+  "stats": {
+   "lead": 40,
+   "valor": 85,
+   "wit": 70,
+   "politics": 30,
+   "charm": 75
+  },
+  "skills": [
+   "swordsman"
+  ],
+  "bio": "衛の人。読書と撃剣を好み、燕で田光・高漸離と交わる。太子丹の命で秦王政を刺そうとして失敗、殺された。",
+  "source": "『史記』刺客列伝",
+  "note": "要確認: 生年不詳。燕に来た年は不詳（前232年頃と推定）。イベント用の人物",
+  "homeNation": "wei"
+ },
+ {
+  "id": "gao_jianli",
+  "name": "高漸離",
+  "nation": "yan",
+  "born": null,
+  "died": null,
+  "appears": -232,
+  "role": "artist",
+  "stats": {
+   "lead": 20,
+   "valor": 55,
+   "wit": 60,
+   "politics": 30,
+   "charm": 88
+  },
+  "skills": [
+   "musician"
+  ],
+  "bio": "燕の筑の名手。荊軻の友。のち目をつぶされながら秦王を筑で撃とうとして殺された。",
+  "source": "『史記』刺客列伝",
+  "note": "要確認: 生没年不詳。イベント用の人物"
+ }
+]

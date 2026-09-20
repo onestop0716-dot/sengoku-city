@@ -1,0 +1,45 @@
+[
+ {
+  "id": "magistrate",
+  "name": "県令",
+  "scope": "city",
+  "officeSlots": 3,
+  "promotion": null,
+  "tribute": 0.05,
+  "term": "xianling"
+ },
+ {
+  "id": "governor",
+  "name": "郡守",
+  "scope": "commandery",
+  "officeSlots": 6,
+  "promotion": {
+   "merit": 1000,
+   "population": 10000
+  },
+  "tribute": 0.08,
+  "term": "junshou"
+ },
+ {
+  "id": "chancellor",
+  "name": "相邦",
+  "scope": "nation",
+  "officeSlots": 12,
+  "promotion": {
+   "merit": 5000,
+   "population": 30000
+  },
+  "tribute": 0.1
+ },
+ {
+  "id": "general",
+  "name": "大将軍",
+  "scope": "nation",
+  "officeSlots": 12,
+  "promotion": {
+   "merit": 5000,
+   "victories": 10
+  },
+  "tribute": 0.1
+ }
+]

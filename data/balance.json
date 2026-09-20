@@ -183,5 +183,18 @@
       "vehicle": 40,
       "weapon": 35
     }
+  },
+  "persons": {
+    "_note": "人材: 要求俸禄 = salaryBase + 能力平均 × salaryPerStat（銭/月）。礼金 = 俸禄 × giftMonths。忠誠の目標は基礎 + 官職 loyaltyOffice / 無役 -loyaltyIdle / 赤字 -loyaltyDeficit",
+    "salaryBase": 5,
+    "salaryPerStat": 0.3,
+    "giftMonths": 6,
+    "visitorGiftFactor": 1.5,
+    "loyaltyOffice": 20,
+    "loyaltyIdle": 5,
+    "loyaltyDeficit": 40,
+    "loyaltySmoothing": 0.2,
+    "leaveBelow": 25,
+    "visitorStayDays": 360
   }
 }

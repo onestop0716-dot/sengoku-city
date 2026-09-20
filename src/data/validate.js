@@ -9,7 +9,7 @@ const FORBIDDEN_WORDS = ['紙', '椅子', '茶', '綿', '仏', '寺院', '火薬
 export function validateData(raw) {
   const errors = [], warnings = [];
   const req = (name) => { if (!raw[name]) errors.push(`${name}.json がありません`); };
-  ['nations', 'cities', 'terrain', 'zones', 'buildings', 'crops', 'assets', 'balance', 'terms', 'structures', 'difficulties', 'advice'].forEach(req);
+  ['nations', 'cities', 'terrain', 'zones', 'buildings', 'crops', 'assets', 'balance', 'terms', 'structures', 'difficulties', 'advice', 'persons', 'offices', 'ranks', 'techs'].forEach(req);
   if (errors.length) return { errors, warnings };
 
   const ids = (arr, name) => {
@@ -74,6 +74,36 @@ export function validateData(raw) {
     if (a.kind === 'gltf' && !a.credit) warnings.push(`assets/${a.id}: 外部素材は credit（CREDITS.md への参照）を書いてください`);
   }
   for (const t of raw.terrain.tiles) if (!t.color) errors.push(`terrain/${t.id}: color がありません`);
+  // 人材・官職・官位・技術
+  if (raw.persons && raw.offices && raw.ranks && raw.techs) {
+    const nationIds = new Set(raw.nations.map((n) => n.id));
+    ids(raw.persons, 'persons'); ids(raw.offices, 'offices'); ids(raw.ranks, 'ranks');
+    const techIds = ids(raw.techs, 'techs');
+    for (const p of raw.persons) {
+      if (!nationIds.has(p.nation)) errors.push(`persons/${p.id}: nation "${p.nation}" が nations にありません`);
+      for (const k of ['lead', 'valor', 'wit', 'politics', 'charm']) { const v = p.stats?.[k]; if (typeof v !== 'number' || v < 1 || v > 100) errors.push(`persons/${p.id}: stats.${k} は 1〜100 の数にしてください`); }
+      if (typeof p.appears !== 'number') errors.push(`persons/${p.id}: appears（登場年）がありません`);
+      if (p.died !== null && typeof p.died !== 'number') errors.push(`persons/${p.id}: died は数か null にしてください`);
+      if (p.born !== null && p.died !== null && p.born >= p.died) errors.push(`persons/${p.id}: born が died 以降です`);
+      if (!p.source) errors.push(`persons/${p.id}: source（出典）がありません`);
+      if (!p.note) warnings.push(`persons/${p.id}: note（要確認事項）がありません`);
+    }
+    const rankIds = new Set(raw.ranks.map((r) => r.id));
+    for (const o of raw.offices) {
+      if (!Array.isArray(o.mainStats) || !o.mainStats.length) errors.push(`offices/${o.id}: mainStats がありません`);
+      if (o.minRank && !rankIds.has(o.minRank)) errors.push(`offices/${o.id}: minRank "${o.minRank}" が ranks にありません`);
+      if (typeof o.salary !== 'number') errors.push(`offices/${o.id}: salary がありません`);
+      if (o.term && !termIds.has(o.term)) warnings.push(`offices/${o.id}: term "${o.term}" が terms にありません`);
+    }
+    for (const t of raw.techs) {
+      for (const r of t.requires || []) if (!techIds.has(r)) errors.push(`techs/${t.id}: requires "${r}" が techs にありません`);
+      if (typeof t.cost !== 'number' || typeof t.days !== 'number') errors.push(`techs/${t.id}: cost と days が必要です`);
+      for (const u of t.unlocks || []) if (!raw.structures.some((s) => s.id === u)) errors.push(`techs/${t.id}: unlocks "${u}" が structures にありません`);
+    }
+    for (const n of raw.nations) for (const s of n.startTechs || []) if (!techIds.has(s)) errors.push(`nations/${n.id}: startTechs "${s}" が techs にありません`);
+    for (const s of raw.structures) if (s.unlock?.tech && !techIds.has(s.unlock.tech)) errors.push(`structures/${s.id}: unlock.tech "${s.unlock.tech}" が techs にありません`);
+  }
+
   // 案内役の助言
   if (raw.advice) {
     const A = raw.advice, ex = new Set(A.expressions || []);
@@ -104,7 +134,7 @@ export function validateData(raw) {
       for (const w of FORBIDDEN_WORDS) if (text.includes(w) && !allow.includes(w)) warnings.push(`${file}/${e.id}: ${key} に禁止語「${w}」が含まれています`);
     }
   };
-  for (const [file, arr] of [['nations', raw.nations], ['cities', raw.cities], ['zones', raw.zones], ['buildings', raw.buildings], ['crops', raw.crops], ['terms', raw.terms], ['structures', raw.structures], ['advice', raw.advice?.advices || []], ['advice/tutorial', raw.advice?.tutorial || []]]) arr.forEach((e) => check(file, e));
+  for (const [file, arr] of [['nations', raw.nations], ['cities', raw.cities], ['zones', raw.zones], ['buildings', raw.buildings], ['crops', raw.crops], ['terms', raw.terms], ['structures', raw.structures], ['advice', raw.advice?.advices || []], ['advice/tutorial', raw.advice?.tutorial || []], ['persons', raw.persons || []], ['offices', raw.offices || []], ['techs', raw.techs || []]]) arr.forEach((e) => check(file, e));
 
   return { errors, warnings };
 }

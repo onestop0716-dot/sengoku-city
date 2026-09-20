@@ -3,6 +3,8 @@ import { clampRect, lPath, rectTiles, idx } from '../core/grid.js';
 import { buildRoadPath, removeRoadAt } from './roads.js';
 import { setZoneRect, removeBuilding } from './zones.js';
 import { placeStructure, placeStructureLine, removeStructure } from './structures.js';
+import { recruit, dismiss, appoint } from './persons.js';
+import { startResearch, cancelResearch } from './research.js';
 
 /**
  * @param {object} world @param {object} reg
@@ -54,6 +56,11 @@ export function applyCommand(world, reg, cmd) {
       else { const [lo, hi] = allowed[cmd.key]; world.policy[cmd.key] = Math.min(hi, Math.max(lo, Number(cmd.value) || 0)); }
       return { ok: true };
     }
+    case 'person.recruit': return recruit(world, reg, cmd.personId);
+    case 'person.dismiss': return dismiss(world, reg, cmd.personId);
+    case 'office.appoint': return appoint(world, reg, cmd.officeId, cmd.personId ?? null);
+    case 'research.start': return startResearch(world, reg, cmd.techId);
+    case 'research.cancel': return cancelResearch(world);
     default:
       return { ok: false, message: `不明なコマンド: ${cmd.type}` };
   }

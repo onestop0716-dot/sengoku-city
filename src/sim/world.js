@@ -10,6 +10,9 @@ import { tickFoodDaily, tickPopulationMonthly } from './population.js';
 import { tickEconomyMonthly, tickEconomyYearly, updateDemand, emptyMonth } from './economy.js';
 import { tickStructures, placeInitialStructures, recomputeServices } from './structures.js';
 import { placeStartingVillage } from './start-village.js';
+import { ensurePersonsState, tickPersonsMonthly, tickPersonsYearly } from './persons.js';
+import { ensureResearchState, tickResearchDaily } from './research.js';
+import { refreshModifiers } from './modifiers.js';
 
 /**
  * @param {{seed:number, cityId:string, reg:object, size?:number, money?:number}} opts
@@ -31,7 +34,8 @@ export function createWorld({ seed, cityId, reg, size, money, village = true }) 
     buildingAt: new Int32Array(w * h).fill(-1),
     buildings: new Map(), nextBuildingId: 1,
     structures: new Map(), nextStructureId: 1, structAt: new Int32Array(w * h).fill(-1), servicesDirty: true,
-    rank: 'magistrate', techs: [], goods: {},
+    rank: 'magistrate', techs: [...(reg.nationById.get(city.nation)?.startTechs || [])], goods: {},
+    persons: { hired: [], visitors: [], gone: [] }, offices: null, research: { current: null, progress: 0 }, mods: null,
     money: money ?? reg.balance.start.money,
     // 経済・人口（フェーズ2）
     policy: { taxLand: 0.1, taxHead: 0.1, taxMarket: 0.1, taxCustoms: 0.1, granaryShare: 0.1, relief: true },
@@ -57,6 +61,7 @@ export function createWorld({ seed, cityId, reg, size, money, village = true }) 
   if (village) placeStartingVillage(world, reg);
   ensureRoadDist(world, reg);
   recomputeServices(world, reg);
+  ensurePersonsState(world, reg); ensureResearchState(world); refreshModifiers(world, reg);
   world.log.push({ day: 0, text: `${reg.nationById.get(city.nation).name}の${city.name}に県令として着任しました` });
   return world;
 }
@@ -71,8 +76,10 @@ export function tick(world, reg) {
   tickStructures(world, reg);
   world.stats.housingCapacity = housingCapacity(world, reg);
   tickFoodDaily(world, reg);
+  tickResearchDaily(world, reg);
   if (flags.newMonth) {
-    if (flags.newYear) tickEconomyYearly(world, reg);
+    if (flags.newYear) { tickEconomyYearly(world, reg); tickPersonsYearly(world, reg); }
+    refreshModifiers(world, reg);
     tickEconomyMonthly(world, reg);
     harvest(world, reg, world.calendar.month);
     tickPopulationMonthly(world, reg);

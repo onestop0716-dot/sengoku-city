@@ -572,6 +572,98 @@
       "title": "次の目標: 人口 500 人",
       "text": "立派な県城になってきたね。人口 500 人を目指して、士の邸や工房も増やしていこう。",
       "todo": "人口 500 人を目指す"
+    },
+    {
+      "id": "research_idle",
+      "priority": 2,
+      "expression": "normal",
+      "cooldownDays": 90,
+      "when": {
+        "all": [
+          {
+            "metric": "researching",
+            "truthy": false
+          },
+          {
+            "metric": "techAvailable",
+            "gte": 1
+          },
+          {
+            "metric": "money",
+            "gte": 800
+          },
+          {
+            "metric": "monthsElapsed",
+            "gte": 3
+          }
+        ]
+      },
+      "title": "研究を始めようよ",
+      "text": "いま何も研究していないよ。上の「研究」から鉄製農具や市の制度を選ぶと、少しずつ県が強くなる。費用は毎月 30〜80 銭くらい。",
+      "todo": "研究を始める（上の「研究」）"
+    },
+    {
+      "id": "recruit_hint",
+      "priority": 1,
+      "expression": "happy",
+      "cooldownDays": 120,
+      "when": {
+        "all": [
+          {
+            "metric": "hiredCount",
+            "eq": 0
+          },
+          {
+            "metric": "candidates",
+            "gte": 1
+          },
+          {
+            "metric": "money",
+            "gte": 1500
+          },
+          {
+            "metric": "monthsElapsed",
+            "gte": 2
+          }
+        ]
+      },
+      "title": "人を雇ってみない？",
+      "text": "上の「人材」に、登用できる人がいるよ。県丞にすると税収が増えるし、田嗇夫なら収穫が増える。礼金と俸禄はかかるけどね。",
+      "todo": "人材を登用して官職に任命する"
+    },
+    {
+      "id": "office_vacant",
+      "priority": 2,
+      "expression": "troubled",
+      "cooldownDays": 60,
+      "when": {
+        "all": [
+          {
+            "metric": "idleHired",
+            "gte": 1
+          },
+          {
+            "metric": "vacantSlots",
+            "gte": 1
+          }
+        ]
+      },
+      "title": "任命していない人がいるよ",
+      "text": "配下に無役の人がいる。「人材」の官職で任命しないと効果が出ないし、無役だと忠誠も下がるよ。",
+      "todo": "無役の配下を官職に任命する"
+    },
+    {
+      "id": "visitor_present",
+      "priority": 3,
+      "expression": "happy",
+      "cooldownDays": 60,
+      "when": {
+        "metric": "visitors",
+        "gte": 1
+      },
+      "title": "客館にお客さんだよ",
+      "text": "他国の賢者が客館に滞在中。しばらくすると去っちゃうから、登用するなら今のうち。",
+      "todo": "客館の来客を登用する"
     }
   ],
   "tutorial": [

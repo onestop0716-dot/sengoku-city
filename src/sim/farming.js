@@ -1,5 +1,6 @@
 // 農業: 作物ごとの収穫月に、畑の収量を計算して穀物と銭（田租）にする。
 import { idx } from '../core/grid.js';
+import { modsOf } from './modifiers.js';
 
 /** 畑1マスの年間収量（石）。桑・麻は 0 で、代わりに産物の価値を返す */
 export function fieldYield(world, reg, b) {
@@ -15,8 +16,10 @@ export function fieldYield(world, reg, b) {
   const fert = 0.4 + world.map.fertility[i] * 1.2;
   const level = E.yieldLevelFactor[Math.min(b.level, E.yieldLevelFactor.length) - 1];
   const worker = world.stats.farmWorkerRatio ?? 1;          // 働き手が足りないと減る
-  const irrigated = world.services.irrigation && world.services.irrigation[i] ? 1 + (crop.irrigationBonus ?? 0.3) : 1;
-  const factor = terrain * climate * affinity * fert * level * worker * irrigated;
+  const M = modsOf(world);
+  const irrigated = world.services.irrigation && world.services.irrigation[i] ? 1 + (crop.irrigationBonus ?? 0.3) + M.irrigationBonus : 1;
+  const tech = M.farmYield * (1 + (M.cropYield[crop.id] || 0));   // 技術（鉄製農具など）と田嗇夫
+  const factor = terrain * climate * affinity * fert * level * worker * irrigated * tech;
   if (crop.baseYield > 0) return { grain: crop.baseYield * factor, value: 0, crop };
   return { grain: 0, value: (E.productValuePerTile[crop.id] || 0) * factor, crop };
 }
@@ -39,7 +42,7 @@ export function harvest(world, reg, month) {
   world.grain.civil += grain - toGranary;
   // 田租: 収穫の価値 × 税率（史実の現物納を銭に簡略化）
   const totalValue = grain * E.grainPrice + value;
-  const tax = totalValue * world.policy.taxLand;
+  const tax = totalValue * world.policy.taxLand * modsOf(world).taxIncome;
   world.money += tax;
   world.finance.month.income['田租'] += tax;
   world.finance.lastHarvest = { month, grain: Math.round(grain), value: Math.round(totalValue), tax: Math.round(tax), tiles };

@@ -1,0 +1,131 @@
+[
+ {
+  "id": "assistant_magistrate",
+  "name": "県丞",
+  "desc": "県令を補佐する次官。税の取り立てと帳簿を司る",
+  "mainStats": [
+   "politics"
+  ],
+  "salary": 25,
+  "effects": [
+   {
+    "type": "tax_income",
+    "perStat": 0.0025
+   }
+  ],
+  "term": "xiancheng",
+  "minRank": "magistrate"
+ },
+ {
+  "id": "lieutenant",
+  "name": "県尉",
+  "desc": "県の治安と兵事を司る武官",
+  "mainStats": [
+   "lead",
+   "valor"
+  ],
+  "salary": 25,
+  "effects": [
+   {
+    "type": "security",
+    "perStat": 0.12
+   },
+   {
+    "type": "conscription",
+    "perStat": 0.002
+   }
+  ],
+  "term": "xianwei",
+  "minRank": "magistrate"
+ },
+ {
+  "id": "master_artisan",
+  "name": "工師",
+  "desc": "工房と工事を監督する官",
+  "mainStats": [
+   "wit",
+   "politics"
+  ],
+  "salary": 15,
+  "effects": [
+   {
+    "type": "workshop_output",
+    "perStat": 0.003
+   },
+   {
+    "type": "build_speed",
+    "perStat": 0.004
+   }
+  ],
+  "term": "gongshi",
+  "minRank": "magistrate"
+ },
+ {
+  "id": "farm_overseer",
+  "name": "田嗇夫",
+  "desc": "農地と農民を監督する官",
+  "mainStats": [
+   "politics"
+  ],
+  "salary": 15,
+  "effects": [
+   {
+    "type": "farm_yield",
+    "perStat": 0.002
+   }
+  ],
+  "term": "tiansefu",
+  "minRank": "magistrate"
+ },
+ {
+  "id": "market_overseer",
+  "name": "市嗇夫",
+  "desc": "市を管理し市租を集める官",
+  "mainStats": [
+   "wit"
+  ],
+  "salary": 15,
+  "effects": [
+   {
+    "type": "market_tax",
+    "perStat": 0.003
+   }
+  ],
+  "term": "shisefu",
+  "minRank": "magistrate"
+ },
+ {
+  "id": "general",
+  "name": "将軍",
+  "desc": "軍を率いる（フェーズ6で戦闘に反映）",
+  "mainStats": [
+   "lead",
+   "valor"
+  ],
+  "salary": 40,
+  "effects": [
+   {
+    "type": "military",
+    "perStat": 0.004
+   }
+  ],
+  "minRank": "magistrate"
+ },
+ {
+  "id": "envoy",
+  "name": "使者",
+  "desc": "他国との交渉にあたる（フェーズ5で外交に反映）",
+  "mainStats": [
+   "charm",
+   "wit"
+  ],
+  "salary": 20,
+  "effects": [
+   {
+    "type": "diplomacy",
+    "perStat": 0.004
+   }
+  ],
+  "minRank": "magistrate"
+ }
+]

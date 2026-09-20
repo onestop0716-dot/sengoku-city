@@ -3,6 +3,7 @@
 import { createRng } from '../../core/rng.js';
 import { createWorld } from '../world.js';
 import { recomputeServices } from '../structures.js';
+import { refreshModifiers } from '../modifiers.js';
 
 export const SAVE_VERSION = 1;
 
@@ -24,6 +25,7 @@ export function serializeWorld(world) {
     foodSufficiency: world.foodSufficiency, finance: JSON.parse(JSON.stringify(world.finance)), stats: JSON.parse(JSON.stringify(world.stats)),
     log: world.log.slice(-100),
     advisor: world.advisor ? JSON.parse(JSON.stringify(world.advisor)) : null,
+    persons: JSON.parse(JSON.stringify(world.persons || { hired: [], visitors: [], gone: [] })), offices: { ...(world.offices || {}) }, research: { ...(world.research || { current: null, progress: 0 }) },
   };
 }
 
@@ -61,6 +63,7 @@ export function deserializeWorld(data, reg) {
   world.money = d.money; world.demand = { ...d.demand }; world.security = d.security; world.foodSufficient = d.foodSufficient;
   if (d.policy) world.policy = { ...world.policy, ...d.policy };
   if (d.advisor) world.advisor = d.advisor;
+  if (d.persons) world.persons = d.persons; if (d.offices) world.offices = { ...world.offices, ...d.offices }; if (d.research) world.research = { ...d.research };
   if (d.population) world.population = { ...world.population, ...d.population };
   if (d.grain) world.grain = { ...world.grain, ...d.grain };
   if (d.loyalty != null) world.loyalty = d.loyalty; if (d.hygiene != null) world.hygiene = d.hygiene;
@@ -68,6 +71,7 @@ export function deserializeWorld(data, reg) {
   if (d.finance) world.finance = { ...world.finance, ...d.finance };
   if (d.stats) world.stats = { ...world.stats, ...d.stats };
   world.log = d.log || [];
+  refreshModifiers(world, reg);
   world.dirty = { tiles: new Set(), buildings: true, trees: true };
   return world;
 }

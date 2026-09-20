@@ -62,11 +62,11 @@ export function tickPopulationMonthly(world, reg) {
   // 民忠（目標値へなだらかに）
   const L = P.loyalty;
   const foodTerm = world.foodSufficiency >= E.famineThreshold ? (world.foodSufficient ? L.foodOk : 0) : -L.foodShort;
-  const target = L.base - world.policy.taxHead * L.headTax - world.policy.taxLand * L.landTax + foodTerm - unemployedRatio * L.unemployed + (world.security - 50) * L.securityScale + (world.services.loyaltyBonus || 0);
+  const target = L.base - world.policy.taxHead * L.headTax - world.policy.taxLand * L.landTax + foodTerm - unemployedRatio * L.unemployed + (world.security - 50) * L.securityScale + (world.services.loyaltyBonus || 0) + (world.mods?.loyalty || 0);
   world.loyalty = clamp(world.loyalty + (clamp(target, 0, 100) - world.loyalty) * L.smoothing, 0, 100);
   // 治安
   const S = P.security;
-  const sTarget = S.base - unemployedRatio * S.unemployed - (pop.total / 1000) * S.crowdingPer1000 + pop.shi * 0.02 + (world.services.securityBonus || 0);
+  const sTarget = S.base - unemployedRatio * S.unemployed - (pop.total / 1000) * S.crowdingPer1000 + pop.shi * 0.02 + (world.services.securityBonus || 0) + (world.mods?.security || 0);
   world.security = clamp(world.security + (clamp(sTarget, 0, 100) - world.security) * S.smoothing, 0, 100);
   // 衛生（井戸・水路はフェーズ3）
   world.hygiene = clamp(P.hygiene.base - (pop.total / 500) * P.hygiene.per500 + (world.services.hygieneBonus || 0), 0, 100);

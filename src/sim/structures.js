@@ -8,7 +8,7 @@ const RANK_ORDER = ['magistrate', 'governor', 'chancellor', 'general'];
 export function lockReason(world, reg, def) {
   const u = def.unlock || {};
   if (u.rank && RANK_ORDER.indexOf(world.rank || 'magistrate') < RANK_ORDER.indexOf(u.rank)) return `官位「${{ governor: '郡守', chancellor: '相邦', general: '大将軍' }[u.rank]}」で解禁`;
-  if (u.tech && !(world.techs || []).includes(u.tech)) return '技術で解禁（フェーズ4）';
+  if (u.tech && !(world.techs || []).includes(u.tech)) return `技術「${reg.techById?.get(u.tech)?.name || u.tech}」で解禁`;
   if (def.unique && Array.from(world.structures.values()).some((s) => s.type === def.id)) return '1つしか建てられません';
   return null;
 }
@@ -164,7 +164,7 @@ export function removeStructure(world, reg, id) {
 export function tickStructures(world, reg) {
   for (const s of world.structures.values()) {
     if (s.state !== 'building') continue;
-    s.progress++;
+    s.progress += world.mods?.buildSpeed || 1;   // 工師・伝舎網で速くなる
     if (s.progress >= s.buildDays) { s.state = 'built'; world.dirty.buildings = true; onBuilt(world, reg, s); world.log.push({ day: world.day, text: `${structureName(reg, reg.structureById.get(s.type), world.nationId)}が完成しました` }); }
   }
   if (world.servicesDirty) recomputeServices(world, reg);

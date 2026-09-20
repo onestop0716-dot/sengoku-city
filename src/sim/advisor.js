@@ -4,6 +4,8 @@ import { idx } from '../core/grid.js';
 import { explainBuildBlockers, zoneDefAt } from './zones.js';
 import { lockReason, structureName } from './structures.js';
 import { formatYear } from './calendar.js';
+import { listCandidates, officeSlots, usedSlots } from './persons.js';
+import { canResearch } from './research.js';
 
 const SAMPLE_DAYS = 90;   // 民忠などの変化を見る期間
 
@@ -101,6 +103,9 @@ export function computeMetrics(world, reg, opts = {}) {
     daysSinceStep: world.day - st.stepStartDay,
     newUnlock, rank: world.rank, disaster: world.disaster || null, fine,
     cityName: reg.cityById.get(world.cityId)?.name || '',
+    researching: !!world.research?.current, techAvailable: reg.techs.filter((t) => canResearch(world, reg, t.id).ok).length,
+    hiredCount: world.persons?.hired.length || 0, idleHired: (world.persons?.hired || []).filter((h) => !Object.values(world.offices || {}).includes(h.id)).length,
+    vacantSlots: Math.max(0, officeSlots(world, reg) - usedSlots(world)), candidates: listCandidates(world, reg).length, visitors: world.persons?.visitors.length || 0,
     name: reg.advice?.character?.name || '',
   };
 }
