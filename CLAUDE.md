@@ -9,7 +9,7 @@
 
 ## 2. 技術方針
 - 言語: JavaScript（ES Modules）+ JSDoc型注釈。ビルド工程なし。`index.html` を静的ホスティングに置くだけで動く。
-- 3D: Three.js。現在は `index.html` の import map で CDN（jsdelivr、バージョン固定 0.160.0）から読み込む。開発環境からCDNに到達できず同梱できなかったため。`npm run vendor:three` を実行すると `vendor/three/` に同梱され import map が書き換わる（推奨。実行後 CREDITS.md にバージョンを記録）。
+- 3D: Three.js r160 を `vendor/three/` に同梱（CDN 依存なし）。更新は `npm run vendor:three`（要ネット接続）で行い、CREDITS.md のバージョンも更新する。
 - テスト: Node 標準の `node --test`（外部依存なし）。`npm test` で実行。
 - ロジック（`src/sim/`）は DOM / Three.js を一切 import しない。描画（`src/render/`）と UI（`src/ui/`）はシミュレーション状態を読むだけで、書き換えは必ずコマンド経由。
 - データ駆動: 建物・区画・人物・技術・イベント・交易品・国・都市・実績などはすべて `data/*.json`。コードにマジックナンバーや固有名詞をハードコードしない。バランス定数は `data/balance.json`。
@@ -54,5 +54,6 @@ npm run vendor:three  # Three.js を vendor/ に同梱（要ネット接続）
 ```
 
 ## 8. 描画の確認について
-- 開発環境（Claude のリモート実行環境）はブラウザから CDN に到達できないため、Three.js の実描画は自動確認できない。Playwright + Three.js スタブで「起動・操作・ロジック」の煙試験のみ行う。
-- 3D の見た目はオーナーの手元で確認してもらい、報告の「動作確認の手順」に必ず含める。
+- `tools/screenshot.mjs`（Playwright + headless Chromium）で実際の描画のスクリーンショットを撮れる。描画を変えたら必ず撮って目視で確認し、報告に改善前後の画像を添える。
+- 描画は `src/render/` に閉じる。見た目の改善でロジック（`src/sim/`）を変えてはならない。
+- 面の向き（表裏）に注意: builder の `triOut`/`quadN` は外向き・法線向きに自動で揃える。新しい形状はスクリーンショットで裏面が消えていないか確認する。

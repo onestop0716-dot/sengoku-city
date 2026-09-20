@@ -92,8 +92,15 @@
  { "id": "field_hemp_3_a", "kind": "procedural", "generator": "field", "params": { "crop": "hemp", "level": 3, "variant": 0 } },
  { "id": "field_hemp_3_b", "kind": "procedural", "generator": "field", "params": { "crop": "hemp", "level": 3, "variant": 1 } },
  { "id": "field_hemp_3_c", "kind": "procedural", "generator": "field", "params": { "crop": "hemp", "level": 3, "variant": 2 } },
- { "id": "tree_a", "kind": "procedural", "generator": "tree", "params": { "variant": 0 } },
- { "id": "tree_b", "kind": "procedural", "generator": "tree", "params": { "variant": 1 } },
- { "id": "tree_c", "kind": "procedural", "generator": "tree", "params": { "variant": 2 } },
+ { "id": "tree_pine_0", "kind": "procedural", "generator": "tree", "params": { "species": "pine", "variant": 0 }, "note": "松" },
+ { "id": "tree_pine_1", "kind": "procedural", "generator": "tree", "params": { "species": "pine", "variant": 1 }, "note": "松" },
+ { "id": "tree_cypress_0", "kind": "procedural", "generator": "tree", "params": { "species": "cypress", "variant": 0 }, "note": "柏" },
+ { "id": "tree_cypress_1", "kind": "procedural", "generator": "tree", "params": { "species": "cypress", "variant": 1 }, "note": "柏" },
+ { "id": "tree_sophora_0", "kind": "procedural", "generator": "tree", "params": { "species": "sophora", "variant": 0 }, "note": "槐" },
+ { "id": "tree_sophora_1", "kind": "procedural", "generator": "tree", "params": { "species": "sophora", "variant": 1 }, "note": "槐" },
+ { "id": "tree_elm_0", "kind": "procedural", "generator": "tree", "params": { "species": "elm", "variant": 0 }, "note": "楡" },
+ { "id": "tree_elm_1", "kind": "procedural", "generator": "tree", "params": { "species": "elm", "variant": 1 }, "note": "楡" },
+ { "id": "tree_willow_0", "kind": "procedural", "generator": "tree", "params": { "species": "willow", "variant": 0 }, "note": "柳（水辺）" },
+ { "id": "tree_willow_1", "kind": "procedural", "generator": "tree", "params": { "species": "willow", "variant": 1 }, "note": "柳（水辺）" },
  { "id": "scaffold", "kind": "procedural", "generator": "scaffold", "params": {} }
 ]

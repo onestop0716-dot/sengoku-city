@@ -4,7 +4,7 @@
 七雄のいずれかに仕える県令として一都市を発展させ、郡守・相邦/大将軍へと出世し、天下統一を目指します。
 
 ## 状態
-- フェーズ1（地形・カメラ・道路・区画・建物の自動成長）まで実装済み。
+- フェーズ1（地形・カメラ・道路・区画・建物の自動成長）まで実装済み。描画は改善版（滑らかな地形・水面・反り屋根・樹種5種・影・品質設定）。
 - 公開URL（GitHub Pages を有効化後）: https://onestop0716-dot.github.io/desktop-tutorial/
 - 設計書: [`docs/`](./docs/)
 
@@ -13,6 +13,7 @@
 cd sengoku-city
 npm test         # ロジックテスト
 npm run serve    # http://localhost:8080/ で起動
+node tools/screenshot.mjs out.png   # 実描画のスクリーンショット（Playwright が必要）
 ```
 ビルド工程はありません。`sengoku-city/` フォルダをそのまま静的ホスティング（GitHub Pages 等）に置けば動きます。
 

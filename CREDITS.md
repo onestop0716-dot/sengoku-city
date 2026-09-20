@@ -5,7 +5,7 @@
 ## ライブラリ
 | 名称 | バージョン | ライセンス | 出典 | 用途 |
 |---|---|---|---|---|
-| Three.js | 0.160.0（CDN: cdn.jsdelivr.net から読み込み。`npm run vendor:three` で同梱可） | MIT | https://github.com/mrdoob/three.js | 3D描画 |
+| Three.js | r160（`vendor/three/` に同梱: three.module.js, GLTFLoader.js, BufferGeometryUtils.js, LICENSE） | MIT | https://github.com/mrdoob/three.js | 3D描画 |
 
 ## 3Dモデル
 （現在は全てコード生成のローポリモデル。外部 glTF/GLB を導入したらここに追記）

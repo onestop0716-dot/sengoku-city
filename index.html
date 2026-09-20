@@ -7,8 +7,8 @@
 <link rel="stylesheet" href="./src/ui/styles.css">
 <script type="importmap">
 { "imports": {
-  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  "three": "./vendor/three/three.module.js",
+  "three/addons/": "./vendor/three/addons/"
 } }
 </script>
 </head>
@@ -19,6 +19,7 @@
 <div id="info" class="panel"></div>
 <div id="log" class="panel"></div>
 <div id="hint">左ドラッグ: ツールを適用 ／ 右ドラッグ: 回転 ／ 中ドラッグ・WASD: 移動 ／ ホイール: ズーム ／ Esc: 選択に戻る</div>
+<div id="settings" class="panel"></div>
 <div id="tooltip"></div>
 <div id="error"></div>
 <div id="start">

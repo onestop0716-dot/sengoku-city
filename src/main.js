@@ -15,8 +15,10 @@ import { createToolbar } from './ui/toolbar.js';
 import { createInfoPanel } from './ui/info-panel.js';
 import { createLog } from './ui/log.js';
 import { showStartScreen } from './ui/start-screen.js';
+import { createSettingsPanel } from './ui/settings-panel.js';
 import { createGameLoop } from './app/game-loop.js';
 import { createInput } from './app/input.js';
+import { loadSettings, qualityOf } from './app/settings.js';
 
 const showError = (msg) => { const el = document.getElementById('error'); el.textContent = msg; el.style.display = 'block'; };
 window.addEventListener('error', (e) => showError(`エラー: ${e.message}`));
@@ -25,19 +27,30 @@ window.addEventListener('unhandledrejection', (e) => showError(`エラー: ${e.r
 async function main() {
   const reg = createRegistry(await loadDataBrowser('./data/'));
   for (const w of reg.warnings) console.warn('データ警告:', w);
+  const settings = loadSettings();
   const start = await showStartScreen(reg);
   const world = createWorld({ seed: start.seed, cityId: start.cityId, reg, size: start.size });
 
   const canvas = document.getElementById('view');
-  const { renderer, scene, resize } = createScene(canvas);
-  const { w, h } = resize();
+  const sc = createScene(canvas);
+  const { renderer, scene } = sc;
+  const { w, h } = sc.resize();
   const orbit = createOrbitCamera(canvas, { centerX: world.map.w / 2, centerZ: world.map.h / 2, aspect: w / h });
-  const terrain = createTerrainMesh(world, reg);
-  scene.add(terrain.mesh); scene.add(terrain.water);
+  const env = { terrain: null };
+  const buildTerrain = (q) => {
+    if (env.terrain) { scene.remove(env.terrain.group); env.terrain.dispose(); }
+    env.terrain = createTerrainMesh(world, reg, { segments: q.segments, sunDir: sc.sunDir });
+    env.terrain.setRipple(q.ripple);
+    scene.add(env.terrain.group);
+  };
+  let quality = qualityOf(settings);
+  buildTerrain(quality);
+  sc.applyQuality(quality);
   const assets = createAssetResolver(reg);
-  const buildings = createBuildingsView(world, reg, scene, assets, terrain);
-  const overlay = createOverlay(scene, terrain);
-  const picker = createPicker(canvas, orbit.camera, terrain, world.map.w, world.map.h);
+  const buildings = createBuildingsView(world, reg, scene, assets, env);
+  buildings.setQuality(quality);
+  const overlay = createOverlay(scene, env);
+  const picker = createPicker(canvas, orbit.camera, env, world.map.w, world.map.h);
 
   const tooltip = createTooltip(reg);
   const log = createLog(world);
@@ -46,21 +59,31 @@ async function main() {
     onTick() {},
     onFrame(dt) {
       orbit.update(dt);
-      terrain.update();
-      buildings.update();
+      env.terrain.update(dt);
+      buildings.update(orbit.camera.position);
+      sc.followShadow(orbit.state.target, quality.shadowRadius);
       hud.update(); log.update(); infoPanel.update();
       renderer.render(scene, orbit.camera);
     },
   });
-  const hud = createHud(world, reg, loop, tooltip);
+  const settingsPanel = createSettingsPanel(settings, () => {
+    const q = qualityOf(settings);
+    const rebuild = q.segments !== quality.segments;
+    quality = q;
+    sc.applyQuality(q);
+    if (rebuild) { buildTerrain(q); buildings.refreshModels(); } else env.terrain.setRipple(q.ripple);
+    buildings.setQuality(q);
+  });
+  const hud = createHud(world, reg, loop, tooltip, () => settingsPanel.toggle());
   const toolbar = createToolbar(reg, () => {});
   createInput({ canvas, picker, overlay, world, reg, toolbar, infoPanel, log, orbit });
 
-  window.addEventListener('resize', () => { const s = resize(); orbit.setAspect(s.w / s.h); });
+  window.addEventListener('resize', () => { const s = sc.resize(); orbit.setAspect(s.w / s.h); });
   window.addEventListener('keydown', (e) => { if (e.code === 'Space' && e.target.tagName !== 'INPUT') { e.preventDefault(); loop.togglePause(); } });
+
   loop.start();
   assets.loadExternal(() => buildings.refreshModels());
-  window.__game = { world, reg, loop, THREE }; // デバッグ用
+  window.__game = { world, reg, loop, THREE, settings, orbit, env, rendererInfo: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles }) }; // デバッグ用
 }
 
 main().catch((err) => { console.error(err); showError(`起動に失敗しました: ${err.message}`); });

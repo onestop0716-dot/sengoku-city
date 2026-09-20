@@ -31,4 +31,9 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #dfe7ee; col
 #start select, #start input { width: 100%; padding: 6px 8px; font-size: 14px; background: #2a2018; color: var(--fg); border: 1px solid var(--line); border-radius: 4px; }
 #start .note { font-size: 12px; opacity: 0.75; margin-top: 8px; min-height: 2.5em; }
 #start button.primary { margin-top: 18px; width: 100%; padding: 10px; font-size: 16px; background: var(--accent); color: #2a1e0e; border: none; border-radius: 4px; cursor: pointer; }
+#settings { top: 56px; left: 50%; transform: translateX(-50%); width: 360px; padding: 12px 14px; display: none; z-index: 5; }
+#settings h3 { margin: 0 0 8px; color: var(--accent); font-size: 15px; }
+#settings .row { display: flex; gap: 12px; align-items: center; margin: 6px 0; }
+#settings .row label { cursor: pointer; }
+#settings .note { font-size: 12px; opacity: 0.75; margin: 6px 0 10px; }
 #error { position: absolute; top: 60px; left: 50%; transform: translateX(-50%); background: #7a1e1e; color: #fff; padding: 10px 16px; border-radius: 6px; display: none; z-index: 30; max-width: 80%; white-space: pre-wrap; }
