@@ -1,0 +1,30 @@
+{
+  "time": { "daysPerSecond": 2, "speeds": [0, 1, 2, 4], "startYear": -247 },
+  "map": { "defaultSize": 96, "centerClearRadius": 8, "riverLevel": -0.4, "hillHeight": 1.2, "mountainHeight": 2.4 },
+  "start": { "money": 5000 },
+  "road": { "costPerTile": 5, "maxRoadDistance": 6 },
+  "prosperity": {
+    "base": 50,
+    "water": { "bonus": 15, "penalty": -20, "range": 8 },
+    "market": { "bonusResidential": 10, "bonusFarm": 5, "rangeResidential": 12, "rangeFarm": 20 },
+    "security": { "neutral": 50, "scale": 5, "clamp": 10 },
+    "food": { "bonus": 10, "penalty": -20 },
+    "demandScale": 0.2,
+    "roadFar": -100
+  },
+  "growth": {
+    "buildThreshold": 50,
+    "buildChancePerDay": 0.12,
+    "maxBuildsPerDay": 4,
+    "levelUp": { "threshold": 65, "days": 30 },
+    "levelDown": { "threshold": 35, "days": 60 },
+    "removeAfterDays": 60
+  },
+  "placeholders": {
+    "_note": "フェーズ2で本実装に置き換える暫定値",
+    "demand": { "residential": 50, "farm": 50 },
+    "security": 60,
+    "foodSufficient": true
+  },
+  "display": { "maxAgents": 300, "maxVehicles": 60 }
+}

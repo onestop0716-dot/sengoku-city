@@ -1,0 +1,19 @@
+{
+  "tiles": [
+    { "id": "plain",    "name": "平地", "buildable": true,  "farmable": true,  "moveCost": 1,  "color": "#9db55a" },
+    { "id": "hill",     "name": "丘",   "buildable": true,  "farmable": true,  "moveCost": 2,  "color": "#a8a860" },
+    { "id": "mountain", "name": "山",   "buildable": false, "farmable": false, "moveCost": 99, "color": "#8a7f70" },
+    { "id": "river",    "name": "川",   "buildable": false, "farmable": false, "moveCost": 99, "water": true, "color": "#4a8fc4" },
+    { "id": "lake",     "name": "湖",   "buildable": false, "farmable": false, "moveCost": 99, "water": true, "color": "#4a8fc4" },
+    { "id": "sea",      "name": "海",   "buildable": false, "farmable": false, "moveCost": 99, "water": true, "color": "#3b7bb0" },
+    { "id": "forest",   "name": "森",   "buildable": true,  "farmable": false, "moveCost": 3,  "clearable": true, "yields": "wood", "color": "#5f8f3e" },
+    { "id": "marsh",    "name": "湿地", "buildable": false, "farmable": true,  "moveCost": 4,  "cropOnly": ["rice"], "color": "#7fa06a" }
+  ],
+  "resources": [
+    { "id": "copper", "name": "銅",   "on": ["hill", "mountain_edge"], "color": "#b87333", "note": "青銅器の原料。楚・蜀に多い" },
+    { "id": "iron",   "name": "鉄",   "on": ["hill", "mountain_edge"], "color": "#5c5c5c", "note": "韓・趙・燕の製鉄" },
+    { "id": "salt",   "name": "塩",   "on": ["coast", "lake", "inland_pool"], "color": "#e8e8e8", "note": "海塩・池塩・井塩。inland_pool は内陸の塩池・塩井（河東・蜀）" },
+    { "id": "clay",   "name": "粘土", "on": ["river_bank"],            "color": "#a0522d", "note": "陶器・瓦・版築" },
+    { "id": "wood",   "name": "木材", "on": ["forest"],                "color": "#6b4f2a", "note": "森のマスが供給する" }
+  ]
+}

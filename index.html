@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>戦国七雄・都市開発シミュレーション</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="./src/ui/styles.css">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<canvas id="view"></canvas>
+<div id="hud" class="panel"></div>
+<div id="toolbar" class="panel"></div>
+<div id="info" class="panel"></div>
+<div id="log" class="panel"></div>
+<div id="hint">左ドラッグ: ツールを適用 ／ 右ドラッグ: 回転 ／ 中ドラッグ・WASD: 移動 ／ ホイール: ズーム ／ Esc: 選択に戻る</div>
+<div id="tooltip"></div>
+<div id="error"></div>
+<div id="start">
+  <div class="card">
+    <h1>戦国七雄・都市開発シミュレーション</h1>
+    <p>前247年、秦王政が即位した年。あなたは一都市の県令として着任します。（フェーズ1: 地形・道路・区画・建物の自動成長）</p>
+    <label>仕える国</label><select id="start-nation"></select>
+    <label>着任する都市</label><select id="start-city"></select>
+    <div class="note" id="start-note"></div>
+    <label>地形のシード（同じ値なら同じ地形）</label><input id="start-seed" type="text">
+    <label>マップの大きさ</label><select id="start-size"><option value="64">64×64（小）</option><option value="96" selected>96×96（標準）</option><option value="128">128×128（大）</option></select>
+    <button class="primary" id="start-btn">着任する</button>
+  </div>
+</div>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>

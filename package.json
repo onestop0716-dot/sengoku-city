@@ -1,0 +1,14 @@
+{
+  "name": "sengoku-city",
+  "version": "0.1.0",
+  "description": "戦国七雄・都市開発シミュレーション（ブラウザ / Three.js）",
+  "type": "module",
+  "private": true,
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "node --test \"tests/**/*.test.js\"",
+    "serve": "node tools/serve.mjs",
+    "validate": "node tools/validate-data.mjs",
+    "vendor:three": "node tools/vendor-three.mjs"
+  }
+}
