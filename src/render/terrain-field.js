@@ -43,6 +43,36 @@ export function sampleTile(field, w, h, x, z) {
   return lerp(lerp(a, b, fx), lerp(c, d, fx), fz);
 }
 
+/**
+ * マス単位のマスクを細かい格子（頂点）へ写す。頂点が属するマスの平均を取るので、
+ * 境界は 1 セル（1/S マス）幅でしか広がらない。blurCells>0 でごくわずかにぼかす。
+ */
+export function fineMask(tileMask, w, h, S, blurCells = 0) {
+  const VW = w * S + 1, VH = h * S + 1;
+  const out = new Float32Array(VW * VH);
+  for (let j = 0; j < VH; j++) for (let i = 0; i < VW; i++) {
+    const xs = i % S === 0 ? [i / S - 1, i / S] : [Math.floor(i / S)];
+    const zs = j % S === 0 ? [j / S - 1, j / S] : [Math.floor(j / S)];
+    let sum = 0, n = 0;
+    for (const z of zs) for (const x of xs) { if (x < 0 || z < 0 || x >= w || z >= h) continue; sum += tileMask[z * w + x]; n++; }
+    out[j * VW + i] = n ? sum / n : 0;
+  }
+  if (blurCells > 0) {
+    const tmp = new Float32Array(out);
+    const r = blurCells;
+    for (let j = 0; j < VH; j++) for (let i = 0; i < VW; i++) {
+      let sum = 0, n = 0;
+      for (let dj = -r; dj <= r; dj++) for (let di = -r; di <= r; di++) {
+        const ii = i + di, jj = j + dj;
+        if (ii < 0 || jj < 0 || ii >= VW || jj >= VH) continue;
+        sum += tmp[jj * VW + ii]; n++;
+      }
+      out[j * VW + i] = sum / n;
+    }
+  }
+  return out;
+}
+
 const cubic = (p0, p1, p2, p3, t) => 0.5 * ((2 * p1) + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t + (-p0 + 3 * p1 - 3 * p2 + p3) * t * t * t);
 
 /** 角（整数座標）に定義された格子を Catmull-Rom で双三次補間 */
@@ -85,7 +115,8 @@ export function createTerrainField(world, reg, { segments = 4 } = {}) {
 
   // --- マス単位のマスク（ぼかす）
   const waterMask = new Float32Array(w * h), forestMask = new Float32Array(w * h), marshMask = new Float32Array(w * h), fert = new Float32Array(w * h);
-  const roadMask = new Float32Array(w * h);
+  const roadMask = new Float32Array(w * h), shoreMask = new Float32Array(w * h);
+  const shoreDist = reg.balance.zoning?.shoreDistance ?? 1;
   const rebuildMasks = () => {
     for (let i = 0; i < w * h; i++) {
       waterMask[i] = isWater(i) ? 1 : 0;
@@ -93,14 +124,15 @@ export function createTerrainField(world, reg, { segments = 4 } = {}) {
       marshMask[i] = tile[i] === T('marsh') ? 1 : 0;
       fert[i] = world.map.fertility[i];
       roadMask[i] = world.roads[i] ? 1 : 0;
+      shoreMask[i] = !isWater(i) && world.map.waterDist[i] <= shoreDist ? 1 : 0;
     }
   };
   rebuildMasks();
+  // 水の形（掘り下げ）だけはマス単位で2回ぼかして曲線の岸線にする。色はすべて細かい格子でくっきり扱う
   const waterB = blur3(blur3(waterMask, w, h), w, h);
-  const forestB = blur3(forestMask, w, h);
-  const marshB = blur3(marshMask, w, h);
   const fertB = blur3(fert, w, h);
-  const refreshBlurred = () => { blur3(blur3(waterMask, w, h), w, h, waterB); blur3(forestMask, w, h, forestB); blur3(marshMask, w, h, marshB); };
+  let forestF = fineMask(forestMask, w, h, S, 1), marshF = fineMask(marshMask, w, h, S, 1), roadF = fineMask(roadMask, w, h, S, 0), shoreF = fineMask(shoreMask, w, h, S, 1);
+  const refreshFine = () => { forestF = fineMask(forestMask, w, h, S, 1); marshF = fineMask(marshMask, w, h, S, 1); roadF = fineMask(roadMask, w, h, S, 0); shoreF = fineMask(shoreMask, w, h, S, 1); };
 
   /** 連続した地形の高さ（水底を含む） */
   const smoothMax = (a, b, k) => (a + b + Math.sqrt((a - b) * (a - b) + k * k)) / 2;
@@ -121,7 +153,7 @@ export function createTerrainField(world, reg, { segments = 4 } = {}) {
     return [nx, ny, nz];
   };
 
-  const colorAt = (x, z, hgt, ny) => {
+  const colorAt = (x, z, hgt, ny, k) => {
     const f = sampleTile(fertB, w, h, x, z);
     const n1 = fbm(x / 9, z / 9, world.seed + 501) - 0.5;
     let c = mix3(PAL.grassDry, PAL.grassRich, clamp01(f * 1.15 + n1 * 0.6));
@@ -130,14 +162,15 @@ export function createTerrainField(world, reg, { segments = 4 } = {}) {
     c = mix3(c, PAL.rock, smoothstep(0.16, 0.34, slope));
     c = mix3(c, PAL.dirt, smoothstep(bal.hillHeight - 0.3, bal.hillHeight + 0.6, hgt) * 0.35);
     c = mix3(c, PAL.rockDark, smoothstep(bal.mountainHeight - 0.4, bal.mountainHeight + 0.8, hgt) * 0.8);
-    c = mix3(c, PAL.forestFloor, sampleTile(forestB, w, h, x, z) * 0.85);
-    c = mix3(c, PAL.marsh, sampleTile(marshB, w, h, x, z));
-    const wm = sampleTile(waterB, w, h, x, z);
-    c = mix3(c, PAL.sand, smoothstep(0.06, 0.4, wm));
-    c = mix3(c, PAL.bed, smoothstep(0.42, 0.85, wm));
-    const rm = sampleTile(roadMask, w, h, x, z);
-    c = mix3(c, PAL.roadEdge, smoothstep(0.12, 0.4, rm));
-    c = mix3(c, PAL.road, smoothstep(0.35, 0.7, rm));
+    c = mix3(c, PAL.forestFloor, forestF[k] * 0.85);
+    c = mix3(c, PAL.marsh, marshF[k]);
+    // 砂地: 岸辺のマス（区画を置けない範囲）と、水面近くの低い土地。水面下は川底の色
+    const sand = Math.max(shoreF[k], smoothstep(waterLevel + 0.16, waterLevel + 0.03, hgt));
+    c = mix3(c, PAL.sand, sand);
+    c = mix3(c, PAL.bed, smoothstep(waterLevel + 0.02, waterLevel - 0.14, hgt));
+    const rm = roadF[k];
+    c = mix3(c, PAL.roadEdge, smoothstep(0.2, 0.45, rm));
+    c = mix3(c, PAL.road, smoothstep(0.45, 0.75, rm));
     const grain = 1 + (hash2(Math.round(x * 4), Math.round(z * 4), 77) - 0.5) * 0.05;
     return [c[0] * grain, c[1] * grain, c[2] * grain];
   };
@@ -151,7 +184,7 @@ export function createTerrainField(world, reg, { segments = 4 } = {}) {
     positions[k] = x; positions[k + 1] = y; positions[k + 2] = z;
     normalAt(x, z, nrm);
     normals[k] = nrm[0]; normals[k + 1] = nrm[1]; normals[k + 2] = nrm[2];
-    const c = colorAt(x, z, y, nrm[1]);
+    const c = colorAt(x, z, y, nrm[1], j * VW + i);
     colors[k] = c[0]; colors[k + 1] = c[1]; colors[k + 2] = c[2];
   };
   for (let j = 0; j < VH; j++) for (let i = 0; i < VW; i++) computeVertex(i, j);
@@ -165,10 +198,12 @@ export function createTerrainField(world, reg, { segments = 4 } = {}) {
   return {
     S, VW, VH, waterLevel, positions, normals, colors, indices,
     heightAt, normalAt, sampleTile, waterB, roadMask,
+    /** 頂点番号 (i,j) */
+    vindex: (i, j) => j * VW + i,
     /** 変更されたマス集合の周辺だけ色を再計算し、更新した頂点範囲 [jMin,jMax] を返す */
     recolor(dirtyTiles) {
       if (!dirtyTiles.size) return null;
-      rebuildMasks(); refreshBlurred();
+      rebuildMasks(); refreshFine();
       let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
       for (const i of dirtyTiles) { const x = i % w, z = (i / w) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); z0 = Math.min(z0, z); z1 = Math.max(z1, z); }
       const pad = 3;
@@ -176,7 +211,7 @@ export function createTerrainField(world, reg, { segments = 4 } = {}) {
       const j0 = Math.max(0, (z0 - pad) * S), j1 = Math.min(VH - 1, (z1 + 1 + pad) * S);
       for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) {
         const k = (j * VW + i) * 3;
-        const c = colorAt(i / S, j / S, positions[k + 1], normals[k + 1]);
+        const c = colorAt(i / S, j / S, positions[k + 1], normals[k + 1], j * VW + i);
         colors[k] = c[0]; colors[k + 1] = c[1]; colors[k + 2] = c[2];
       }
       return { j0, j1 };

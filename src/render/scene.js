@@ -17,11 +17,12 @@ export function createScene(canvas) {
 
   const scene = new THREE.Scene();
   const horizon = new THREE.Color('#e6ede9').convertSRGBToLinear();
+  scene.background = horizon.clone();                        // 万一空が描けない領域があっても黒くしない
   scene.fog = new THREE.Fog(horizon.clone(), 140, 320);
 
   // 空（グラデーションの球）
   const sky = new THREE.Mesh(
-    new THREE.SphereGeometry(520, 24, 12),
+    new THREE.SphereGeometry(1000, 24, 12),
     new THREE.ShaderMaterial({ vertexShader: SKY_VERT, fragmentShader: SKY_FRAG, side: THREE.BackSide, depthWrite: false, fog: false,
       uniforms: { top: { value: new THREE.Color('#8fb6d8').convertSRGBToLinear() }, horizon: { value: horizon.clone() } } }),
   );
@@ -47,6 +48,10 @@ export function createScene(canvas) {
 
   return {
     renderer, scene, sun, sunDir, sky, resize,
+    /** 空のドームは常にカメラを中心に置く（描画距離で切れないように） */
+    followCamera(camPos) { sky.position.copy(camPos); },
+    /** 霞の範囲（ズーム上限に合わせる） */
+    setFog(near, far) { scene.fog.near = near; scene.fog.far = far; },
     /** 影の範囲をカメラの注視点に追従させる */
     followShadow(target, radius) {
       sun.position.set(target.x + 60, 90, target.z + 35);

@@ -35,7 +35,9 @@ async function main() {
   const sc = createScene(canvas);
   const { renderer, scene } = sc;
   const { w, h } = sc.resize();
-  const orbit = createOrbitCamera(canvas, { centerX: world.map.w / 2, centerZ: world.map.h / 2, aspect: w / h });
+  const maxDistance = Math.max(60, Math.round(world.map.w * 1.35));   // ズームアウトの上限（マップ外が大きく見えすぎない）
+  const orbit = createOrbitCamera(canvas, { centerX: world.map.w / 2, centerZ: world.map.h / 2, aspect: w / h, maxDistance });
+  sc.setFog(maxDistance * 1.4, maxDistance * 3.4);
   const env = { terrain: null };
   const buildTerrain = (q) => {
     if (env.terrain) { scene.remove(env.terrain.group); env.terrain.dispose(); }
@@ -59,6 +61,7 @@ async function main() {
     onTick() {},
     onFrame(dt) {
       orbit.update(dt);
+      sc.followCamera(orbit.camera.position);
       env.terrain.update(dt);
       buildings.update(orbit.camera.position);
       sc.followShadow(orbit.state.target, quality.shadowRadius);

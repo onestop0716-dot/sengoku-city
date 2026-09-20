@@ -1,12 +1,12 @@
 // 360度回転・ズーム・パンできる俯瞰カメラ。右ドラッグ=回転、中ドラッグ=パン、ホイール=ズーム、WASD/矢印=パン、Q/E=回転。
 import * as THREE from 'three';
 
-export function createOrbitCamera(canvas, { centerX, centerZ, aspect }) {
-  const camera = new THREE.PerspectiveCamera(50, aspect, 0.5, 600);
+export function createOrbitCamera(canvas, { centerX, centerZ, aspect, maxDistance = 130 }) {
+  const camera = new THREE.PerspectiveCamera(50, aspect, 0.5, 2500);
   const state = {
     target: new THREE.Vector3(centerX, 0, centerZ),
-    distance: 45, yaw: Math.PI * 0.25, pitch: 0.85,
-    minDistance: 6, maxDistance: 180, minPitch: 0.2, maxPitch: 1.45,
+    distance: Math.min(45, maxDistance), yaw: Math.PI * 0.25, pitch: 0.85,
+    minDistance: 6, maxDistance, minPitch: 0.2, maxPitch: 1.45,
   };
   const keys = new Set();
   let drag = null;
@@ -77,6 +77,7 @@ export function createOrbitCamera(canvas, { centerX, centerZ, aspect }) {
       if (dx || dz) pan(dx, dz);
       if (keys.has('KeyQ')) state.yaw += 1.5 * dt;
       if (keys.has('KeyE')) state.yaw -= 1.5 * dt;
+      state.distance = Math.min(state.maxDistance, Math.max(state.minDistance, state.distance));   // 常に上限・下限を守る
       apply();
     },
   };

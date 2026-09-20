@@ -2,6 +2,7 @@
 import { idx, inBounds, N8, rectTiles } from '../core/grid.js';
 import { hash2 } from '../core/rng.js';
 import { ensureRoadDist } from './roads.js';
+import { chooseFacing } from './placement.js';
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
@@ -11,6 +12,8 @@ export function canZoneTile(world, reg, x, y, zoneDef) {
   const t = reg.tiles[world.map.tile[i]];
   if (world.roads[i]) return false;
   if (world.buildingAt[i] !== -1) return false;
+  // 岸辺（水際のマス）には区画を置けない
+  if (world.map.waterDist[i] <= (reg.balance.zoning?.shoreDistance ?? 1)) return false;
   if (zoneDef.category === 'farm') {
     if (!t.farmable) return false;
     if (t.cropOnly && !t.cropOnly.includes(zoneDef.crop)) return false;
@@ -144,7 +147,7 @@ function placeBuilding(world, reg, x, y, def, zoneDef) {
   const W = world.map.w;
   const id = world.nextBuildingId++;
   const variant = Math.floor(hash2(x, y, world.seed) * 3);
-  const rotation = Math.floor(hash2(x, y, world.seed + 1) * 4);
+  const rotation = chooseFacing(world, x, y, def.size[0], def.size[1]);
   const lv = def.levels[0];
   const b = {
     id, buildingType: def.id, category: def.category, zone: zoneDef.id,
@@ -188,6 +191,7 @@ export function tickZones(world, reg, rng) {
       if (b.level < maxLevel && ++b.upTimer >= G.levelUp.days) {
         b.level++; b.upTimer = 0;
         b.state = 'building'; b.progress = 0; b.buildDays = def.levels[b.level - 1].buildDays;
+        b.rotation = chooseFacing(world, b.x, b.y, b.w, b.h);   // 建て替え時に向きを見直す
         world.dirty.buildings = true;
         world.log.push({ day: world.day, text: `${def.name}がレベル${b.level}に成長しました` });
       }

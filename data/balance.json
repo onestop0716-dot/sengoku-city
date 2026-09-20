@@ -3,6 +3,7 @@
   "map": { "defaultSize": 96, "centerClearRadius": 8, "riverLevel": -0.4, "hillHeight": 1.2, "mountainHeight": 2.4 },
   "start": { "money": 5000 },
   "road": { "costPerTile": 5, "maxRoadDistance": 6 },
+  "zoning": { "shoreDistance": 1, "_note": "水際からこのマス数以内には区画を置けない（岸辺）" },
   "prosperity": {
     "base": 50,
     "water": { "bonus": 15, "penalty": -20, "range": 8 },
