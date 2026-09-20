@@ -9,7 +9,31 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #dfe7ee; col
 #hud .spacer { flex: 1; }
 #hud button, #toolbar button, .btn { background: rgba(255,255,255,0.08); color: var(--fg); border: 1px solid var(--line); border-radius: 4px; padding: 4px 9px; cursor: pointer; font-size: 13px; }
 #hud button.active, #toolbar button.active { background: var(--accent); color: #2a1e0e; border-color: var(--accent); }
-#toolbar { top: 56px; left: 8px; width: 150px; padding: 8px; display: flex; flex-direction: column; gap: 4px; max-height: calc(100% - 200px); overflow-y: auto; }
+#toolbar { top: 56px; left: 8px; width: 150px; padding: 8px; display: flex; flex-direction: column; gap: 4px; max-height: calc(100% - 300px); overflow-y: auto; }
+#demand { left: 8px; bottom: 124px; width: 150px; padding: 6px 8px; }
+#demand h4 { margin: 0 0 4px; font-size: 11px; opacity: .7; font-weight: normal; }
+.dm-row { display: flex; align-items: center; gap: 6px; font-size: 12px; margin: 2px 0; }
+.dm-bar { flex: 1; height: 8px; background: rgba(255,255,255,0.08); border-radius: 2px; position: relative; overflow: hidden; }
+.dm-bar .dm-pos { position: absolute; left: 50%; top: 0; height: 100%; background: #5fbf6a; }
+.dm-bar .dm-neg { position: absolute; right: 50%; top: 0; height: 100%; background: #e06060; }
+.bigpanel { top: 56px; left: 50%; transform: translateX(-50%); width: 700px; max-width: calc(100% - 340px); max-height: calc(100% - 200px); overflow-y: auto; padding: 12px 16px; display: none; z-index: 4; }
+.bigpanel h3 { margin: 0; color: var(--accent); font-size: 16px; }
+.bigpanel h4 { margin: 10px 0 4px; font-size: 12px; opacity: .8; font-weight: normal; }
+.bigpanel .panel-head { display: flex; justify-content: space-between; align-items: center; }
+.bigpanel .cols { display: flex; gap: 20px; }
+.bigpanel .col { flex: 1; min-width: 0; }
+.bigpanel table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.bigpanel td, .bigpanel th { padding: 2px 0; border-bottom: 1px solid var(--line); text-align: left; }
+.bigpanel td:last-child, .bigpanel th:last-child { text-align: right; }
+.bigpanel .note { font-size: 12px; opacity: .75; margin: 6px 0; }
+.slider-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; font-size: 13px; }
+.slider-row label { width: 56px; }
+.slider-row input[type=range] { flex: 1; }
+.slider-row span { width: 40px; text-align: right; }
+.slider-row span.wide { width: auto; text-align: left; }
+.bar { display: inline-block; width: 110px; height: 8px; background: rgba(255,255,255,0.08); border-radius: 2px; vertical-align: middle; margin-right: 6px; overflow: hidden; }
+.bar span { display: block; height: 100%; background: var(--accent); }
+#finance-chart { width: 100%; height: 160px; background: rgba(0,0,0,0.2); border-radius: 4px; }
 #toolbar h4 { margin: 6px 0 2px; font-size: 11px; opacity: 0.7; font-weight: normal; }
 #toolbar button { text-align: left; }
 #toolbar .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
@@ -20,7 +44,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #dfe7ee; col
 #info td:last-child { text-align: right; }
 #log { bottom: 8px; left: 8px; right: 8px; height: 110px; padding: 6px 10px; overflow-y: auto; font-size: 12px; line-height: 1.5; }
 #log .day { opacity: 0.55; margin-right: 6px; }
-#hint { position: absolute; bottom: 124px; left: 8px; font-size: 12px; color: #3a2e1e; background: rgba(255,255,255,0.7); padding: 3px 8px; border-radius: 4px; }
+#hint { position: absolute; bottom: 124px; left: 166px; font-size: 12px; color: #3a2e1e; background: rgba(255,255,255,0.7); padding: 3px 8px; border-radius: 4px; }
 #tooltip { position: absolute; pointer-events: none; background: #1f1812; color: #f3e9d2; padding: 6px 9px; border-radius: 4px; font-size: 12px; max-width: 280px; display: none; z-index: 20; border: 1px solid var(--accent); }
 .term { border-bottom: 1px dotted var(--accent); cursor: help; }
 #start { position: absolute; inset: 0; background: radial-gradient(ellipse at center, #3a2e1e 0%, #1a130c 100%); display: flex; align-items: center; justify-content: center; z-index: 10; }

@@ -1,15 +1,55 @@
 {
-  "time": { "daysPerSecond": 2, "speeds": [0, 1, 2, 4], "startYear": -247 },
-  "map": { "defaultSize": 192, "centerClearRadius": 8, "riverLevel": -0.4, "hillHeight": 1.2, "mountainHeight": 2.4 },
-  "start": { "money": 5000 },
-  "road": { "costPerTile": 5, "maxRoadDistance": 6 },
-  "zoning": { "shoreDistance": 1, "_note": "水際からこのマス数以内には区画を置けない（岸辺）" },
+  "time": {
+    "daysPerSecond": 2,
+    "speeds": [
+      0,
+      1,
+      2,
+      4
+    ],
+    "startYear": -247
+  },
+  "map": {
+    "defaultSize": 192,
+    "centerClearRadius": 8,
+    "riverLevel": -0.4,
+    "hillHeight": 1.2,
+    "mountainHeight": 2.4
+  },
+  "start": {
+    "money": 5000,
+    "grain": 1500
+  },
+  "road": {
+    "costPerTile": 5,
+    "maxRoadDistance": 6
+  },
+  "zoning": {
+    "shoreDistance": 1,
+    "_note": "水際からこのマス数以内には区画を置けない（岸辺）"
+  },
   "prosperity": {
     "base": 50,
-    "water": { "bonus": 15, "penalty": -20, "range": 8 },
-    "market": { "bonusResidential": 10, "bonusFarm": 5, "rangeResidential": 12, "rangeFarm": 20 },
-    "security": { "neutral": 50, "scale": 5, "clamp": 10 },
-    "food": { "bonus": 10, "penalty": -20 },
+    "water": {
+      "bonus": 15,
+      "penalty": -20,
+      "range": 8
+    },
+    "market": {
+      "bonusResidential": 10,
+      "bonusFarm": 5,
+      "rangeResidential": 12,
+      "rangeFarm": 20
+    },
+    "security": {
+      "neutral": 50,
+      "scale": 5,
+      "clamp": 10
+    },
+    "food": {
+      "bonus": 10,
+      "penalty": -20
+    },
     "demandScale": 0.2,
     "roadFar": -100
   },
@@ -17,15 +57,94 @@
     "buildThreshold": 50,
     "buildChancePerDay": 0.12,
     "maxBuildsPerDay": 4,
-    "levelUp": { "threshold": 65, "days": 30 },
-    "levelDown": { "threshold": 35, "days": 60 },
+    "levelUp": {
+      "threshold": 65,
+      "days": 30
+    },
+    "levelDown": {
+      "threshold": 35,
+      "days": 60
+    },
     "removeAfterDays": 60
   },
   "placeholders": {
-    "_note": "フェーズ2で本実装に置き換える暫定値",
-    "demand": { "residential": 50, "farm": 50 },
+    "_note": "フェーズ2で人口・食糧・治安は本実装済み。市までの距離はフェーズ3",
     "security": 60,
     "foodSufficient": true
   },
-  "display": { "maxAgents": 300, "maxVehicles": 60 }
+  "display": {
+    "maxAgents": 300,
+    "maxVehicles": 60
+  },
+  "economy": {
+    "_note": "フェーズ2: 経済・人口の定数。単位は 銭 と 石。畑1区画（レベル1、標準的な土地）で約4人分の穀物",
+    "grainPrice": 6,
+    "productValuePerTile": {
+      "mulberry": 40,
+      "hemp": 18
+    },
+    "consumptionPerPersonPerYear": 1.5,
+    "yieldLevelFactor": [
+      1.0,
+      1.5,
+      2.0
+    ],
+    "farmJobsPerTile": 2,
+    "farmhouseBonus": 0.15,
+    "headTaxPerPersonPerMonthAt10": 0.15,
+    "officialsSalaryPerMonth": 40,
+    "tributeRate": 0.05,
+    "granaryBaseCapacity": 800,
+    "grainSpoilagePerMonth": 0.008,
+    "famineThreshold": 0.7,
+    "historyMonths": 24
+  },
+  "population": {
+    "immigrationRate": 0.15,
+    "emigrationRate": 0.025,
+    "naturalGrowthPerMonth": 0.0015,
+    "loyalty": {
+      "base": 60,
+      "headTax": 150,
+      "landTax": 80,
+      "foodOk": 10,
+      "foodShort": 25,
+      "unemployed": 30,
+      "securityScale": 0.2,
+      "smoothing": 0.2,
+      "emigrateBelow": 35
+    },
+    "security": {
+      "base": 55,
+      "unemployed": 40,
+      "crowdingPer1000": 2,
+      "smoothing": 0.2
+    },
+    "hygiene": {
+      "base": 70,
+      "per500": 4
+    }
+  },
+  "demand": {
+    "residential": {
+      "base": 25,
+      "jobs": 0.4,
+      "loyalty": 1.0,
+      "foodOk": 15,
+      "foodShort": -30,
+      "vacancy": 80
+    },
+    "farm": {
+      "base": 20,
+      "shortage": 120,
+      "surplus": -40
+    },
+    "market": {
+      "perPerson": 0.05,
+      "base": -10
+    },
+    "workshop": {
+      "base": 0
+    }
+  }
 }

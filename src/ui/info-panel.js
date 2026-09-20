@@ -1,6 +1,7 @@
 // 右の情報パネル: マス／建物の詳細と繁栄度の内訳。
 import { idx } from '../core/grid.js';
 import { computeProsperity, zoneDefAt } from '../sim/zones.js';
+import { fieldYield } from '../sim/farming.js';
 
 export function createInfoPanel(world, reg, tooltip) {
   const el = document.getElementById('info');
@@ -29,6 +30,7 @@ export function createInfoPanel(world, reg, tooltip) {
       html += `<h3 style="margin-top:10px">${def.name} Lv${b.level}</h3><table>`;
       html += `<tr><td>状態</td><td>${b.state === 'building' ? `建設中 ${b.progress}/${b.buildDays}日` : '完成'}</td></tr>`;
       if (lv.capacity) html += `<tr><td>収容</td><td>${lv.capacity}人</td></tr>`;
+      if (b.category === 'field' && b.state === 'built') { const y = fieldYield(world, reg, b); html += `<tr><td>見込み収量</td><td>${y.crop?.baseYield > 0 ? `${y.grain.toFixed(1)} 石/年（${y.crop.harvestMonth}月）` : `${Math.round(y.value)} 銭相当/年（${y.crop?.harvestMonth}月）`}</td></tr>`; }
       const p = computeProsperity(world, reg, b.x, b.y, reg.zoneById.get(b.zone), b);
       html += `<tr><td>${tooltip.termHtml('prosperity')}</td><td><b>${p.total}</b></td></tr>`;
       for (const [k, v] of Object.entries(p.parts)) if (k !== '基本') html += `<tr><td style="padding-left:12px;opacity:.8">${k}</td><td>${v > 0 ? '+' : ''}${Math.round(v)}</td></tr>`;

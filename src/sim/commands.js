@@ -43,6 +43,13 @@ export function applyCommand(world, reg, cmd) {
       }
       return { ok: true, count };
     }
+    case 'policy.set': {
+      const allowed = { taxLand: [0, 0.3], taxHead: [0, 0.3], taxMarket: [0, 0.3], taxCustoms: [0, 0.3], granaryShare: [0, 0.3], relief: null };
+      if (!(cmd.key in allowed)) return { ok: false, message: `不明な政策: ${cmd.key}` };
+      if (allowed[cmd.key] === null) world.policy[cmd.key] = !!cmd.value;
+      else { const [lo, hi] = allowed[cmd.key]; world.policy[cmd.key] = Math.min(hi, Math.max(lo, Number(cmd.value) || 0)); }
+      return { ok: true };
+    }
     default:
       return { ok: false, message: `不明なコマンド: ${cmd.type}` };
   }

@@ -1,0 +1,55 @@
+// 税・支出・財政記録・需要メーター。
+const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+
+export function emptyMonth() {
+  return { income: { '田租': 0, '口賦': 0, '市租': 0, '関税': 0 }, expense: { '俸禄': 0, '維持費': 0, '上納': 0, '建設費': 0 } };
+}
+
+/** 月初: 口賦・俸禄・維持費を処理し、先月の記録を履歴へ */
+export function tickEconomyMonthly(world, reg) {
+  const E = reg.balance.economy;
+  const m = world.finance.month;
+  // 先月分を履歴に
+  const income = Object.values(m.income).reduce((a, b) => a + b, 0), expense = Object.values(m.expense).reduce((a, b) => a + b, 0);
+  world.finance.history.push({ year: world.finance.recordYear, month: world.finance.recordMonth, income: Math.round(income), expense: Math.round(expense), balance: Math.round(world.money), detail: m });
+  if (world.finance.history.length > E.historyMonths) world.finance.history.splice(0, world.finance.history.length - E.historyMonths);
+  world.finance.yearIncome += income;
+  world.finance.month = emptyMonth();
+  world.finance.recordYear = world.calendar.year; world.finance.recordMonth = world.calendar.month;
+  const cur = world.finance.month;
+  // 口賦（人頭税）
+  const head = world.population.total * E.headTaxPerPersonPerMonthAt10 * (world.policy.taxHead / 0.1);
+  world.money += head; cur.income['口賦'] += head;
+  // 俸禄（県廷の官吏）
+  world.money -= E.officialsSalaryPerMonth; cur.expense['俸禄'] += E.officialsSalaryPerMonth;
+  // 穀物の目減り
+  world.grain.civil *= 1 - E.grainSpoilagePerMonth; world.grain.granary *= 1 - E.grainSpoilagePerMonth;
+  if (world.money < 0 && world.calendar.month % 2 === 0) world.log.push({ day: world.day, text: '財政が赤字です。税率や建設を見直してください' });
+}
+
+/** 年初: 上納（前年の税収の一定割合を国へ納める） */
+export function tickEconomyYearly(world, reg) {
+  const E = reg.balance.economy;
+  const tribute = Math.round(world.finance.yearIncome * E.tributeRate);
+  world.money -= tribute; world.finance.month.expense['上納'] += tribute;
+  world.finance.lastTribute = tribute; world.finance.yearIncome = 0;
+  world.log.push({ day: world.day, text: `上納: 前年の税収から ${tribute} 銭を国に納めました` });
+}
+
+/** 需要メーター（−100〜100） */
+export function updateDemand(world, reg) {
+  const D = reg.balance.demand;
+  const pop = world.population, st = world.stats;
+  const cap = st.housingCapacity || 0;
+  const vacancy = cap > 0 ? clamp((cap - pop.total) / cap, 0, 1) : 0;
+  const jobGap = (st.jobs || 0) - Math.round(pop.commoner * 0.8);
+  const food = world.foodSufficient ? D.residential.foodOk : world.foodSufficiency < reg.balance.economy.famineThreshold ? D.residential.foodShort : 0;
+  world.demand.residential = clamp(D.residential.base + jobGap * D.residential.jobs + (world.loyalty - 50) * D.residential.loyalty + food - vacancy * D.residential.vacancy, -100, 100);
+  // 農: 食糧が足りないほど高い。余っていれば下がる
+  const yearNeed = pop.total * reg.balance.economy.consumptionPerPersonPerYear;
+  const stock = world.grain.civil + world.grain.granary;
+  const months = yearNeed > 0 ? (stock / yearNeed) * 12 : 12;
+  world.demand.farm = clamp(D.farm.base + (1 - clamp(world.foodSufficiency, 0, 1.5)) * D.farm.shortage + (months > 18 ? D.farm.surplus : 0) + (pop.total < 20 ? 30 : 0), -100, 100);
+  world.demand.market = clamp(D.market.base + pop.total * D.market.perPerson, -100, 100);
+  world.demand.workshop = clamp(D.workshop.base, -100, 100);
+}

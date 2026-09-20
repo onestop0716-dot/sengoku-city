@@ -18,6 +18,8 @@ export function serializeWorld(world) {
     roads: arr(world.roads), zones: arr(world.zones),
     buildings: Array.from(world.buildings.values()), nextBuildingId: world.nextBuildingId,
     money: world.money, demand: { ...world.demand }, security: world.security, foodSufficient: world.foodSufficient,
+    policy: { ...world.policy }, population: { ...world.population }, grain: { ...world.grain }, loyalty: world.loyalty, hygiene: world.hygiene,
+    foodSufficiency: world.foodSufficiency, finance: JSON.parse(JSON.stringify(world.finance)), stats: JSON.parse(JSON.stringify(world.stats)),
     log: world.log.slice(-100),
   };
 }
@@ -49,6 +51,13 @@ export function deserializeWorld(data, reg) {
   world.day = d.day; world.calendar = { ...d.calendar };
   world.rng = createRng(d.seed); world.rng.setState(d.rngState);
   world.money = d.money; world.demand = { ...d.demand }; world.security = d.security; world.foodSufficient = d.foodSufficient;
+  if (d.policy) world.policy = { ...world.policy, ...d.policy };
+  if (d.population) world.population = { ...world.population, ...d.population };
+  if (d.grain) world.grain = { ...world.grain, ...d.grain };
+  if (d.loyalty != null) world.loyalty = d.loyalty; if (d.hygiene != null) world.hygiene = d.hygiene;
+  if (d.foodSufficiency != null) world.foodSufficiency = d.foodSufficiency;
+  if (d.finance) world.finance = { ...world.finance, ...d.finance };
+  if (d.stats) world.stats = { ...world.stats, ...d.stats };
   world.log = d.log || [];
   world.dirty = { tiles: new Set(), buildings: true, trees: true };
   return world;

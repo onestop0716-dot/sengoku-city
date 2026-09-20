@@ -16,6 +16,9 @@ import { createInfoPanel } from './ui/info-panel.js';
 import { createLog } from './ui/log.js';
 import { showStartScreen } from './ui/start-screen.js';
 import { createSettingsPanel } from './ui/settings-panel.js';
+import { createFinancePanel } from './ui/panels/finance.js';
+import { createPopulationPanel } from './ui/panels/population.js';
+import { createDemandMeter } from './ui/demand-meter.js';
 import { createGameLoop } from './app/game-loop.js';
 import { createInput } from './app/input.js';
 import { loadSettings, qualityFor } from './app/settings.js';
@@ -65,7 +68,7 @@ async function main() {
       env.terrain.update(dt);
       buildings.update(orbit.camera.position);
       sc.followShadow(orbit.state.target, quality.shadowRadius);
-      hud.update(); log.update(); infoPanel.update();
+      hud.update(); log.update(); infoPanel.update(); demand.update(); finance.update(); population.update();
       renderer.render(scene, orbit.camera);
     },
   });
@@ -77,7 +80,11 @@ async function main() {
     if (rebuild) { buildTerrain(q); buildings.refreshModels(); } else env.terrain.setRipple(q.ripple);
     buildings.setQuality(q);
   });
-  const hud = createHud(world, reg, loop, tooltip, () => settingsPanel.toggle());
+  const finance = createFinancePanel(world, reg, tooltip);
+  const population = createPopulationPanel(world, reg, tooltip);
+  const demand = createDemandMeter(world, tooltip);
+  const panels = { finance, population };
+  const hud = createHud(world, reg, loop, tooltip, { onSettings: () => settingsPanel.toggle(), onPanel: (name) => { for (const [k, p] of Object.entries(panels)) if (k !== name) p.el.style.display = 'none'; panels[name].toggle(); } });
   const toolbar = createToolbar(reg, () => {});
   createInput({ canvas, picker, overlay, world, reg, toolbar, infoPanel, log, orbit });
 
