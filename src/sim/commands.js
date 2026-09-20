@@ -5,6 +5,9 @@ import { setZoneRect, removeBuilding } from './zones.js';
 import { placeStructure, placeStructureLine, removeStructure } from './structures.js';
 import { recruit, dismiss, appoint } from './persons.js';
 import { startResearch, cancelResearch } from './research.js';
+import { sendCaravan } from './nation/trade.js';
+import { sendGift, propose } from './nation/diplomacy.js';
+import { fulfillOrder, setCityPolicy } from './nation/state.js';
 
 /**
  * @param {object} world @param {object} reg
@@ -61,6 +64,11 @@ export function applyCommand(world, reg, cmd) {
     case 'office.appoint': return appoint(world, reg, cmd.officeId, cmd.personId ?? null);
     case 'research.start': return startResearch(world, reg, cmd.techId);
     case 'research.cancel': return cancelResearch(world);
+    case 'caravan.send': return sendCaravan(world, reg, cmd);
+    case 'diplomacy.gift': return sendGift(world, reg, cmd.nationId, cmd.amount);
+    case 'diplomacy.propose': return propose(world, reg, cmd.nationId, cmd.kind);
+    case 'order.fulfill': return fulfillOrder(world, reg, cmd.orderId);
+    case 'commandery.policy': return setCityPolicy(world, reg, cmd.cityId, cmd.policy);
     default:
       return { ok: false, message: `不明なコマンド: ${cmd.type}` };
   }

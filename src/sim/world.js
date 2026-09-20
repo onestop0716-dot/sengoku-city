@@ -13,6 +13,8 @@ import { placeStartingVillage } from './start-village.js';
 import { ensurePersonsState, tickPersonsMonthly, tickPersonsYearly } from './persons.js';
 import { ensureResearchState, tickResearchDaily } from './research.js';
 import { refreshModifiers } from './modifiers.js';
+import { ensureNationState, tickNationMonthly } from './nation/state.js';
+import { tickCaravansDaily } from './nation/trade.js';
 
 /**
  * @param {{seed:number, cityId:string, reg:object, size?:number, money?:number}} opts
@@ -61,7 +63,7 @@ export function createWorld({ seed, cityId, reg, size, money, village = true }) 
   if (village) placeStartingVillage(world, reg);
   ensureRoadDist(world, reg);
   recomputeServices(world, reg);
-  ensurePersonsState(world, reg); ensureResearchState(world); refreshModifiers(world, reg);
+  ensurePersonsState(world, reg); ensureResearchState(world); ensureNationState(world, reg); refreshModifiers(world, reg);
   world.log.push({ day: 0, text: `${reg.nationById.get(city.nation).name}の${city.name}に県令として着任しました` });
   return world;
 }
@@ -77,6 +79,7 @@ export function tick(world, reg) {
   world.stats.housingCapacity = housingCapacity(world, reg);
   tickFoodDaily(world, reg);
   tickResearchDaily(world, reg);
+  tickCaravansDaily(world, reg);
   if (flags.newMonth) {
     if (flags.newYear) { tickEconomyYearly(world, reg); tickPersonsYearly(world, reg); }
     refreshModifiers(world, reg);
@@ -84,6 +87,7 @@ export function tick(world, reg) {
     harvest(world, reg, world.calendar.month);
     tickPopulationMonthly(world, reg);
     updateDemand(world, reg);
+    tickNationMonthly(world, reg);
   }
   if (world.log.length > 200) world.log.splice(0, world.log.length - 200);
   return flags;

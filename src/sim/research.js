@@ -71,6 +71,7 @@ export function completeTech(world, reg, id) {
   if (!world.techs.includes(id)) world.techs.push(id);
   if (world.research.current === id) { world.research.current = null; world.research.progress = 0; }
   const t = reg.techById.get(id);
+  if (world.nation) world.nation.merit += reg.balance.nation?.merit.perTech || 0;
   world.log.push({ day: world.day, text: `「${t?.name}」が完成しました${t?.unlocks?.length ? `。${t.unlocks.map((u) => reg.structureById.get(u)?.name).join('・')}が建てられます` : ''}` });
   refreshModifiers(world, reg);
   world.dirty.buildings = true;

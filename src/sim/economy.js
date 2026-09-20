@@ -6,7 +6,7 @@ import { researchCostMonthly } from './research.js';
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
 export function emptyMonth() {
-  return { income: { '田租': 0, '口賦': 0, '市租': 0, '関税': 0 }, expense: { '俸禄': 0, '維持費': 0, '上納': 0, '建設費': 0, '研究費': 0 } };
+  return { income: { '田租': 0, '口賦': 0, '市租': 0, '関税': 0, '郡税': 0 }, expense: { '俸禄': 0, '維持費': 0, '上納': 0, '建設費': 0, '研究費': 0 } };
 }
 
 /** 月初: 口賦・俸禄・維持費を処理し、先月の記録を履歴へ */
@@ -66,7 +66,9 @@ export function tickEconomyMonthly(world, reg) {
 /** 年初: 上納（前年の税収の一定割合を国へ納める） */
 export function tickEconomyYearly(world, reg) {
   const E = reg.balance.economy;
-  const tribute = Math.round(world.finance.yearIncome * E.tributeRate);
+  const rate = reg.rankById?.get(world.rank || 'magistrate')?.tribute ?? E.tributeRate;
+  const tribute = Math.round(world.finance.yearIncome * rate);
+  if (world.nation) { world.nation.merit += tribute * (reg.balance.nation?.merit.perTributeQian || 0); world.nation.favor = Math.min(100, world.nation.favor + 2); }
   world.money -= tribute; world.finance.month.expense['上納'] += tribute;
   world.finance.lastTribute = tribute; world.finance.yearIncome = 0;
   world.log.push({ day: world.day, text: `上納: 前年の税収から ${tribute} 銭を国に納めました` });

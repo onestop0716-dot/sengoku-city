@@ -25,6 +25,7 @@ export function serializeWorld(world) {
     foodSufficiency: world.foodSufficiency, finance: JSON.parse(JSON.stringify(world.finance)), stats: JSON.parse(JSON.stringify(world.stats)),
     log: world.log.slice(-100),
     advisor: world.advisor ? JSON.parse(JSON.stringify(world.advisor)) : null,
+    nation: world.nation ? JSON.parse(JSON.stringify(world.nation)) : null,
     persons: JSON.parse(JSON.stringify(world.persons || { hired: [], visitors: [], gone: [] })), offices: { ...(world.offices || {}) }, research: { ...(world.research || { current: null, progress: 0 }) },
   };
 }
@@ -63,6 +64,7 @@ export function deserializeWorld(data, reg) {
   world.money = d.money; world.demand = { ...d.demand }; world.security = d.security; world.foodSufficient = d.foodSufficient;
   if (d.policy) world.policy = { ...world.policy, ...d.policy };
   if (d.advisor) world.advisor = d.advisor;
+  if (d.nation) world.nation = d.nation;
   if (d.persons) world.persons = d.persons; if (d.offices) world.offices = { ...world.offices, ...d.offices }; if (d.research) world.research = { ...d.research };
   if (d.population) world.population = { ...world.population, ...d.population };
   if (d.grain) world.grain = { ...world.grain, ...d.grain };

@@ -14,11 +14,12 @@
   "scope": "commandery",
   "officeSlots": 6,
   "promotion": {
-   "merit": 1000,
-   "population": 10000
+   "merit": 800,
+   "population": 2500
   },
   "tribute": 0.08,
-  "term": "junshou"
+  "term": "junshou",
+  "note": "設計書の「人口1万」はゲーム内の人口規模に合わせて縮小"
  },
  {
   "id": "chancellor",
@@ -26,8 +27,9 @@
   "scope": "nation",
   "officeSlots": 12,
   "promotion": {
-   "merit": 5000,
-   "population": 30000
+   "merit": 4000,
+   "population": 7000,
+   "favor": 80
   },
   "tribute": 0.1
  },
@@ -37,8 +39,8 @@
   "scope": "nation",
   "officeSlots": 12,
   "promotion": {
-   "merit": 5000,
-   "victories": 10
+   "merit": 4000,
+   "victories": 3
   },
   "tribute": 0.1
  }

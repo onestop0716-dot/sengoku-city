@@ -196,5 +196,67 @@
     "loyaltySmoothing": 0.2,
     "leaveBelow": 25,
     "visitorStayDays": 360
+  },
+  "nation": {
+    "_note": "全国: 国力モデル・貿易・外交・王命・功績。距離は cities.mapPos の単位（咸陽〜臨淄 ≈ 340）",
+    "caravan": {
+      "speedPerDay": 12,
+      "feeBase": 40,
+      "feePerValue": 0.04,
+      "buyShare": 0.5,
+      "banditBase": 0.08,
+      "banditPerWarning": 0.03,
+      "maxActive": 3,
+      "reach": {
+        "magistrate": 220,
+        "governor": 420,
+        "chancellor": 9999,
+        "general": 9999
+      },
+      "minRelation": -20
+    },
+    "market": {
+      "specialtyFactor": 0.6,
+      "capitalDemand": 1.25,
+      "driftRange": 0.25,
+      "driftStep": 0.06
+    },
+    "relations": {
+      "giftPerPoint": 60,
+      "giftMax": 15,
+      "driftToBase": 0.05,
+      "tradeBonus": 1,
+      "nonAggressionMin": 30,
+      "allianceMin": 60
+    },
+    "merit": {
+      "perPopulationGrowth": 0.5,
+      "perTributeQian": 0.02,
+      "perTech": 60,
+      "perTradeProfitQian": 0.02,
+      "perOrder": 250,
+      "orderFailed": -100,
+      "favorOrder": 10,
+      "favorFailed": -15
+    },
+    "orders": {
+      "intervalMonths": 30,
+      "firstAfterMonths": 14,
+      "deadlineMonths": 12,
+      "moneyPerCapita": 1.2,
+      "grainPerCapita": 0.6,
+      "minMoney": 300,
+      "minGrain": 200
+    },
+    "cities": {
+      "growthBase": 0.0015,
+      "growthFarm": 0.0025,
+      "growthCommerce": 0.001,
+      "wealthBase": 0.001,
+      "wealthCommerce": 0.003,
+      "armyMilitary": 0.004,
+      "commanderyIncomeRate": 0.02,
+      "commanderyCount": 3
+    }
   }
 }

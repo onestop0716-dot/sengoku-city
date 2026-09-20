@@ -1,7 +1,7 @@
 // data/*.json をまとめて引けるようにする。sim/render/ui は生の JSON ではなく registry を使う。
 import { validateData } from './validate.js';
 
-export const DATA_FILES = ['nations', 'cities', 'terrain', 'zones', 'buildings', 'crops', 'assets', 'balance', 'terms', 'structures', 'difficulties', 'advice', 'persons', 'offices', 'ranks', 'techs'];
+export const DATA_FILES = ['nations', 'cities', 'terrain', 'zones', 'buildings', 'crops', 'assets', 'balance', 'terms', 'structures', 'difficulties', 'advice', 'persons', 'offices', 'ranks', 'techs', 'goods'];
 
 /** 深いマージ（難易度の上書き用） */
 export function deepMerge(base, over) {
@@ -40,6 +40,7 @@ export function createRegistry(raw, { difficulty = 'normal' } = {}) {
     offices: raw.offices, officeById: byId(raw.offices),
     ranks: raw.ranks, rankById: byId(raw.ranks),
     techs: raw.techs, techById: byId(raw.techs),
+    goods: raw.goods, goodsById: byId(raw.goods),
   };
 }
 

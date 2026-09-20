@@ -664,6 +664,77 @@
       "title": "客館にお客さんだよ",
       "text": "他国の賢者が客館に滞在中。しばらくすると去っちゃうから、登用するなら今のうち。",
       "todo": "客館の来客を登用する"
+    },
+    {
+      "id": "royal_order",
+      "priority": 4,
+      "expression": "warning",
+      "cooldownDays": 45,
+      "when": {
+        "all": [
+          {
+            "metric": "openOrders",
+            "gte": 1
+          },
+          {
+            "metric": "orderDaysLeft",
+            "lte": 120
+          }
+        ]
+      },
+      "title": "王命の期限が近いよ",
+      "text": "王からの命令がまだ果たされていない。期限まであと {orderDaysLeft} 日。「全国」の王命から納めよう。怠ると王の信任を失うよ。",
+      "todo": "王命を果たす（全国 › 王命）"
+    },
+    {
+      "id": "royal_order_new",
+      "priority": 3,
+      "expression": "normal",
+      "cooldownDays": 30,
+      "when": {
+        "all": [
+          {
+            "metric": "openOrders",
+            "gte": 1
+          },
+          {
+            "metric": "orderDaysLeft",
+            "gt": 120
+          }
+        ]
+      },
+      "title": "王命が届いたよ",
+      "text": "王から命令が来ている。「全国」の王命で内容を確かめて、余裕のあるうちに納めておこう。達成すると功績と信任が上がるよ。",
+      "todo": "王命を確かめる（全国 › 王命）"
+    },
+    {
+      "id": "caravan_idle",
+      "priority": 1,
+      "expression": "normal",
+      "cooldownDays": 120,
+      "when": {
+        "all": [
+          {
+            "metric": "marketHalls",
+            "gte": 1
+          },
+          {
+            "metric": "caravans",
+            "eq": 0
+          },
+          {
+            "metric": "goodsStock",
+            "gte": 30
+          },
+          {
+            "metric": "fine",
+            "truthy": true
+          }
+        ]
+      },
+      "title": "商隊を出してみよう",
+      "text": "工房の品がたまってるね。「全国」の貿易で商隊を送ると、首都では高く売れて、特産地では安く買える。利益は功績にもなるよ。",
+      "todo": "商隊を送る（全国 › 貿易）"
     }
   ],
   "tutorial": [

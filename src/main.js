@@ -24,6 +24,7 @@ import { createFinancePanel } from './ui/panels/finance.js';
 import { createPopulationPanel } from './ui/panels/population.js';
 import { createPersonsPanel } from './ui/panels/persons.js';
 import { createResearchPanel } from './ui/panels/research.js';
+import { createNationPanel } from './ui/panels/nation.js';
 import { createDemandMeter } from './ui/demand-meter.js';
 import { createGameLoop } from './app/game-loop.js';
 import { createInput } from './app/input.js';
@@ -83,7 +84,7 @@ async function main() {
       agentsView.update(dt, loop.speed, orbit.camera.position);
       toolbar.update();
       sc.followShadow(orbit.state.target, quality.shadowRadius);
-      hud.update(); log.update(); infoPanel.update(); demand.update(); finance.update(); population.update(); persons.update(); research.update(); settingsPanel.update(loop.stats); advisor.update(); viewPanel.update();
+      hud.update(); log.update(); infoPanel.update(); demand.update(); finance.update(); population.update(); persons.update(); research.update(); nation.update(); settingsPanel.update(loop.stats); advisor.update(); viewPanel.update();
       renderer.render(scene, orbit.camera);
     },
   });
@@ -98,10 +99,11 @@ async function main() {
   const finance = createFinancePanel(world, reg, tooltip);
   const population = createPopulationPanel(world, reg, tooltip);
   const demand = createDemandMeter(world, tooltip);
-  const advisor = createAdvisorUi(world, reg, settings, { onOpenSettings: () => settingsPanel.toggle(), onOpen: () => { for (const p of [finance, population, persons, research]) p.el.style.display = 'none'; }, onView: (id) => { const t = viewMode.focusProblem(id); if (t) { orbit.state.target.set(t[0] + 0.5, env.terrain.heightAt(t[0] + 0.5, t[1] + 0.5), t[1] + 0.5); orbit.state.distance = Math.min(orbit.state.distance, 40); } } });
+  const advisor = createAdvisorUi(world, reg, settings, { onOpenSettings: () => settingsPanel.toggle(), onOpen: () => { for (const p of [finance, population, persons, research, nation]) p.el.style.display = 'none'; }, onView: (id) => { const t = viewMode.focusProblem(id); if (t) { orbit.state.target.set(t[0] + 0.5, env.terrain.heightAt(t[0] + 0.5, t[1] + 0.5), t[1] + 0.5); orbit.state.distance = Math.min(orbit.state.distance, 40); } } });
   const persons = createPersonsPanel(world, reg, tooltip, log);
   const research = createResearchPanel(world, reg, tooltip, log);
-  const panels = { finance, population, persons, research, advisor };
+  const nation = createNationPanel(world, reg, tooltip, log);
+  const panels = { finance, population, persons, research, nation, advisor };
   const hud = createHud(world, reg, loop, tooltip, { onSettings: () => settingsPanel.toggle(), onPanel: (name) => { for (const [k, p] of Object.entries(panels)) if (k !== name) p.el.style.display = 'none'; panels[name].toggle(); } });
   const viewPanel = createViewModePanel(world, reg, viewMode, { button: hud.viewButton });
   viewMode.onChange((m) => hud.setViewMode(viewPanel.nameOf(m)));

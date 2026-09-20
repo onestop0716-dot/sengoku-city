@@ -103,6 +103,8 @@ export function computeMetrics(world, reg, opts = {}) {
     daysSinceStep: world.day - st.stepStartDay,
     newUnlock, rank: world.rank, disaster: world.disaster || null, fine,
     cityName: reg.cityById.get(world.cityId)?.name || '',
+    openOrders: (world.nation?.orders || []).filter((o) => o.state === 'open').length, orderDaysLeft: Math.min(9999, ...(world.nation?.orders || []).filter((o) => o.state === 'open').map((o) => o.deadlineDay - world.day)),
+    caravans: world.nation?.caravans.length || 0, goodsStock: Object.values(world.goods || {}).reduce((a, b) => a + b, 0), rankName: reg.rankById?.get(world.rank || 'magistrate')?.name || '', promotionReady: false,
     researching: !!world.research?.current, techAvailable: reg.techs.filter((t) => canResearch(world, reg, t.id).ok).length,
     hiredCount: world.persons?.hired.length || 0, idleHired: (world.persons?.hired || []).filter((h) => !Object.values(world.offices || {}).includes(h.id)).length,
     vacantSlots: Math.max(0, officeSlots(world, reg) - usedSlots(world)), candidates: listCandidates(world, reg).length, visitors: world.persons?.visitors.length || 0,

@@ -1,0 +1,90 @@
+[
+ {
+  "id": "salt",
+  "name": "塩",
+  "basePrice": 12,
+  "weight": 1,
+  "specialty": "salt",
+  "note": "斉の海塩、河東の池塩、蜀の井塩"
+ },
+ {
+  "id": "iron",
+  "name": "鉄",
+  "basePrice": 12,
+  "weight": 2,
+  "specialty": "iron",
+  "note": "韓・趙・燕の製鉄"
+ },
+ {
+  "id": "bronze",
+  "name": "青銅",
+  "basePrice": 15,
+  "weight": 2,
+  "specialty": "copper",
+  "note": "楚・蜀の銅"
+ },
+ {
+  "id": "silk",
+  "name": "絹",
+  "basePrice": 30,
+  "weight": 0.5,
+  "specialty": "silk",
+  "note": "斉・魯の絹織"
+ },
+ {
+  "id": "lacquer",
+  "name": "漆器",
+  "basePrice": 25,
+  "weight": 0.5,
+  "specialty": "lacquer",
+  "note": "楚の漆器"
+ },
+ {
+  "id": "horse",
+  "name": "馬",
+  "basePrice": 40,
+  "weight": 3,
+  "specialty": "horse",
+  "note": "燕・趙・秦の馬産。生きた馬を商隊で連れて行く"
+ },
+ {
+  "id": "wood",
+  "name": "木材",
+  "basePrice": 6,
+  "weight": 3,
+  "specialty": "wood",
+  "note": "山地の材木"
+ },
+ {
+  "id": "weapon",
+  "name": "武器",
+  "basePrice": 35,
+  "weight": 2,
+  "specialty": "weapons",
+  "note": "青銅・鉄の戈・剣"
+ },
+ {
+  "id": "pottery",
+  "name": "陶器",
+  "basePrice": 5,
+  "weight": 2,
+  "specialty": null,
+  "note": "日用の陶器"
+ },
+ {
+  "id": "vehicle",
+  "name": "車",
+  "basePrice": 40,
+  "weight": 4,
+  "specialty": null,
+  "note": "二輪の車両"
+ },
+ {
+  "id": "grain",
+  "name": "穀物",
+  "basePrice": 2,
+  "weight": 2,
+  "specialty": null,
+  "note": "粟・黍など。都市の蓄えから積む（1石=1）"
+ }
+]
