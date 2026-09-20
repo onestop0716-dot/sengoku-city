@@ -101,7 +101,7 @@ export function createViewMode(world, reg, scene, env, assets) {
     assets.material.depthWrite = true;
     env.terrain.setZoneOverlayVisible(mode === 'normal');
     ringGroup.visible = mode !== 'normal';
-    dirty = true;
+    cache = null; dirty = true;                      // 前のモードのデータを使わない
     notify();
   };
 
@@ -117,13 +117,14 @@ export function createViewMode(world, reg, scene, env, assets) {
     /** 地形を作り直した後に表示状態を再適用する */
     reapply() { env.terrain.setZoneOverlayVisible(mode === 'normal'); dirty = true; },
     /** 区画モードの集計（凡例用） */
-    zoneStats() { return mode === 'zones' && cache ? cache.stats : []; },
+    zoneStats() { if (mode !== 'zones') return []; if (dirty || !cache) recompute(); return cache?.stats || []; },
     /** ホバー中のマスの説明 */
     describe(x, y) {
       if (mode === 'normal') return null;
+      if (dirty || !cache) recompute();
       const i = y * w + x;
       if (mode === 'zones') {
-        const zm = cache || computeZoneMap(world, reg);
+        const zm = cache;
         const k = zm.kind[i];
         if (k >= ZONE_KIND.ZONE_BASE) { const z = reg.zones[k - ZONE_KIND.ZONE_BASE]; const b = world.buildingAt[i] !== -1 ? world.buildings.get(world.buildingAt[i]) : null; return { title: z.name, value: b ? `${reg.buildingById.get(b.buildingType)?.name || ''}${b.state === 'built' ? ` L${b.level}` : '（建設中）'}` : '未建築', parts: [] }; }
         const names = { [ZONE_KIND.ROAD]: '道路', [ZONE_KIND.STRUCTURE]: '特殊建築', [ZONE_KIND.WATER]: '水面', [ZONE_KIND.UNBUILDABLE]: '建てられない地形', [ZONE_KIND.SHORE]: '岸辺（区画不可）' };
@@ -143,6 +144,7 @@ export function createViewMode(world, reg, scene, env, assets) {
       }
       const auto = modeForEffects(def.effects);
       if (auto && mode !== auto) { if (autoPrev === null) autoPrev = mode; setMode(auto); }
+      if (dirty || !cache) recompute();
       if (!tile) { if (preview) { clearPreviewFlags(); preview = null; } return; }
       if (preview && preview.x === tile.x && preview.y === tile.y && preview.def === def) return;
       clearPreviewFlags();
@@ -153,7 +155,7 @@ export function createViewMode(world, reg, scene, env, assets) {
     /** 問題の場所へ: モードを切り替え、いちばん悪いマスを返す */
     focusProblem(id) {
       setMode(id);
-      if (dirty) recompute();
+      if (dirty || !cache) recompute();
       return worstTile(world, reg, id, cache);
     },
     update(dt) {
