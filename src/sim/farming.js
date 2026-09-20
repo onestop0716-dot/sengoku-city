@@ -15,7 +15,8 @@ export function fieldYield(world, reg, b) {
   const fert = 0.4 + world.map.fertility[i] * 1.2;
   const level = E.yieldLevelFactor[Math.min(b.level, E.yieldLevelFactor.length) - 1];
   const worker = world.stats.farmWorkerRatio ?? 1;          // 働き手が足りないと減る
-  const factor = terrain * climate * affinity * fert * level * worker;
+  const irrigated = world.services.irrigation && world.services.irrigation[i] ? 1 + (crop.irrigationBonus ?? 0.3) : 1;
+  const factor = terrain * climate * affinity * fert * level * worker * irrigated;
   if (crop.baseYield > 0) return { grain: crop.baseYield * factor, value: 0, crop };
   return { grain: 0, value: (E.productValuePerTile[crop.id] || 0) * factor, crop };
 }

@@ -11,7 +11,7 @@ export function canZoneTile(world, reg, x, y, zoneDef) {
   const i = idx(world.map.w, x, y);
   const t = reg.tiles[world.map.tile[i]];
   if (world.roads[i]) return false;
-  if (world.buildingAt[i] !== -1) return false;
+  if (world.buildingAt[i] !== -1 || (world.structAt && world.structAt[i] !== -1)) return false;
   // 岸辺（水際のマス）には区画を置けない
   if (world.map.waterDist[i] <= (reg.balance.zoning?.shoreDistance ?? 1)) return false;
   if (zoneDef.category === 'farm') {
@@ -77,6 +77,7 @@ export function computeProsperity(world, reg, x, y, zoneDef, building = null) {
   parts['市'] = md <= mRange ? (isFarm ? P.market.bonusFarm : P.market.bonusResidential) : 0;
 
   parts['治安'] = clamp((world.security - P.security.neutral) / P.security.scale, -P.security.clamp, P.security.clamp);
+  if (zoneDef.category === 'market') parts['市亭'] = world.services.marketAdmin && world.services.marketAdmin[i] ? 0 : -100;   // 市亭の範囲外では市は開けない
   parts['食糧'] = world.foodSufficient ? P.food.bonus : P.food.penalty;
 
   // 周辺環境（8近傍にある建物の種類ごとに一度だけ加算）
@@ -87,6 +88,8 @@ export function computeProsperity(world, reg, x, y, zoneDef, building = null) {
   for (let yy = y - 1; yy <= y + bh; yy++) for (let xx = x - 1; xx <= x + bw; xx++) {
     if (!inBounds(w, world.map.h, xx, yy)) continue;
     if (xx >= x && xx < x + bw && yy >= y && yy < y + bh) continue;
+    const sid = world.structAt ? world.structAt[idx(w, xx, yy)] : -1;
+    if (sid !== -1 && !seen.has('temple')) { const st = world.structures.get(sid); const sdef = st && reg.structureById.get(st.type); if (sdef && sdef.category === 'temple') { seen.add('temple'); env += adj.adjTemple || 0; } }
     const id = world.buildingAt[idx(w, xx, yy)];
     if (id === -1) continue;
     const b = world.buildings.get(id);
@@ -131,8 +134,27 @@ export function modelIdFor(world, reg, b) {
   return lv.models[b.variant % lv.models.length];
 }
 
+/** 建物の立地条件（市亭の範囲、近くの資源・畑・工房、国） */
+export function meetsRequirement(world, reg, def, x, y) {
+  const req = def.requires;
+  if (!req) return true;
+  const W = world.map.w, H = world.map.h, i = idx(W, x, y);
+  if (req.marketAdmin && !(world.services.marketAdmin && world.services.marketAdmin[i])) return false;
+  if (req.nationAny && !req.nationAny.includes(world.nationId)) return false;
+  const r = req.radius || 6;
+  const scan = (pred) => {
+    for (let yy = Math.max(0, y - r); yy <= Math.min(H - 1, y + r); yy++) for (let xx = Math.max(0, x - r); xx <= Math.min(W - 1, x + r); xx++) if (pred(idx(W, xx, yy))) return true;
+    return false;
+  };
+  if (req.resource) { const ri = reg.resources.findIndex((q) => q.id === req.resource) + 1; if (!scan((j) => world.map.resource[j] === ri)) return false; }
+  if (req.field) { if (!scan((j) => { const id = world.buildingAt[j]; if (id === -1) return false; const b = world.buildings.get(id); return b && b.category === 'field' && b.state === 'built' && req.field.includes(reg.buildingById.get(b.buildingType).crop); })) return false; }
+  if (req.workshopNear) { if (!scan((j) => { const id = world.buildingAt[j]; if (id === -1) return false; const b = world.buildings.get(id); return b && b.state === 'built' && req.workshopNear.includes(b.buildingType); })) return false; }
+  return true;
+}
+
 function fits(world, reg, x, y, w, h, zi, zoneDef, def) {
   const W = world.map.w;
+  if (!meetsRequirement(world, reg, def, x, y)) return false;
   for (let yy = y; yy < y + h; yy++) for (let xx = x; xx < x + w; xx++) {
     if (!inBounds(W, world.map.h, xx, yy)) return false;
     const i = idx(W, xx, yy);
@@ -161,11 +183,13 @@ function placeBuilding(world, reg, x, y, def, zoneDef) {
   return b;
 }
 
-function pickBuilding(reg, zoneDef, rng) {
-  const total = zoneDef.buildings.reduce((s, e) => s + (e.weight || 1), 0);
+function pickBuilding(reg, zoneDef, rng, world, x, y) {
+  const cands = zoneDef.buildings.filter((e) => meetsRequirement(world, reg, reg.buildingById.get(e.id), x, y));
+  if (!cands.length) return null;
+  const total = cands.reduce((s, e) => s + (e.weight || 1), 0);
   let r = rng.next() * total;
-  for (const e of zoneDef.buildings) { r -= e.weight || 1; if (r <= 0) return reg.buildingById.get(e.id); }
-  return reg.buildingById.get(zoneDef.buildings[0].id);
+  for (const e of cands) { r -= e.weight || 1; if (r <= 0) return reg.buildingById.get(e.id); }
+  return reg.buildingById.get(cands[0].id);
 }
 
 /** 1日分の区画処理 */
@@ -222,8 +246,8 @@ export function tickZones(world, reg, rng) {
     const x = i % W, y = (i / W) | 0;
     if (computeProsperity(world, reg, x, y, zoneDef).total < G.buildThreshold) continue;
     if (!rng.chance(G.buildChancePerDay)) continue;
-    const def = pickBuilding(reg, zoneDef, rng);
-    if (!fits(world, reg, x, y, def.size[0], def.size[1], zi, zoneDef, def)) continue;
+    const def = pickBuilding(reg, zoneDef, rng, world, x, y);
+    if (!def || !fits(world, reg, x, y, def.size[0], def.size[1], zi, zoneDef, def)) continue;
     const cost = def.levels[0].cost;
     if (world.money < cost) { moneyShort = true; continue; }
     world.money -= cost;
@@ -237,7 +261,7 @@ export function tickZones(world, reg, rng) {
 export function housingCapacity(world, reg) {
   let cap = 0;
   for (const b of world.buildings.values()) {
-    if (b.state !== 'built') continue;
+    if (b.state !== 'built' || (b.category !== 'residential' && b.category !== 'farm_house')) continue;
     const def = reg.buildingById.get(b.buildingType);
     cap += def.levels[b.level - 1].capacity || 0;
   }

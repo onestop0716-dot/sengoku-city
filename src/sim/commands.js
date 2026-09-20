@@ -2,6 +2,7 @@
 import { clampRect, lPath, rectTiles, idx } from '../core/grid.js';
 import { buildRoadPath, removeRoadAt } from './roads.js';
 import { setZoneRect, removeBuilding } from './zones.js';
+import { placeStructure, placeStructureLine, removeStructure } from './structures.js';
 
 /**
  * @param {object} world @param {object} reg
@@ -37,12 +38,15 @@ export function applyCommand(world, reg, cmd) {
       let count = 0;
       for (const [x, y] of rectTiles(rect)) {
         const i = idx(w, x, y);
+        if (world.structAt[i] !== -1) { if (removeStructure(world, reg, world.structAt[i])) count++; }
         if (world.buildingAt[i] !== -1) { removeBuilding(world, world.buildingAt[i]); count++; }
         if (world.roads[i]) { removeRoadAt(world, x, y); count++; }
         if (world.zones[i]) { world.zones[i] = 0; world.dirty.tiles.add(i); count++; }
       }
       return { ok: true, count };
     }
+    case 'structure.place': return placeStructure(world, reg, cmd.typeId, cmd.x, cmd.y);
+    case 'structure.line': return placeStructureLine(world, reg, cmd.typeId, cmd.x0, cmd.y0, cmd.x1, cmd.y1);
     case 'policy.set': {
       const allowed = { taxLand: [0, 0.3], taxHead: [0, 0.3], taxMarket: [0, 0.3], taxCustoms: [0, 0.3], granaryShare: [0, 0.3], relief: null };
       if (!(cmd.key in allowed)) return { ok: false, message: `不明な政策: ${cmd.key}` };

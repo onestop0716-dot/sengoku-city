@@ -2,8 +2,11 @@
 import { houseCommoner, houseShi, houseNoble } from './houses.js';
 import { farmhouse, field } from './farm.js';
 import { tree, scaffold } from './nature.js';
+import { structure } from './structures.js';
+import { marketStall, workshop, militaryBuilding } from './commerce.js';
+import { agent } from './agents.js';
 
-export const GENERATORS = { houseCommoner, houseShi, houseNoble, farmhouse, field, tree, scaffold };
+export const GENERATORS = { houseCommoner, houseShi, houseNoble, farmhouse, field, tree, scaffold, structure, marketStall, workshop, militaryBuilding, agent };
 
 /** アセット定義からローポリ形状（配列）を作る */
 export function generateModel(asset) {

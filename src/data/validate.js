@@ -9,7 +9,7 @@ const FORBIDDEN_WORDS = ['紙', '椅子', '茶', '綿', '仏', '寺院', '火薬
 export function validateData(raw) {
   const errors = [], warnings = [];
   const req = (name) => { if (!raw[name]) errors.push(`${name}.json がありません`); };
-  ['nations', 'cities', 'terrain', 'zones', 'buildings', 'crops', 'assets', 'balance', 'terms'].forEach(req);
+  ['nations', 'cities', 'terrain', 'zones', 'buildings', 'crops', 'assets', 'balance', 'terms', 'structures'].forEach(req);
   if (errors.length) return { errors, warnings };
 
   const ids = (arr, name) => {
@@ -58,6 +58,14 @@ export function validateData(raw) {
       for (const m of lv.models || []) if (!assetIds.has(m)) errors.push(`buildings/${b.id} L${lv.level}: model "${m}" が assets にありません`);
     }
   }
+  ids(raw.structures, 'structures');
+  for (const s of raw.structures) {
+    if (!s.linear && (!Array.isArray(s.size) || s.size.length !== 2)) errors.push(`structures/${s.id}: size は [w,h] にしてください`);
+    if (!s.models?.length) errors.push(`structures/${s.id}: models がありません`);
+    for (const m of s.models || []) if (!assetIds.has(m)) errors.push(`structures/${s.id}: model "${m}" が assets にありません`);
+    if (!s.effects) errors.push(`structures/${s.id}: effects がありません`);
+    if (s.term && !termIds.has(s.term)) warnings.push(`structures/${s.id}: term "${s.term}" が terms にありません`);
+  }
   for (const a of raw.assets) {
     if (a.kind === 'procedural' && !a.generator) errors.push(`assets/${a.id}: generator がありません`);
     if (a.kind === 'gltf' && !a.src) errors.push(`assets/${a.id}: src がありません`);
@@ -75,7 +83,7 @@ export function validateData(raw) {
       for (const w of FORBIDDEN_WORDS) if (text.includes(w) && !allow.includes(w)) warnings.push(`${file}/${e.id}: ${key} に禁止語「${w}」が含まれています`);
     }
   };
-  for (const [file, arr] of [['nations', raw.nations], ['cities', raw.cities], ['zones', raw.zones], ['buildings', raw.buildings], ['crops', raw.crops], ['terms', raw.terms]]) arr.forEach((e) => check(file, e));
+  for (const [file, arr] of [['nations', raw.nations], ['cities', raw.cities], ['zones', raw.zones], ['buildings', raw.buildings], ['crops', raw.crops], ['terms', raw.terms], ['structures', raw.structures]]) arr.forEach((e) => check(file, e));
 
   return { errors, warnings };
 }

@@ -1,8 +1,8 @@
 // 表示設定。localStorage に保存。品質は 高/中/低 の3段階。
 export const QUALITIES = {
-  high:   { name: '高', segments: 4, shadows: true,  shadowMap: 2048, shadowRadius: 45, pixelRatio: 2,   treeLod: [70, 140], buildingLod: 150, ripple: 1, nearCap: 900, treeNearCap: 1500 },
-  medium: { name: '中', segments: 2, shadows: true,  shadowMap: 1024, shadowRadius: 40, pixelRatio: 1.5, treeLod: [50, 100], buildingLod: 110, ripple: 1, nearCap: 600, treeNearCap: 900 },
-  low:    { name: '低', segments: 1, shadows: false, shadowMap: 512,  shadowRadius: 30, pixelRatio: 1,   treeLod: [30, 60],  buildingLod: 80,  ripple: 0.5, nearCap: 300, treeNearCap: 400 },
+  high:   { name: '高', segments: 4, shadows: true,  shadowMap: 2048, shadowRadius: 45, pixelRatio: 2,   treeLod: [70, 140], buildingLod: 150, ripple: 1, nearCap: 2500, treeNearCap: 1500, maxAgents: 300, maxVehicles: 60 },
+  medium: { name: '中', segments: 2, shadows: true,  shadowMap: 1024, shadowRadius: 40, pixelRatio: 1.5, treeLod: [50, 100], buildingLod: 110, ripple: 1, nearCap: 1200, treeNearCap: 900, maxAgents: 150, maxVehicles: 30 },
+  low:    { name: '低', segments: 1, shadows: false, shadowMap: 512,  shadowRadius: 30, pixelRatio: 1,   treeLod: [30, 60],  buildingLod: 80,  ripple: 0.5, nearCap: 500, treeNearCap: 400, maxAgents: 60, maxVehicles: 12 },
 };
 const KEY = 'sengoku-city.settings';
 

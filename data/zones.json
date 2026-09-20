@@ -1,28 +1,295 @@
 [
-  { "id": "res_commoner", "name": "住居（庶民）", "category": "residential", "demandKey": "residential", "color": "#3fa34d",
-    "buildings": [ { "id": "house_commoner", "weight": 1 } ], "roadDistance": 3,
-    "prosperity": { "adjWorkshop": -10, "adjFarm": 5, "adjTemple": 0, "adjNoble": 0 },
-    "term": "commoner" },
-  { "id": "res_shi", "name": "住居（士）", "category": "residential", "demandKey": "residential", "color": "#2f7fbf",
-    "buildings": [ { "id": "house_shi", "weight": 1 } ], "roadDistance": 3,
-    "prosperity": { "adjWorkshop": -15, "adjFarm": 0, "adjTemple": 10, "adjNoble": 5 },
-    "term": "shi" },
-  { "id": "res_noble", "name": "住居（貴族）", "category": "residential", "demandKey": "residential", "color": "#8e44ad",
-    "buildings": [ { "id": "house_noble", "weight": 1 } ], "roadDistance": 3,
-    "prosperity": { "adjWorkshop": -20, "adjFarm": -5, "adjTemple": 10, "adjNoble": 5 },
-    "term": "noble" },
-  { "id": "farm_millet",   "name": "農地（粟）", "category": "farm", "demandKey": "farm", "color": "#d4b13f", "crop": "millet",
-    "buildings": [ { "id": "field_millet", "weight": 7 }, { "id": "farmhouse", "weight": 1 } ], "roadDistance": 6, "prosperity": {} },
-  { "id": "farm_broomcorn","name": "農地（黍）", "category": "farm", "demandKey": "farm", "color": "#c9a227", "crop": "broomcorn",
-    "buildings": [ { "id": "field_broomcorn", "weight": 7 }, { "id": "farmhouse", "weight": 1 } ], "roadDistance": 6, "prosperity": {} },
-  { "id": "farm_wheat",    "name": "農地（麦）", "category": "farm", "demandKey": "farm", "color": "#e0c060", "crop": "wheat",
-    "buildings": [ { "id": "field_wheat", "weight": 7 }, { "id": "farmhouse", "weight": 1 } ], "roadDistance": 6, "prosperity": {} },
-  { "id": "farm_bean",     "name": "農地（菽）", "category": "farm", "demandKey": "farm", "color": "#8fbf5a", "crop": "bean",
-    "buildings": [ { "id": "field_bean", "weight": 7 }, { "id": "farmhouse", "weight": 1 } ], "roadDistance": 6, "prosperity": {}, "term": "shu" },
-  { "id": "farm_rice",     "name": "農地（稲）", "category": "farm", "demandKey": "farm", "color": "#6fbf8a", "crop": "rice",
-    "buildings": [ { "id": "field_rice", "weight": 7 }, { "id": "farmhouse", "weight": 1 } ], "roadDistance": 6, "prosperity": {} },
-  { "id": "farm_mulberry", "name": "桑畑", "category": "farm", "demandKey": "farm", "color": "#4f9f4f", "crop": "mulberry",
-    "buildings": [ { "id": "field_mulberry", "weight": 7 }, { "id": "farmhouse", "weight": 1 } ], "roadDistance": 6, "prosperity": {}, "term": "mulberry" },
-  { "id": "farm_hemp",     "name": "農地（麻）", "category": "farm", "demandKey": "farm", "color": "#7fa87f", "crop": "hemp",
-    "buildings": [ { "id": "field_hemp", "weight": 7 }, { "id": "farmhouse", "weight": 1 } ], "roadDistance": 6, "prosperity": {} }
+ {
+  "id": "res_commoner",
+  "name": "住居（庶民）",
+  "category": "residential",
+  "demandKey": "residential",
+  "color": "#3fa34d",
+  "buildings": [
+   {
+    "id": "house_commoner",
+    "weight": 1
+   }
+  ],
+  "roadDistance": 3,
+  "prosperity": {
+   "adjWorkshop": -10,
+   "adjFarm": 5,
+   "adjTemple": 0,
+   "adjNoble": 0
+  },
+  "term": "commoner"
+ },
+ {
+  "id": "res_shi",
+  "name": "住居（士）",
+  "category": "residential",
+  "demandKey": "residential",
+  "color": "#2f7fbf",
+  "buildings": [
+   {
+    "id": "house_shi",
+    "weight": 1
+   }
+  ],
+  "roadDistance": 3,
+  "prosperity": {
+   "adjWorkshop": -15,
+   "adjFarm": 0,
+   "adjTemple": 10,
+   "adjNoble": 5
+  },
+  "term": "shi"
+ },
+ {
+  "id": "res_noble",
+  "name": "住居（貴族）",
+  "category": "residential",
+  "demandKey": "residential",
+  "color": "#8e44ad",
+  "buildings": [
+   {
+    "id": "house_noble",
+    "weight": 1
+   }
+  ],
+  "roadDistance": 3,
+  "prosperity": {
+   "adjWorkshop": -20,
+   "adjFarm": -5,
+   "adjTemple": 10,
+   "adjNoble": 5
+  },
+  "term": "noble"
+ },
+ {
+  "id": "farm_millet",
+  "name": "農地（粟）",
+  "category": "farm",
+  "demandKey": "farm",
+  "color": "#d4b13f",
+  "crop": "millet",
+  "buildings": [
+   {
+    "id": "field_millet",
+    "weight": 7
+   },
+   {
+    "id": "farmhouse",
+    "weight": 1
+   }
+  ],
+  "roadDistance": 6,
+  "prosperity": {}
+ },
+ {
+  "id": "farm_broomcorn",
+  "name": "農地（黍）",
+  "category": "farm",
+  "demandKey": "farm",
+  "color": "#c9a227",
+  "crop": "broomcorn",
+  "buildings": [
+   {
+    "id": "field_broomcorn",
+    "weight": 7
+   },
+   {
+    "id": "farmhouse",
+    "weight": 1
+   }
+  ],
+  "roadDistance": 6,
+  "prosperity": {}
+ },
+ {
+  "id": "farm_wheat",
+  "name": "農地（麦）",
+  "category": "farm",
+  "demandKey": "farm",
+  "color": "#e0c060",
+  "crop": "wheat",
+  "buildings": [
+   {
+    "id": "field_wheat",
+    "weight": 7
+   },
+   {
+    "id": "farmhouse",
+    "weight": 1
+   }
+  ],
+  "roadDistance": 6,
+  "prosperity": {}
+ },
+ {
+  "id": "farm_bean",
+  "name": "農地（菽）",
+  "category": "farm",
+  "demandKey": "farm",
+  "color": "#8fbf5a",
+  "crop": "bean",
+  "buildings": [
+   {
+    "id": "field_bean",
+    "weight": 7
+   },
+   {
+    "id": "farmhouse",
+    "weight": 1
+   }
+  ],
+  "roadDistance": 6,
+  "prosperity": {},
+  "term": "shu"
+ },
+ {
+  "id": "farm_rice",
+  "name": "農地（稲）",
+  "category": "farm",
+  "demandKey": "farm",
+  "color": "#6fbf8a",
+  "crop": "rice",
+  "buildings": [
+   {
+    "id": "field_rice",
+    "weight": 7
+   },
+   {
+    "id": "farmhouse",
+    "weight": 1
+   }
+  ],
+  "roadDistance": 6,
+  "prosperity": {}
+ },
+ {
+  "id": "farm_mulberry",
+  "name": "桑畑",
+  "category": "farm",
+  "demandKey": "farm",
+  "color": "#4f9f4f",
+  "crop": "mulberry",
+  "buildings": [
+   {
+    "id": "field_mulberry",
+    "weight": 7
+   },
+   {
+    "id": "farmhouse",
+    "weight": 1
+   }
+  ],
+  "roadDistance": 6,
+  "prosperity": {},
+  "term": "mulberry"
+ },
+ {
+  "id": "farm_hemp",
+  "name": "農地（麻）",
+  "category": "farm",
+  "demandKey": "farm",
+  "color": "#7fa87f",
+  "crop": "hemp",
+  "buildings": [
+   {
+    "id": "field_hemp",
+    "weight": 7
+   },
+   {
+    "id": "farmhouse",
+    "weight": 1
+   }
+  ],
+  "roadDistance": 6,
+  "prosperity": {}
+ },
+ {
+  "id": "market",
+  "name": "市（市場）",
+  "category": "market",
+  "demandKey": "market",
+  "color": "#d9743c",
+  "buildings": [
+   {
+    "id": "market_stall",
+    "weight": 1
+   }
+  ],
+  "roadDistance": 2,
+  "prosperity": {
+   "adjWorkshop": 0,
+   "adjFarm": 0,
+   "adjTemple": 0,
+   "adjNoble": 0
+  },
+  "term": "market",
+  "note": "市亭の管理範囲（半径10）にしか建たない"
+ },
+ {
+  "id": "workshop",
+  "name": "工房",
+  "category": "workshop",
+  "demandKey": "workshop",
+  "color": "#8a5a2b",
+  "buildings": [
+   {
+    "id": "ws_iron",
+    "weight": 1
+   },
+   {
+    "id": "ws_bronze",
+    "weight": 1
+   },
+   {
+    "id": "ws_pottery",
+    "weight": 1
+   },
+   {
+    "id": "ws_salt",
+    "weight": 1
+   },
+   {
+    "id": "ws_textile",
+    "weight": 1
+   },
+   {
+    "id": "ws_lacquer",
+    "weight": 1
+   },
+   {
+    "id": "ws_vehicle",
+    "weight": 1
+   },
+   {
+    "id": "ws_weapon",
+    "weight": 1
+   }
+  ],
+  "roadDistance": 3,
+  "prosperity": {},
+  "term": "workshop",
+  "note": "近くの資源や畑に応じて工房の種類が自動で決まる"
+ },
+ {
+  "id": "military",
+  "name": "軍営",
+  "category": "military",
+  "demandKey": "workshop",
+  "color": "#a33a3a",
+  "buildings": [
+   {
+    "id": "barracks",
+    "weight": 3
+   },
+   {
+    "id": "stable",
+    "weight": 1
+   }
+  ],
+  "roadDistance": 3,
+  "prosperity": {},
+  "term": "junying",
+  "note": "兵舎と馬厩（フェーズ6で徴兵）"
+ }
 ]

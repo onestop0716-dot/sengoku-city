@@ -1,7 +1,7 @@
 // data/*.json をまとめて引けるようにする。sim/render/ui は生の JSON ではなく registry を使う。
 import { validateData } from './validate.js';
 
-export const DATA_FILES = ['nations', 'cities', 'terrain', 'zones', 'buildings', 'crops', 'assets', 'balance', 'terms'];
+export const DATA_FILES = ['nations', 'cities', 'terrain', 'zones', 'buildings', 'crops', 'assets', 'balance', 'terms', 'structures'];
 
 const byId = (arr) => { const m = new Map(); for (const e of arr) m.set(e.id, e); return m; };
 
@@ -20,6 +20,7 @@ export function createRegistry(raw) {
     resources: raw.terrain.resources, resourceById: byId(raw.terrain.resources),
     zones: raw.zones, zoneById: byId(raw.zones), zoneIndex,
     buildings: raw.buildings, buildingById: byId(raw.buildings),
+    structures: raw.structures, structureById: byId(raw.structures),
     crops: raw.crops, cropById: byId(raw.crops),
     assets: raw.assets, assetById: byId(raw.assets),
     terms: raw.terms, termById: byId(raw.terms),

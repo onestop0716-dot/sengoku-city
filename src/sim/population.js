@@ -40,13 +40,21 @@ export function tickPopulationMonthly(world, reg) {
   const P = reg.balance.population, E = reg.balance.economy;
   const { cap, farmTiles, farmhouses } = capacityByClass(world, reg);
   const pop = world.population;
-  // 仕事
+  // 仕事: 農地 → 工房 → 市 の順に就く
   const farmJobs = farmTiles * E.farmJobsPerTile;
-  const jobs = farmJobs;                                   // 工房・市はフェーズ3
+  let workshopJobs = 0, marketJobs = 0;
+  for (const b of world.buildings.values()) {
+    if (b.state !== 'built') continue;
+    const def = reg.buildingById.get(b.buildingType);
+    if (def.jobs) { const j = Math.round(def.jobs * (1 + 0.5 * (b.level - 1))); if (b.category === 'workshop') workshopJobs += j; else if (b.category === 'market') marketJobs += j; }
+  }
+  const jobs = farmJobs + workshopJobs + marketJobs;
   const workers = Math.round(pop.commoner * 0.8);
   pop.farmers = Math.min(workers, farmJobs);
-  pop.artisans = 0; pop.merchants = 0;
-  pop.unemployed = Math.max(0, workers - pop.farmers);
+  pop.artisans = Math.min(workers - pop.farmers, workshopJobs);
+  pop.merchants = Math.min(workers - pop.farmers - pop.artisans, marketJobs);
+  pop.unemployed = Math.max(0, workers - pop.farmers - pop.artisans - pop.merchants);
+  world.stats.workshopJobs = workshopJobs; world.stats.marketJobs = marketJobs;
   const unemployedRatio = workers > 0 ? pop.unemployed / workers : 0;
   world.stats.farmWorkerRatio = farmJobs > 0 ? clamp(pop.farmers / farmJobs, 0.4, 1) * (1 + E.farmhouseBonus * Math.min(1, farmhouses / Math.max(1, farmTiles / 8))) : 1;
   world.stats.jobs = jobs; world.stats.farmJobs = farmJobs; world.stats.farmTiles = farmTiles;
@@ -54,14 +62,14 @@ export function tickPopulationMonthly(world, reg) {
   // 民忠（目標値へなだらかに）
   const L = P.loyalty;
   const foodTerm = world.foodSufficiency >= E.famineThreshold ? (world.foodSufficient ? L.foodOk : 0) : -L.foodShort;
-  const target = L.base - world.policy.taxHead * L.headTax - world.policy.taxLand * L.landTax + foodTerm - unemployedRatio * L.unemployed + (world.security - 50) * L.securityScale;
+  const target = L.base - world.policy.taxHead * L.headTax - world.policy.taxLand * L.landTax + foodTerm - unemployedRatio * L.unemployed + (world.security - 50) * L.securityScale + (world.services.loyaltyBonus || 0);
   world.loyalty = clamp(world.loyalty + (clamp(target, 0, 100) - world.loyalty) * L.smoothing, 0, 100);
   // 治安
   const S = P.security;
-  const sTarget = S.base - unemployedRatio * S.unemployed - (pop.total / 1000) * S.crowdingPer1000 + pop.shi * 0.02;
+  const sTarget = S.base - unemployedRatio * S.unemployed - (pop.total / 1000) * S.crowdingPer1000 + pop.shi * 0.02 + (world.services.securityBonus || 0);
   world.security = clamp(world.security + (clamp(sTarget, 0, 100) - world.security) * S.smoothing, 0, 100);
   // 衛生（井戸・水路はフェーズ3）
-  world.hygiene = clamp(P.hygiene.base - (pop.total / 500) * P.hygiene.per500, 0, 100);
+  world.hygiene = clamp(P.hygiene.base - (pop.total / 500) * P.hygiene.per500 + (world.services.hygieneBonus || 0), 0, 100);
 
   // 人口の増減（身分ごとに住居の収容数へ向かう）
   const attract = clamp((world.loyalty - 30) / 50, 0, 1) * (world.foodSufficient ? 1 : 0.3);

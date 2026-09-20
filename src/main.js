@@ -7,6 +7,7 @@ import { createOrbitCamera } from './render/camera.js';
 import { createTerrainMesh } from './render/terrain-mesh.js';
 import { createAssetResolver } from './render/assets/resolve.js';
 import { createBuildingsView } from './render/buildings.js';
+import { createAgentsView } from './render/agents-view.js';
 import { createOverlay } from './render/overlay.js';
 import { createPicker } from './render/picking.js';
 import { createTooltip } from './ui/tooltip.js';
@@ -55,6 +56,9 @@ async function main() {
   const buildings = createBuildingsView(world, reg, scene, assets, env);
   buildings.setQuality(quality);
   const overlay = createOverlay(scene, env);
+  const radiusOverlay = createOverlay(scene, env, 8192);
+  const agentsView = createAgentsView(world, reg, scene, assets, env);
+  agentsView.setQuality(quality);
   const picker = createPicker(canvas, orbit.camera, env, world.map.w, world.map.h);
 
   const tooltip = createTooltip(reg);
@@ -67,8 +71,10 @@ async function main() {
       sc.followCamera(orbit.camera.position);
       env.terrain.update(dt);
       buildings.update(orbit.camera.position);
+      agentsView.update(dt, loop.speed, orbit.camera.position);
+      toolbar.update();
       sc.followShadow(orbit.state.target, quality.shadowRadius);
-      hud.update(); log.update(); infoPanel.update(); demand.update(); finance.update(); population.update();
+      hud.update(); log.update(); infoPanel.update(); demand.update(); finance.update(); population.update(); settingsPanel.update(loop.stats);
       renderer.render(scene, orbit.camera);
     },
   });
@@ -78,22 +84,22 @@ async function main() {
     quality = q;
     sc.applyQuality(q);
     if (rebuild) { buildTerrain(q); buildings.refreshModels(); } else env.terrain.setRipple(q.ripple);
-    buildings.setQuality(q);
+    buildings.setQuality(q); agentsView.setQuality(q);
   });
   const finance = createFinancePanel(world, reg, tooltip);
   const population = createPopulationPanel(world, reg, tooltip);
   const demand = createDemandMeter(world, tooltip);
   const panels = { finance, population };
   const hud = createHud(world, reg, loop, tooltip, { onSettings: () => settingsPanel.toggle(), onPanel: (name) => { for (const [k, p] of Object.entries(panels)) if (k !== name) p.el.style.display = 'none'; panels[name].toggle(); } });
-  const toolbar = createToolbar(reg, () => {});
-  createInput({ canvas, picker, overlay, world, reg, toolbar, infoPanel, log, orbit });
+  const toolbar = createToolbar(reg, world, () => { radiusOverlay.clear(); });
+  createInput({ canvas, picker, overlay, radiusOverlay, world, reg, toolbar, infoPanel, log, orbit });
 
   window.addEventListener('resize', () => { const s = sc.resize(); orbit.setAspect(s.w / s.h); });
   window.addEventListener('keydown', (e) => { if (e.code === 'Space' && e.target.tagName !== 'INPUT') { e.preventDefault(); loop.togglePause(); } });
 
   loop.start();
   assets.loadExternal(() => buildings.refreshModels());
-  window.__game = { world, reg, loop, THREE, settings, orbit, env, rendererInfo: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles }) }; // デバッグ用
+  window.__game = { world, reg, loop, THREE, settings, orbit, env, agentsView, rendererInfo: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles }) }; // デバッグ用
 }
 
 main().catch((err) => { console.error(err); showError(`起動に失敗しました: ${err.message}`); });

@@ -2,6 +2,7 @@
 // version を持ち、古い版は migrate() で読み替える。マップの大きさ（w,h）を必ず含める。
 import { createRng } from '../../core/rng.js';
 import { createWorld } from '../world.js';
+import { recomputeServices } from '../structures.js';
 
 export const SAVE_VERSION = 1;
 
@@ -17,6 +18,7 @@ export function serializeWorld(world) {
     map: { w: world.map.w, h: world.map.h, tile: arr(world.map.tile), height: arr(world.map.height), fertility: arr(world.map.fertility), resource: arr(world.map.resource) },
     roads: arr(world.roads), zones: arr(world.zones),
     buildings: Array.from(world.buildings.values()), nextBuildingId: world.nextBuildingId,
+    structures: Array.from(world.structures.values()), nextStructureId: world.nextStructureId, rank: world.rank, techs: world.techs, goods: { ...world.goods },
     money: world.money, demand: { ...world.demand }, security: world.security, foodSufficient: world.foodSufficient,
     policy: { ...world.policy }, population: { ...world.population }, grain: { ...world.grain }, loyalty: world.loyalty, hygiene: world.hygiene,
     foodSufficiency: world.foodSufficiency, finance: JSON.parse(JSON.stringify(world.finance)), stats: JSON.parse(JSON.stringify(world.stats)),
@@ -48,6 +50,11 @@ export function deserializeWorld(data, reg) {
     for (let yy = b.y; yy < b.y + b.h; yy++) for (let xx = b.x; xx < b.x + b.w; xx++) world.buildingAt[yy * w + xx] = b.id;
   }
   world.nextBuildingId = d.nextBuildingId;
+  world.structures = new Map(); world.structAt.fill(-1);
+  for (const s of d.structures || []) { world.structures.set(s.id, { ...s }); for (let yy = s.y; yy < s.y + s.h; yy++) for (let xx = s.x; xx < s.x + s.w; xx++) world.structAt[yy * w + xx] = s.id; }
+  if (d.nextStructureId) world.nextStructureId = d.nextStructureId;
+  if (d.rank) world.rank = d.rank; if (d.techs) world.techs = d.techs; if (d.goods) world.goods = { ...d.goods };
+  recomputeServices(world, reg);
   world.day = d.day; world.calendar = { ...d.calendar };
   world.rng = createRng(d.seed); world.rng.setState(d.rngState);
   world.money = d.money; world.demand = { ...d.demand }; world.security = d.security; world.foodSufficient = d.foodSufficient;

@@ -8,6 +8,7 @@ import { tickZones, housingCapacity } from './zones.js';
 import { harvest } from './farming.js';
 import { tickFoodDaily, tickPopulationMonthly } from './population.js';
 import { tickEconomyMonthly, tickEconomyYearly, updateDemand, emptyMonth } from './economy.js';
+import { tickStructures, placeInitialStructures, recomputeServices } from './structures.js';
 
 /**
  * @param {{seed:number, cityId:string, reg:object, size?:number, money?:number}} opts
@@ -28,6 +29,8 @@ export function createWorld({ seed, cityId, reg, size, money }) {
     zones: new Uint8Array(w * h),
     buildingAt: new Int32Array(w * h).fill(-1),
     buildings: new Map(), nextBuildingId: 1,
+    structures: new Map(), nextStructureId: 1, structAt: new Int32Array(w * h).fill(-1), servicesDirty: true,
+    rank: 'magistrate', techs: [], goods: {},
     money: money ?? reg.balance.start.money,
     // 経済・人口（フェーズ2）
     policy: { taxLand: 0.1, taxHead: 0.1, taxMarket: 0.1, taxCustoms: 0.1, granaryShare: 0.1, relief: true },
@@ -37,7 +40,7 @@ export function createWorld({ seed, cityId, reg, size, money }) {
     foodSufficiency: 1, foodSufficient: true,
     finance: { month: emptyMonth(), history: [], yearIncome: 0, recordYear: reg.balance.time.startYear, recordMonth: 1, lastHarvest: null, lastTribute: 0 },
     demand: { residential: 40, farm: 50, market: 0, workshop: 0 },
-    services: { water: null, marketDist: null },
+    services: { water: null, marketDist: null, marketAdmin: null, irrigation: null, securityBonus: 0, loyaltyBonus: 0, hygieneBonus: 0, granaryCap: 0, defense: 0, wells: 0, docks: 0, farmDemand: 0, insideWall: null, insideCount: 0 },
     stats: { housingCapacity: 0, jobs: 0, farmJobs: 0, farmTiles: 0, farmWorkerRatio: 1, capacity: { commoner: 0, shi: 0, noble: 0 } },
     log: [],
     dirty: { tiles: new Set(), buildings: false, trees: true },
@@ -48,7 +51,9 @@ export function createWorld({ seed, cityId, reg, size, money }) {
   buildRoadPath(world, reg, lPath(cx - 6, cy, cx + 6, cy));
   buildRoadPath(world, reg, lPath(cx, cy - 6, cx, cy + 6));
   world.money = saved;
+  placeInitialStructures(world, reg);
   ensureRoadDist(world, reg);
+  recomputeServices(world, reg);
   world.log.push({ day: 0, text: `${reg.nationById.get(city.nation).name}の${city.name}に県令として着任しました` });
   return world;
 }
@@ -60,6 +65,7 @@ export function tick(world, reg) {
   const moneyBefore = world.money;
   tickZones(world, reg, world.rng);
   world.finance.month.expense['建設費'] += Math.max(0, moneyBefore - world.money);   // 区画の自動建設にかかった銭
+  tickStructures(world, reg);
   world.stats.housingCapacity = housingCapacity(world, reg);
   tickFoodDaily(world, reg);
   if (flags.newMonth) {

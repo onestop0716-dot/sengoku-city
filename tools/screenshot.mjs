@@ -12,7 +12,7 @@ await new Promise((r) => setTimeout(r, 800));
 const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
 const errors = [];
-page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
+page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); else if (m.text().startsWith('DBG')) console.log(m.text()); });
 page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
 await page.goto('http://localhost:8092/');
 await page.waitForSelector('#start-btn');

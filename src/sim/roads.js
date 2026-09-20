@@ -7,6 +7,7 @@ export function canBuildRoad(world, reg, x, y) {
   const t = reg.tiles[world.map.tile[i]];
   if (!t.buildable) return false;
   if (world.buildingAt[i] !== -1) return false;
+  if (world.structAt && world.structAt[i] !== -1) return false;
   return true;
 }
 

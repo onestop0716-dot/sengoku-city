@@ -83,6 +83,23 @@ export function createBuildingsView(world, reg, scene, assets, env) {
       for (const [ox, oz] of [[0.15, 0.15], [b.w - 0.15, 0.15], [0.15, b.h - 0.15], [b.w - 0.15, b.h - 0.15]]) y = Math.min(y, env.terrain.heightAt(b.x + ox, b.y + oz));
       buildingItems.get(modelId).push({ x: cx, y, z: cz, rot: (b.rotation || 0) * Math.PI / 2, scale: modelId === 'scaffold' ? Math.max(b.w, b.h) : 1 });
     }
+    for (const s of world.structures.values()) {
+      const modelId = s.state === 'built' ? `${s.type}_a` : 'scaffold';
+      if (!buildingItems.has(modelId)) buildingItems.set(modelId, []);
+      const cx = s.x + s.w / 2, cz = s.y + s.h / 2;
+      let y = env.terrain.heightAt(cx, cz);
+      if (s.type === 'bridge') y = env.terrain.field.waterLevel + 0.05;
+      else if (s.type !== 'canal') for (const [ox, oz] of [[0.15, 0.15], [s.w - 0.15, 0.15], [0.15, s.h - 0.15], [s.w - 0.15, s.h - 0.15]]) y = Math.min(y, env.terrain.heightAt(s.x + ox, s.y + oz));
+      // 線状の建築は隣とつながる向きにする
+      let rot = (s.rotation || 0) * Math.PI / 2;
+      if (s.linear) {
+        const W = world.map.w, same = (dx, dz) => { const i = (s.y + dz) * W + (s.x + dx); return world.structAt[i] !== -1 && world.structures.get(world.structAt[i])?.type === s.type; };
+        const ns = same(0, -1) || same(0, 1), ew = same(-1, 0) || same(1, 0);
+        rot = ns && !ew ? Math.PI / 2 : 0;
+        if (s.type === 'bridge') rot = ns ? Math.PI / 2 : 0;
+      }
+      buildingItems.get(modelId).push({ x: cx, y, z: cz, rot, scale: modelId === 'scaffold' ? Math.max(s.w, s.h) : 1 });
+    }
   };
   const collectTrees = () => {
     const { w, h, tile, waterDist } = world.map;

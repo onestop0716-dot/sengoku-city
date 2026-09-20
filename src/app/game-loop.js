@@ -16,14 +16,14 @@ export function createGameLoop(world, reg, { onFrame, onTick }) {
       running = true;
       const frame = (now) => {
         if (!running) return;
-        const dt = Math.min(0.1, (now - last) / 1000); last = now;
+        const realDt = (now - last) / 1000; const dt = Math.min(0.1, realDt); last = now;
         acc += dt * daysPerSecond * speeds[speedIndex];
         // 1フレームに詰め込む日数の上限。tick が重いときは減らして描画を止めない（更新を複数フレームに分散）
         const maxSteps = stats.tickMs > 12 ? 1 : stats.tickMs > 6 ? 2 : stats.tickMs > 3 ? 4 : 8;
         let steps = 0;
         while (acc >= 1 && steps < maxSteps) { const t0 = performance.now(); const flags = tick(world, reg); stats.tickMs = stats.tickMs * 0.8 + (performance.now() - t0) * 0.2; onTick?.(flags); acc -= 1; steps++; }
         if (acc > 8) acc = 0;
-        stats.frames++; stats.fpsTime += dt; if (stats.fpsTime >= 1) { stats.fps = stats.frames / stats.fpsTime; stats.frames = 0; stats.fpsTime = 0; }
+        stats.frames++; stats.fpsTime += realDt; if (stats.fpsTime >= 1) { stats.fps = stats.frames / stats.fpsTime; stats.frames = 0; stats.fpsTime = 0; }
         onFrame(dt);
         requestAnimationFrame(frame);
       };

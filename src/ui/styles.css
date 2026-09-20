@@ -3,14 +3,16 @@
 html, body { margin: 0; height: 100%; overflow: hidden; background: #dfe7ee; color: var(--fg); }
 #view { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
 .panel { position: absolute; background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; font-size: 13px; backdrop-filter: blur(4px); }
-#hud { top: 8px; left: 8px; right: 8px; height: 40px; display: flex; align-items: center; gap: 18px; padding: 0 12px; }
-#hud .stat { display: flex; align-items: baseline; gap: 4px; }
-#hud .stat b { color: var(--accent); font-size: 15px; }
+#hud { top: 8px; left: 8px; right: 8px; height: 40px; display: flex; align-items: center; gap: 12px; padding: 0 10px; font-size: 12px; white-space: nowrap; overflow: hidden; }
+#hud .stat { display: flex; align-items: baseline; gap: 3px; white-space: nowrap; }
+#hud .stat b { color: var(--accent); font-size: 14px; }
+#hud-speed { display: flex; gap: 2px; }
 #hud .spacer { flex: 1; }
 #hud button, #toolbar button, .btn { background: rgba(255,255,255,0.08); color: var(--fg); border: 1px solid var(--line); border-radius: 4px; padding: 4px 9px; cursor: pointer; font-size: 13px; }
 #hud button.active, #toolbar button.active { background: var(--accent); color: #2a1e0e; border-color: var(--accent); }
-#toolbar { top: 56px; left: 8px; width: 150px; padding: 8px; display: flex; flex-direction: column; gap: 4px; max-height: calc(100% - 300px); overflow-y: auto; }
-#demand { left: 8px; bottom: 124px; width: 150px; padding: 6px 8px; }
+#toolbar { top: 56px; left: 8px; width: 170px; padding: 6px; display: flex; flex-direction: column; gap: 3px; max-height: calc(100% - 300px); overflow-y: auto; }
+#toolbar button { padding: 3px 7px; font-size: 12px; }
+#demand { left: 8px; bottom: 124px; width: 170px; padding: 6px 8px; }
 #demand h4 { margin: 0 0 4px; font-size: 11px; opacity: .7; font-weight: normal; }
 .dm-row { display: flex; align-items: center; gap: 6px; font-size: 12px; margin: 2px 0; }
 .dm-bar { flex: 1; height: 8px; background: rgba(255,255,255,0.08); border-radius: 2px; position: relative; overflow: hidden; }
@@ -36,6 +38,8 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #dfe7ee; col
 #finance-chart { width: 100%; height: 160px; background: rgba(0,0,0,0.2); border-radius: 4px; }
 #toolbar h4 { margin: 6px 0 2px; font-size: 11px; opacity: 0.7; font-weight: normal; }
 #toolbar button { text-align: left; }
+#toolbar button.locked { opacity: 0.45; cursor: not-allowed; }
+#toolbar .cost { float: right; font-size: 10px; opacity: .6; }
 #toolbar .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
 #info { top: 56px; right: 8px; width: 260px; padding: 10px; max-height: calc(100% - 200px); overflow-y: auto; }
 #info h3 { margin: 0 0 6px; font-size: 15px; color: var(--accent); }
@@ -44,7 +48,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #dfe7ee; col
 #info td:last-child { text-align: right; }
 #log { bottom: 8px; left: 8px; right: 8px; height: 110px; padding: 6px 10px; overflow-y: auto; font-size: 12px; line-height: 1.5; }
 #log .day { opacity: 0.55; margin-right: 6px; }
-#hint { position: absolute; bottom: 124px; left: 166px; font-size: 12px; color: #3a2e1e; background: rgba(255,255,255,0.7); padding: 3px 8px; border-radius: 4px; }
+#hint { position: absolute; bottom: 124px; left: 186px; font-size: 12px; color: #3a2e1e; background: rgba(255,255,255,0.7); padding: 3px 8px; border-radius: 4px; }
 #tooltip { position: absolute; pointer-events: none; background: #1f1812; color: #f3e9d2; padding: 6px 9px; border-radius: 4px; font-size: 12px; max-width: 280px; display: none; z-index: 20; border: 1px solid var(--accent); }
 .term { border-bottom: 1px dotted var(--accent); cursor: help; }
 #start { position: absolute; inset: 0; background: radial-gradient(ellipse at center, #3a2e1e 0%, #1a130c 100%); display: flex; align-items: center; justify-content: center; z-index: 10; }

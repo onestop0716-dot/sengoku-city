@@ -1,4 +1,5 @@
 // 税・支出・財政記録・需要メーター。
+import { structureUpkeep } from './structures.js';
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
 export function emptyMonth() {
@@ -22,6 +23,31 @@ export function tickEconomyMonthly(world, reg) {
   world.money += head; cur.income['口賦'] += head;
   // 俸禄（県廷の官吏）
   world.money -= E.officialsSalaryPerMonth; cur.expense['俸禄'] += E.officialsSalaryPerMonth;
+  // 特殊建築の維持費
+  const upkeep = structureUpkeep(world, reg);
+  world.money -= upkeep; cur.expense['維持費'] += upkeep;
+  // 工房の生産と市の取引・市租
+  const G = reg.balance.goods || {};
+  let produced = 0;
+  const artisanRatio = world.stats.workshopJobs > 0 ? clamp(world.population.artisans / world.stats.workshopJobs, 0, 1) : 0;
+  for (const b of world.buildings.values()) {
+    if (b.category !== 'workshop' || b.state !== 'built') continue;
+    const def = reg.buildingById.get(b.buildingType);
+    const units = (G.unitsPerWorkshop || 4) * (1 + 0.5 * (b.level - 1)) * artisanRatio;
+    world.goods[def.produces] = (world.goods[def.produces] || 0) + units;
+    produced += units * (G.prices?.[def.produces] || 10);
+  }
+  const hasMarket = (world.stats.marketJobs || 0) > 0;
+  if (hasMarket) {
+    const merchantRatio = clamp(world.population.merchants / world.stats.marketJobs, 0, 1);
+    let sold = 0;
+    for (const [g, n] of Object.entries(world.goods)) { const s = n * (G.soldShare || 0.6) * merchantRatio; world.goods[g] = n - s; sold += s * (G.prices?.[g] || 10); }
+    const transactions = world.population.total * (G.tradePerPersonPerMonth || 0.3) * merchantRatio + sold;
+    const tax = transactions * world.policy.taxMarket;
+    world.money += tax; cur.income['市租'] += tax;
+    world.finance.lastMarket = { transactions: Math.round(transactions), sold: Math.round(sold), tax: Math.round(tax) };
+  }
+  world.finance.lastProduced = Math.round(produced);
   // 穀物の目減り
   world.grain.civil *= 1 - E.grainSpoilagePerMonth; world.grain.granary *= 1 - E.grainSpoilagePerMonth;
   if (world.money < 0 && world.calendar.month % 2 === 0) world.log.push({ day: world.day, text: '財政が赤字です。税率や建設を見直してください' });
@@ -49,7 +75,10 @@ export function updateDemand(world, reg) {
   const yearNeed = pop.total * reg.balance.economy.consumptionPerPersonPerYear;
   const stock = world.grain.civil + world.grain.granary;
   const months = yearNeed > 0 ? (stock / yearNeed) * 12 : 12;
-  world.demand.farm = clamp(D.farm.base + (1 - clamp(world.foodSufficiency, 0, 1.5)) * D.farm.shortage + (months > 18 ? D.farm.surplus : 0) + (pop.total < 20 ? 30 : 0), -100, 100);
-  world.demand.market = clamp(D.market.base + pop.total * D.market.perPerson, -100, 100);
-  world.demand.workshop = clamp(D.workshop.base, -100, 100);
+  world.demand.farm = clamp(D.farm.base + (1 - clamp(world.foodSufficiency, 0, 1.5)) * D.farm.shortage + (months > 18 ? D.farm.surplus : 0) + (pop.total < 20 ? 30 : 0) + (world.services.farmDemand || 0), -100, 100);
+  // 商: 人口に対して市の店が足りないほど高い
+  const marketNeed = pop.total * D.market.perPerson;
+  world.demand.market = clamp(D.market.base + marketNeed - (st.marketJobs || 0) * 0.5, -100, 100);
+  // 工: 失業者と資源があれば高い。工房の仕事が余っていれば下がる
+  world.demand.workshop = clamp(D.workshop.base + pop.unemployed * 0.5 + (pop.total > 200 ? 20 : 0) - Math.max(0, (st.workshopJobs || 0) - pop.artisans) * 0.5, -100, 100);
 }

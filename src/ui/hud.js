@@ -8,6 +8,7 @@ export function createHud(world, reg, loop, tooltip, { onSettings, onPanel } = {
   el.innerHTML = `
     <div class="stat"><span>${nation.name}・${city.name}</span></div>
     <div class="stat"><span id="hud-date"></span></div>
+    <span id="hud-fps" style="display:none"></span>
     <div class="stat">${tooltip.termHtml('qian', nation.currencyName)} <b id="hud-money"></b></div>
     <div class="stat">${tooltip.termHtml('grain', '穀')} <b id="hud-grain"></b><span style="opacity:.7;font-size:11px" id="hud-grain2"></span></div>
     <div class="stat" data-tip="人口 / 住居の収容数"><span>人口</span> <b id="hud-pop"></b><span style="opacity:.7;font-size:11px" id="hud-cap"></span></div>
@@ -17,7 +18,6 @@ export function createHud(world, reg, loop, tooltip, { onSettings, onPanel } = {
     <div class="spacer"></div>
     <button data-panel="finance">財政</button>
     <button data-panel="population">人口</button>
-    <div class="stat" data-tip="1秒あたりの描画回数（fps）と1日分の計算にかかる時間"><span id="hud-fps" style="opacity:.6;font-size:11px"></span></div>
     <button id="hud-settings" title="設定">設定</button>
     <div id="hud-speed">${speeds.map((s, i) => `<button data-speed="${i}" title="${s === 0 ? '一時停止 (Space)' : s + '倍速'}">${s === 0 ? '❚❚' : '▶'.repeat(Math.log2(s) + 1)}</button>`).join('')}</div>
   `;

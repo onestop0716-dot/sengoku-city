@@ -146,5 +146,21 @@
     "workshop": {
       "base": 0
     }
+  },
+  "goods": {
+    "_note": "工房の月産（単位）と市での売値（銭/単位）。売れ残りは在庫（交易はフェーズ5）",
+    "unitsPerWorkshop": 4,
+    "soldShare": 0.6,
+    "tradePerPersonPerMonth": 0.3,
+    "prices": {
+      "iron": 12,
+      "bronze": 15,
+      "pottery": 5,
+      "salt": 12,
+      "silk": 30,
+      "lacquer": 25,
+      "vehicle": 40,
+      "weapon": 35
+    }
   }
 }

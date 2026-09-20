@@ -2,6 +2,8 @@
 import { idx } from '../core/grid.js';
 import { computeProsperity, zoneDefAt } from '../sim/zones.js';
 import { fieldYield } from '../sim/farming.js';
+import { effectText } from './structure-info.js';
+import { structureName } from '../sim/structures.js';
 
 export function createInfoPanel(world, reg, tooltip) {
   const el = document.getElementById('info');
@@ -21,7 +23,21 @@ export function createInfoPanel(world, reg, tooltip) {
     if (res) html += `<tr><td>資源</td><td>${res.name}</td></tr>`;
     if (world.roads[i]) html += `<tr><td>道路</td><td>あり</td></tr>`;
     if (zone) html += `<tr><td>区画</td><td>${zone.name}</td></tr>`;
+    if (world.services.insideWall && world.services.insideWall[i]) html += `<tr><td>${tooltip.termHtml('inner_city', '内城')}</td><td>城壁の内側</td></tr>`;
+    if (world.services.marketAdmin && world.services.marketAdmin[i]) html += `<tr><td>市亭の範囲</td><td>市を開ける</td></tr>`;
+    if (world.services.irrigation && world.services.irrigation[i]) html += `<tr><td>灌漑</td><td>あり</td></tr>`;
     html += `</table>`;
+    const sid = world.structAt[i];
+    if (sid !== -1) {
+      const s = world.structures.get(sid);
+      const def = reg.structureById.get(s.type);
+      html += `<h3 style="margin-top:10px">${def.term ? tooltip.termHtml(def.term, structureName(reg, def, world.nationId)) : structureName(reg, def, world.nationId)}</h3><table>`;
+      html += `<tr><td>状態</td><td>${s.state === 'building' ? `建設中 ${s.progress}/${s.buildDays}日` : '完成'}</td></tr>`;
+      html += `<tr><td>維持費</td><td>${def.upkeep} 銭/月</td></tr>`;
+      for (const e of def.effects) html += `<tr><td colspan="2" style="opacity:.85">・${effectText(e)}</td></tr>`;
+      if (def.note) html += `<tr><td colspan="2" style="opacity:.6;font-size:11px">${def.note}</td></tr>`;
+      html += `</table>`;
+    }
     const bid = world.buildingAt[i];
     if (bid !== -1) {
       const b = world.buildings.get(bid);

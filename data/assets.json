@@ -1,106 +1,2234 @@
 [
- { "id": "house_c1_a", "kind": "procedural", "generator": "houseCommoner", "params": { "level": 1, "variant": 0 } },
- { "id": "house_c1_b", "kind": "procedural", "generator": "houseCommoner", "params": { "level": 1, "variant": 1 } },
- { "id": "house_c1_c", "kind": "procedural", "generator": "houseCommoner", "params": { "level": 1, "variant": 2 } },
- { "id": "house_c2_a", "kind": "procedural", "generator": "houseCommoner", "params": { "level": 2, "variant": 0 } },
- { "id": "house_c2_b", "kind": "procedural", "generator": "houseCommoner", "params": { "level": 2, "variant": 1 } },
- { "id": "house_c2_c", "kind": "procedural", "generator": "houseCommoner", "params": { "level": 2, "variant": 2 } },
- { "id": "house_c3_a", "kind": "procedural", "generator": "houseCommoner", "params": { "level": 3, "variant": 0 } },
- { "id": "house_c3_b", "kind": "procedural", "generator": "houseCommoner", "params": { "level": 3, "variant": 1 } },
- { "id": "house_c3_c", "kind": "procedural", "generator": "houseCommoner", "params": { "level": 3, "variant": 2 } },
- { "id": "house_s1_a", "kind": "procedural", "generator": "houseShi", "params": { "level": 1, "variant": 0 } },
- { "id": "house_s1_b", "kind": "procedural", "generator": "houseShi", "params": { "level": 1, "variant": 1 } },
- { "id": "house_s1_c", "kind": "procedural", "generator": "houseShi", "params": { "level": 1, "variant": 2 } },
- { "id": "house_s2_a", "kind": "procedural", "generator": "houseShi", "params": { "level": 2, "variant": 0 } },
- { "id": "house_s2_b", "kind": "procedural", "generator": "houseShi", "params": { "level": 2, "variant": 1 } },
- { "id": "house_s2_c", "kind": "procedural", "generator": "houseShi", "params": { "level": 2, "variant": 2 } },
- { "id": "house_s3_a", "kind": "procedural", "generator": "houseShi", "params": { "level": 3, "variant": 0 } },
- { "id": "house_s3_b", "kind": "procedural", "generator": "houseShi", "params": { "level": 3, "variant": 1 } },
- { "id": "house_s3_c", "kind": "procedural", "generator": "houseShi", "params": { "level": 3, "variant": 2 } },
- { "id": "house_n1_a", "kind": "procedural", "generator": "houseNoble", "params": { "level": 1, "variant": 0 } },
- { "id": "house_n1_b", "kind": "procedural", "generator": "houseNoble", "params": { "level": 1, "variant": 1 } },
- { "id": "house_n1_c", "kind": "procedural", "generator": "houseNoble", "params": { "level": 1, "variant": 2 } },
- { "id": "house_n2_a", "kind": "procedural", "generator": "houseNoble", "params": { "level": 2, "variant": 0 } },
- { "id": "house_n2_b", "kind": "procedural", "generator": "houseNoble", "params": { "level": 2, "variant": 1 } },
- { "id": "house_n2_c", "kind": "procedural", "generator": "houseNoble", "params": { "level": 2, "variant": 2 } },
- { "id": "house_n3_a", "kind": "procedural", "generator": "houseNoble", "params": { "level": 3, "variant": 0 } },
- { "id": "house_n3_b", "kind": "procedural", "generator": "houseNoble", "params": { "level": 3, "variant": 1 } },
- { "id": "house_n3_c", "kind": "procedural", "generator": "houseNoble", "params": { "level": 3, "variant": 2 } },
- { "id": "farmhouse_a", "kind": "procedural", "generator": "farmhouse", "params": { "variant": 0 } },
- { "id": "farmhouse_b", "kind": "procedural", "generator": "farmhouse", "params": { "variant": 1 } },
- { "id": "farmhouse_c", "kind": "procedural", "generator": "farmhouse", "params": { "variant": 2 } },
- { "id": "field_millet_1_a", "kind": "procedural", "generator": "field", "params": { "crop": "millet", "level": 1, "variant": 0 } },
- { "id": "field_millet_1_b", "kind": "procedural", "generator": "field", "params": { "crop": "millet", "level": 1, "variant": 1 } },
- { "id": "field_millet_1_c", "kind": "procedural", "generator": "field", "params": { "crop": "millet", "level": 1, "variant": 2 } },
- { "id": "field_millet_2_a", "kind": "procedural", "generator": "field", "params": { "crop": "millet", "level": 2, "variant": 0 } },
- { "id": "field_millet_2_b", "kind": "procedural", "generator": "field", "params": { "crop": "millet", "level": 2, "variant": 1 } },
- { "id": "field_millet_2_c", "kind": "procedural", "generator": "field", "params": { "crop": "millet", "level": 2, "variant": 2 } },
- { "id": "field_millet_3_a", "kind": "procedural", "generator": "field", "params": { "crop": "millet", "level": 3, "variant": 0 } },
- { "id": "field_millet_3_b", "kind": "procedural", "generator": "field", "params": { "crop": "millet", "level": 3, "variant": 1 } },
- { "id": "field_millet_3_c", "kind": "procedural", "generator": "field", "params": { "crop": "millet", "level": 3, "variant": 2 } },
- { "id": "field_broomcorn_1_a", "kind": "procedural", "generator": "field", "params": { "crop": "broomcorn", "level": 1, "variant": 0 } },
- { "id": "field_broomcorn_1_b", "kind": "procedural", "generator": "field", "params": { "crop": "broomcorn", "level": 1, "variant": 1 } },
- { "id": "field_broomcorn_1_c", "kind": "procedural", "generator": "field", "params": { "crop": "broomcorn", "level": 1, "variant": 2 } },
- { "id": "field_broomcorn_2_a", "kind": "procedural", "generator": "field", "params": { "crop": "broomcorn", "level": 2, "variant": 0 } },
- { "id": "field_broomcorn_2_b", "kind": "procedural", "generator": "field", "params": { "crop": "broomcorn", "level": 2, "variant": 1 } },
- { "id": "field_broomcorn_2_c", "kind": "procedural", "generator": "field", "params": { "crop": "broomcorn", "level": 2, "variant": 2 } },
- { "id": "field_broomcorn_3_a", "kind": "procedural", "generator": "field", "params": { "crop": "broomcorn", "level": 3, "variant": 0 } },
- { "id": "field_broomcorn_3_b", "kind": "procedural", "generator": "field", "params": { "crop": "broomcorn", "level": 3, "variant": 1 } },
- { "id": "field_broomcorn_3_c", "kind": "procedural", "generator": "field", "params": { "crop": "broomcorn", "level": 3, "variant": 2 } },
- { "id": "field_wheat_1_a", "kind": "procedural", "generator": "field", "params": { "crop": "wheat", "level": 1, "variant": 0 } },
- { "id": "field_wheat_1_b", "kind": "procedural", "generator": "field", "params": { "crop": "wheat", "level": 1, "variant": 1 } },
- { "id": "field_wheat_1_c", "kind": "procedural", "generator": "field", "params": { "crop": "wheat", "level": 1, "variant": 2 } },
- { "id": "field_wheat_2_a", "kind": "procedural", "generator": "field", "params": { "crop": "wheat", "level": 2, "variant": 0 } },
- { "id": "field_wheat_2_b", "kind": "procedural", "generator": "field", "params": { "crop": "wheat", "level": 2, "variant": 1 } },
- { "id": "field_wheat_2_c", "kind": "procedural", "generator": "field", "params": { "crop": "wheat", "level": 2, "variant": 2 } },
- { "id": "field_wheat_3_a", "kind": "procedural", "generator": "field", "params": { "crop": "wheat", "level": 3, "variant": 0 } },
- { "id": "field_wheat_3_b", "kind": "procedural", "generator": "field", "params": { "crop": "wheat", "level": 3, "variant": 1 } },
- { "id": "field_wheat_3_c", "kind": "procedural", "generator": "field", "params": { "crop": "wheat", "level": 3, "variant": 2 } },
- { "id": "field_bean_1_a", "kind": "procedural", "generator": "field", "params": { "crop": "bean", "level": 1, "variant": 0 } },
- { "id": "field_bean_1_b", "kind": "procedural", "generator": "field", "params": { "crop": "bean", "level": 1, "variant": 1 } },
- { "id": "field_bean_1_c", "kind": "procedural", "generator": "field", "params": { "crop": "bean", "level": 1, "variant": 2 } },
- { "id": "field_bean_2_a", "kind": "procedural", "generator": "field", "params": { "crop": "bean", "level": 2, "variant": 0 } },
- { "id": "field_bean_2_b", "kind": "procedural", "generator": "field", "params": { "crop": "bean", "level": 2, "variant": 1 } },
- { "id": "field_bean_2_c", "kind": "procedural", "generator": "field", "params": { "crop": "bean", "level": 2, "variant": 2 } },
- { "id": "field_bean_3_a", "kind": "procedural", "generator": "field", "params": { "crop": "bean", "level": 3, "variant": 0 } },
- { "id": "field_bean_3_b", "kind": "procedural", "generator": "field", "params": { "crop": "bean", "level": 3, "variant": 1 } },
- { "id": "field_bean_3_c", "kind": "procedural", "generator": "field", "params": { "crop": "bean", "level": 3, "variant": 2 } },
- { "id": "field_rice_1_a", "kind": "procedural", "generator": "field", "params": { "crop": "rice", "level": 1, "variant": 0 } },
- { "id": "field_rice_1_b", "kind": "procedural", "generator": "field", "params": { "crop": "rice", "level": 1, "variant": 1 } },
- { "id": "field_rice_1_c", "kind": "procedural", "generator": "field", "params": { "crop": "rice", "level": 1, "variant": 2 } },
- { "id": "field_rice_2_a", "kind": "procedural", "generator": "field", "params": { "crop": "rice", "level": 2, "variant": 0 } },
- { "id": "field_rice_2_b", "kind": "procedural", "generator": "field", "params": { "crop": "rice", "level": 2, "variant": 1 } },
- { "id": "field_rice_2_c", "kind": "procedural", "generator": "field", "params": { "crop": "rice", "level": 2, "variant": 2 } },
- { "id": "field_rice_3_a", "kind": "procedural", "generator": "field", "params": { "crop": "rice", "level": 3, "variant": 0 } },
- { "id": "field_rice_3_b", "kind": "procedural", "generator": "field", "params": { "crop": "rice", "level": 3, "variant": 1 } },
- { "id": "field_rice_3_c", "kind": "procedural", "generator": "field", "params": { "crop": "rice", "level": 3, "variant": 2 } },
- { "id": "field_mulberry_1_a", "kind": "procedural", "generator": "field", "params": { "crop": "mulberry", "level": 1, "variant": 0 } },
- { "id": "field_mulberry_1_b", "kind": "procedural", "generator": "field", "params": { "crop": "mulberry", "level": 1, "variant": 1 } },
- { "id": "field_mulberry_1_c", "kind": "procedural", "generator": "field", "params": { "crop": "mulberry", "level": 1, "variant": 2 } },
- { "id": "field_mulberry_2_a", "kind": "procedural", "generator": "field", "params": { "crop": "mulberry", "level": 2, "variant": 0 } },
- { "id": "field_mulberry_2_b", "kind": "procedural", "generator": "field", "params": { "crop": "mulberry", "level": 2, "variant": 1 } },
- { "id": "field_mulberry_2_c", "kind": "procedural", "generator": "field", "params": { "crop": "mulberry", "level": 2, "variant": 2 } },
- { "id": "field_mulberry_3_a", "kind": "procedural", "generator": "field", "params": { "crop": "mulberry", "level": 3, "variant": 0 } },
- { "id": "field_mulberry_3_b", "kind": "procedural", "generator": "field", "params": { "crop": "mulberry", "level": 3, "variant": 1 } },
- { "id": "field_mulberry_3_c", "kind": "procedural", "generator": "field", "params": { "crop": "mulberry", "level": 3, "variant": 2 } },
- { "id": "field_hemp_1_a", "kind": "procedural", "generator": "field", "params": { "crop": "hemp", "level": 1, "variant": 0 } },
- { "id": "field_hemp_1_b", "kind": "procedural", "generator": "field", "params": { "crop": "hemp", "level": 1, "variant": 1 } },
- { "id": "field_hemp_1_c", "kind": "procedural", "generator": "field", "params": { "crop": "hemp", "level": 1, "variant": 2 } },
- { "id": "field_hemp_2_a", "kind": "procedural", "generator": "field", "params": { "crop": "hemp", "level": 2, "variant": 0 } },
- { "id": "field_hemp_2_b", "kind": "procedural", "generator": "field", "params": { "crop": "hemp", "level": 2, "variant": 1 } },
- { "id": "field_hemp_2_c", "kind": "procedural", "generator": "field", "params": { "crop": "hemp", "level": 2, "variant": 2 } },
- { "id": "field_hemp_3_a", "kind": "procedural", "generator": "field", "params": { "crop": "hemp", "level": 3, "variant": 0 } },
- { "id": "field_hemp_3_b", "kind": "procedural", "generator": "field", "params": { "crop": "hemp", "level": 3, "variant": 1 } },
- { "id": "field_hemp_3_c", "kind": "procedural", "generator": "field", "params": { "crop": "hemp", "level": 3, "variant": 2 } },
- { "id": "tree_pine_0", "kind": "procedural", "generator": "tree", "params": { "species": "pine", "variant": 0 }, "note": "松" },
- { "id": "tree_pine_1", "kind": "procedural", "generator": "tree", "params": { "species": "pine", "variant": 1 }, "note": "松" },
- { "id": "tree_cypress_0", "kind": "procedural", "generator": "tree", "params": { "species": "cypress", "variant": 0 }, "note": "柏" },
- { "id": "tree_cypress_1", "kind": "procedural", "generator": "tree", "params": { "species": "cypress", "variant": 1 }, "note": "柏" },
- { "id": "tree_sophora_0", "kind": "procedural", "generator": "tree", "params": { "species": "sophora", "variant": 0 }, "note": "槐" },
- { "id": "tree_sophora_1", "kind": "procedural", "generator": "tree", "params": { "species": "sophora", "variant": 1 }, "note": "槐" },
- { "id": "tree_elm_0", "kind": "procedural", "generator": "tree", "params": { "species": "elm", "variant": 0 }, "note": "楡" },
- { "id": "tree_elm_1", "kind": "procedural", "generator": "tree", "params": { "species": "elm", "variant": 1 }, "note": "楡" },
- { "id": "tree_willow_0", "kind": "procedural", "generator": "tree", "params": { "species": "willow", "variant": 0 }, "note": "柳（水辺）" },
- { "id": "tree_willow_1", "kind": "procedural", "generator": "tree", "params": { "species": "willow", "variant": 1 }, "note": "柳（水辺）" },
- { "id": "scaffold", "kind": "procedural", "generator": "scaffold", "params": {} }
+ {
+  "id": "house_c1_a",
+  "kind": "procedural",
+  "generator": "houseCommoner",
+  "params": {
+   "level": 1,
+   "variant": 0
+  }
+ },
+ {
+  "id": "house_c1_b",
+  "kind": "procedural",
+  "generator": "houseCommoner",
+  "params": {
+   "level": 1,
+   "variant": 1
+  }
+ },
+ {
+  "id": "house_c1_c",
+  "kind": "procedural",
+  "generator": "houseCommoner",
+  "params": {
+   "level": 1,
+   "variant": 2
+  }
+ },
+ {
+  "id": "house_c2_a",
+  "kind": "procedural",
+  "generator": "houseCommoner",
+  "params": {
+   "level": 2,
+   "variant": 0
+  }
+ },
+ {
+  "id": "house_c2_b",
+  "kind": "procedural",
+  "generator": "houseCommoner",
+  "params": {
+   "level": 2,
+   "variant": 1
+  }
+ },
+ {
+  "id": "house_c2_c",
+  "kind": "procedural",
+  "generator": "houseCommoner",
+  "params": {
+   "level": 2,
+   "variant": 2
+  }
+ },
+ {
+  "id": "house_c3_a",
+  "kind": "procedural",
+  "generator": "houseCommoner",
+  "params": {
+   "level": 3,
+   "variant": 0
+  }
+ },
+ {
+  "id": "house_c3_b",
+  "kind": "procedural",
+  "generator": "houseCommoner",
+  "params": {
+   "level": 3,
+   "variant": 1
+  }
+ },
+ {
+  "id": "house_c3_c",
+  "kind": "procedural",
+  "generator": "houseCommoner",
+  "params": {
+   "level": 3,
+   "variant": 2
+  }
+ },
+ {
+  "id": "house_s1_a",
+  "kind": "procedural",
+  "generator": "houseShi",
+  "params": {
+   "level": 1,
+   "variant": 0
+  }
+ },
+ {
+  "id": "house_s1_b",
+  "kind": "procedural",
+  "generator": "houseShi",
+  "params": {
+   "level": 1,
+   "variant": 1
+  }
+ },
+ {
+  "id": "house_s1_c",
+  "kind": "procedural",
+  "generator": "houseShi",
+  "params": {
+   "level": 1,
+   "variant": 2
+  }
+ },
+ {
+  "id": "house_s2_a",
+  "kind": "procedural",
+  "generator": "houseShi",
+  "params": {
+   "level": 2,
+   "variant": 0
+  }
+ },
+ {
+  "id": "house_s2_b",
+  "kind": "procedural",
+  "generator": "houseShi",
+  "params": {
+   "level": 2,
+   "variant": 1
+  }
+ },
+ {
+  "id": "house_s2_c",
+  "kind": "procedural",
+  "generator": "houseShi",
+  "params": {
+   "level": 2,
+   "variant": 2
+  }
+ },
+ {
+  "id": "house_s3_a",
+  "kind": "procedural",
+  "generator": "houseShi",
+  "params": {
+   "level": 3,
+   "variant": 0
+  }
+ },
+ {
+  "id": "house_s3_b",
+  "kind": "procedural",
+  "generator": "houseShi",
+  "params": {
+   "level": 3,
+   "variant": 1
+  }
+ },
+ {
+  "id": "house_s3_c",
+  "kind": "procedural",
+  "generator": "houseShi",
+  "params": {
+   "level": 3,
+   "variant": 2
+  }
+ },
+ {
+  "id": "house_n1_a",
+  "kind": "procedural",
+  "generator": "houseNoble",
+  "params": {
+   "level": 1,
+   "variant": 0
+  }
+ },
+ {
+  "id": "house_n1_b",
+  "kind": "procedural",
+  "generator": "houseNoble",
+  "params": {
+   "level": 1,
+   "variant": 1
+  }
+ },
+ {
+  "id": "house_n1_c",
+  "kind": "procedural",
+  "generator": "houseNoble",
+  "params": {
+   "level": 1,
+   "variant": 2
+  }
+ },
+ {
+  "id": "house_n2_a",
+  "kind": "procedural",
+  "generator": "houseNoble",
+  "params": {
+   "level": 2,
+   "variant": 0
+  }
+ },
+ {
+  "id": "house_n2_b",
+  "kind": "procedural",
+  "generator": "houseNoble",
+  "params": {
+   "level": 2,
+   "variant": 1
+  }
+ },
+ {
+  "id": "house_n2_c",
+  "kind": "procedural",
+  "generator": "houseNoble",
+  "params": {
+   "level": 2,
+   "variant": 2
+  }
+ },
+ {
+  "id": "house_n3_a",
+  "kind": "procedural",
+  "generator": "houseNoble",
+  "params": {
+   "level": 3,
+   "variant": 0
+  }
+ },
+ {
+  "id": "house_n3_b",
+  "kind": "procedural",
+  "generator": "houseNoble",
+  "params": {
+   "level": 3,
+   "variant": 1
+  }
+ },
+ {
+  "id": "house_n3_c",
+  "kind": "procedural",
+  "generator": "houseNoble",
+  "params": {
+   "level": 3,
+   "variant": 2
+  }
+ },
+ {
+  "id": "farmhouse_a",
+  "kind": "procedural",
+  "generator": "farmhouse",
+  "params": {
+   "variant": 0
+  }
+ },
+ {
+  "id": "farmhouse_b",
+  "kind": "procedural",
+  "generator": "farmhouse",
+  "params": {
+   "variant": 1
+  }
+ },
+ {
+  "id": "farmhouse_c",
+  "kind": "procedural",
+  "generator": "farmhouse",
+  "params": {
+   "variant": 2
+  }
+ },
+ {
+  "id": "field_millet_1_a",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "millet",
+   "level": 1,
+   "variant": 0
+  }
+ },
+ {
+  "id": "field_millet_1_b",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "millet",
+   "level": 1,
+   "variant": 1
+  }
+ },
+ {
+  "id": "field_millet_1_c",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "millet",
+   "level": 1,
+   "variant": 2
+  }
+ },
+ {
+  "id": "field_millet_2_a",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "millet",
+   "level": 2,
+   "variant": 0
+  }
+ },
+ {
+  "id": "field_millet_2_b",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "millet",
+   "level": 2,
+   "variant": 1
+  }
+ },
+ {
+  "id": "field_millet_2_c",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "millet",
+   "level": 2,
+   "variant": 2
+  }
+ },
+ {
+  "id": "field_millet_3_a",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "millet",
+   "level": 3,
+   "variant": 0
+  }
+ },
+ {
+  "id": "field_millet_3_b",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "millet",
+   "level": 3,
+   "variant": 1
+  }
+ },
+ {
+  "id": "field_millet_3_c",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "millet",
+   "level": 3,
+   "variant": 2
+  }
+ },
+ {
+  "id": "field_broomcorn_1_a",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "broomcorn",
+   "level": 1,
+   "variant": 0
+  }
+ },
+ {
+  "id": "field_broomcorn_1_b",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "broomcorn",
+   "level": 1,
+   "variant": 1
+  }
+ },
+ {
+  "id": "field_broomcorn_1_c",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "broomcorn",
+   "level": 1,
+   "variant": 2
+  }
+ },
+ {
+  "id": "field_broomcorn_2_a",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "broomcorn",
+   "level": 2,
+   "variant": 0
+  }
+ },
+ {
+  "id": "field_broomcorn_2_b",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "broomcorn",
+   "level": 2,
+   "variant": 1
+  }
+ },
+ {
+  "id": "field_broomcorn_2_c",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "broomcorn",
+   "level": 2,
+   "variant": 2
+  }
+ },
+ {
+  "id": "field_broomcorn_3_a",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "broomcorn",
+   "level": 3,
+   "variant": 0
+  }
+ },
+ {
+  "id": "field_broomcorn_3_b",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "broomcorn",
+   "level": 3,
+   "variant": 1
+  }
+ },
+ {
+  "id": "field_broomcorn_3_c",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "broomcorn",
+   "level": 3,
+   "variant": 2
+  }
+ },
+ {
+  "id": "field_wheat_1_a",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "wheat",
+   "level": 1,
+   "variant": 0
+  }
+ },
+ {
+  "id": "field_wheat_1_b",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "wheat",
+   "level": 1,
+   "variant": 1
+  }
+ },
+ {
+  "id": "field_wheat_1_c",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "wheat",
+   "level": 1,
+   "variant": 2
+  }
+ },
+ {
+  "id": "field_wheat_2_a",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "wheat",
+   "level": 2,
+   "variant": 0
+  }
+ },
+ {
+  "id": "field_wheat_2_b",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "wheat",
+   "level": 2,
+   "variant": 1
+  }
+ },
+ {
+  "id": "field_wheat_2_c",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "wheat",
+   "level": 2,
+   "variant": 2
+  }
+ },
+ {
+  "id": "field_wheat_3_a",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "wheat",
+   "level": 3,
+   "variant": 0
+  }
+ },
+ {
+  "id": "field_wheat_3_b",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "wheat",
+   "level": 3,
+   "variant": 1
+  }
+ },
+ {
+  "id": "field_wheat_3_c",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "wheat",
+   "level": 3,
+   "variant": 2
+  }
+ },
+ {
+  "id": "field_bean_1_a",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "bean",
+   "level": 1,
+   "variant": 0
+  }
+ },
+ {
+  "id": "field_bean_1_b",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "bean",
+   "level": 1,
+   "variant": 1
+  }
+ },
+ {
+  "id": "field_bean_1_c",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "bean",
+   "level": 1,
+   "variant": 2
+  }
+ },
+ {
+  "id": "field_bean_2_a",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "bean",
+   "level": 2,
+   "variant": 0
+  }
+ },
+ {
+  "id": "field_bean_2_b",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "bean",
+   "level": 2,
+   "variant": 1
+  }
+ },
+ {
+  "id": "field_bean_2_c",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "bean",
+   "level": 2,
+   "variant": 2
+  }
+ },
+ {
+  "id": "field_bean_3_a",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "bean",
+   "level": 3,
+   "variant": 0
+  }
+ },
+ {
+  "id": "field_bean_3_b",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "bean",
+   "level": 3,
+   "variant": 1
+  }
+ },
+ {
+  "id": "field_bean_3_c",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "bean",
+   "level": 3,
+   "variant": 2
+  }
+ },
+ {
+  "id": "field_rice_1_a",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "rice",
+   "level": 1,
+   "variant": 0
+  }
+ },
+ {
+  "id": "field_rice_1_b",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "rice",
+   "level": 1,
+   "variant": 1
+  }
+ },
+ {
+  "id": "field_rice_1_c",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "rice",
+   "level": 1,
+   "variant": 2
+  }
+ },
+ {
+  "id": "field_rice_2_a",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "rice",
+   "level": 2,
+   "variant": 0
+  }
+ },
+ {
+  "id": "field_rice_2_b",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "rice",
+   "level": 2,
+   "variant": 1
+  }
+ },
+ {
+  "id": "field_rice_2_c",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "rice",
+   "level": 2,
+   "variant": 2
+  }
+ },
+ {
+  "id": "field_rice_3_a",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "rice",
+   "level": 3,
+   "variant": 0
+  }
+ },
+ {
+  "id": "field_rice_3_b",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "rice",
+   "level": 3,
+   "variant": 1
+  }
+ },
+ {
+  "id": "field_rice_3_c",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "rice",
+   "level": 3,
+   "variant": 2
+  }
+ },
+ {
+  "id": "field_mulberry_1_a",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "mulberry",
+   "level": 1,
+   "variant": 0
+  }
+ },
+ {
+  "id": "field_mulberry_1_b",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "mulberry",
+   "level": 1,
+   "variant": 1
+  }
+ },
+ {
+  "id": "field_mulberry_1_c",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "mulberry",
+   "level": 1,
+   "variant": 2
+  }
+ },
+ {
+  "id": "field_mulberry_2_a",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "mulberry",
+   "level": 2,
+   "variant": 0
+  }
+ },
+ {
+  "id": "field_mulberry_2_b",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "mulberry",
+   "level": 2,
+   "variant": 1
+  }
+ },
+ {
+  "id": "field_mulberry_2_c",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "mulberry",
+   "level": 2,
+   "variant": 2
+  }
+ },
+ {
+  "id": "field_mulberry_3_a",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "mulberry",
+   "level": 3,
+   "variant": 0
+  }
+ },
+ {
+  "id": "field_mulberry_3_b",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "mulberry",
+   "level": 3,
+   "variant": 1
+  }
+ },
+ {
+  "id": "field_mulberry_3_c",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "mulberry",
+   "level": 3,
+   "variant": 2
+  }
+ },
+ {
+  "id": "field_hemp_1_a",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "hemp",
+   "level": 1,
+   "variant": 0
+  }
+ },
+ {
+  "id": "field_hemp_1_b",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "hemp",
+   "level": 1,
+   "variant": 1
+  }
+ },
+ {
+  "id": "field_hemp_1_c",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "hemp",
+   "level": 1,
+   "variant": 2
+  }
+ },
+ {
+  "id": "field_hemp_2_a",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "hemp",
+   "level": 2,
+   "variant": 0
+  }
+ },
+ {
+  "id": "field_hemp_2_b",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "hemp",
+   "level": 2,
+   "variant": 1
+  }
+ },
+ {
+  "id": "field_hemp_2_c",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "hemp",
+   "level": 2,
+   "variant": 2
+  }
+ },
+ {
+  "id": "field_hemp_3_a",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "hemp",
+   "level": 3,
+   "variant": 0
+  }
+ },
+ {
+  "id": "field_hemp_3_b",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "hemp",
+   "level": 3,
+   "variant": 1
+  }
+ },
+ {
+  "id": "field_hemp_3_c",
+  "kind": "procedural",
+  "generator": "field",
+  "params": {
+   "crop": "hemp",
+   "level": 3,
+   "variant": 2
+  }
+ },
+ {
+  "id": "tree_pine_0",
+  "kind": "procedural",
+  "generator": "tree",
+  "params": {
+   "species": "pine",
+   "variant": 0
+  },
+  "note": "松"
+ },
+ {
+  "id": "tree_pine_1",
+  "kind": "procedural",
+  "generator": "tree",
+  "params": {
+   "species": "pine",
+   "variant": 1
+  },
+  "note": "松"
+ },
+ {
+  "id": "tree_cypress_0",
+  "kind": "procedural",
+  "generator": "tree",
+  "params": {
+   "species": "cypress",
+   "variant": 0
+  },
+  "note": "柏"
+ },
+ {
+  "id": "tree_cypress_1",
+  "kind": "procedural",
+  "generator": "tree",
+  "params": {
+   "species": "cypress",
+   "variant": 1
+  },
+  "note": "柏"
+ },
+ {
+  "id": "tree_sophora_0",
+  "kind": "procedural",
+  "generator": "tree",
+  "params": {
+   "species": "sophora",
+   "variant": 0
+  },
+  "note": "槐"
+ },
+ {
+  "id": "tree_sophora_1",
+  "kind": "procedural",
+  "generator": "tree",
+  "params": {
+   "species": "sophora",
+   "variant": 1
+  },
+  "note": "槐"
+ },
+ {
+  "id": "tree_elm_0",
+  "kind": "procedural",
+  "generator": "tree",
+  "params": {
+   "species": "elm",
+   "variant": 0
+  },
+  "note": "楡"
+ },
+ {
+  "id": "tree_elm_1",
+  "kind": "procedural",
+  "generator": "tree",
+  "params": {
+   "species": "elm",
+   "variant": 1
+  },
+  "note": "楡"
+ },
+ {
+  "id": "tree_willow_0",
+  "kind": "procedural",
+  "generator": "tree",
+  "params": {
+   "species": "willow",
+   "variant": 0
+  },
+  "note": "柳（水辺）"
+ },
+ {
+  "id": "tree_willow_1",
+  "kind": "procedural",
+  "generator": "tree",
+  "params": {
+   "species": "willow",
+   "variant": 1
+  },
+  "note": "柳（水辺）"
+ },
+ {
+  "id": "scaffold",
+  "kind": "procedural",
+  "generator": "scaffold",
+  "params": {}
+ },
+ {
+  "id": "stall_1_a",
+  "kind": "procedural",
+  "generator": "marketStall",
+  "params": {
+   "level": 1,
+   "variant": 0
+  }
+ },
+ {
+  "id": "stall_1_b",
+  "kind": "procedural",
+  "generator": "marketStall",
+  "params": {
+   "level": 1,
+   "variant": 1
+  }
+ },
+ {
+  "id": "stall_1_c",
+  "kind": "procedural",
+  "generator": "marketStall",
+  "params": {
+   "level": 1,
+   "variant": 2
+  }
+ },
+ {
+  "id": "stall_2_a",
+  "kind": "procedural",
+  "generator": "marketStall",
+  "params": {
+   "level": 2,
+   "variant": 0
+  }
+ },
+ {
+  "id": "stall_2_b",
+  "kind": "procedural",
+  "generator": "marketStall",
+  "params": {
+   "level": 2,
+   "variant": 1
+  }
+ },
+ {
+  "id": "stall_2_c",
+  "kind": "procedural",
+  "generator": "marketStall",
+  "params": {
+   "level": 2,
+   "variant": 2
+  }
+ },
+ {
+  "id": "stall_3_a",
+  "kind": "procedural",
+  "generator": "marketStall",
+  "params": {
+   "level": 3,
+   "variant": 0
+  }
+ },
+ {
+  "id": "stall_3_b",
+  "kind": "procedural",
+  "generator": "marketStall",
+  "params": {
+   "level": 3,
+   "variant": 1
+  }
+ },
+ {
+  "id": "stall_3_c",
+  "kind": "procedural",
+  "generator": "marketStall",
+  "params": {
+   "level": 3,
+   "variant": 2
+  }
+ },
+ {
+  "id": "ws_iron_1_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_iron",
+   "level": 1,
+   "variant": 0
+  }
+ },
+ {
+  "id": "ws_iron_1_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_iron",
+   "level": 1,
+   "variant": 1
+  }
+ },
+ {
+  "id": "ws_iron_1_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_iron",
+   "level": 1,
+   "variant": 2
+  }
+ },
+ {
+  "id": "ws_iron_2_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_iron",
+   "level": 2,
+   "variant": 0
+  }
+ },
+ {
+  "id": "ws_iron_2_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_iron",
+   "level": 2,
+   "variant": 1
+  }
+ },
+ {
+  "id": "ws_iron_2_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_iron",
+   "level": 2,
+   "variant": 2
+  }
+ },
+ {
+  "id": "ws_iron_3_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_iron",
+   "level": 3,
+   "variant": 0
+  }
+ },
+ {
+  "id": "ws_iron_3_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_iron",
+   "level": 3,
+   "variant": 1
+  }
+ },
+ {
+  "id": "ws_iron_3_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_iron",
+   "level": 3,
+   "variant": 2
+  }
+ },
+ {
+  "id": "ws_bronze_1_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_bronze",
+   "level": 1,
+   "variant": 0
+  }
+ },
+ {
+  "id": "ws_bronze_1_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_bronze",
+   "level": 1,
+   "variant": 1
+  }
+ },
+ {
+  "id": "ws_bronze_1_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_bronze",
+   "level": 1,
+   "variant": 2
+  }
+ },
+ {
+  "id": "ws_bronze_2_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_bronze",
+   "level": 2,
+   "variant": 0
+  }
+ },
+ {
+  "id": "ws_bronze_2_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_bronze",
+   "level": 2,
+   "variant": 1
+  }
+ },
+ {
+  "id": "ws_bronze_2_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_bronze",
+   "level": 2,
+   "variant": 2
+  }
+ },
+ {
+  "id": "ws_bronze_3_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_bronze",
+   "level": 3,
+   "variant": 0
+  }
+ },
+ {
+  "id": "ws_bronze_3_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_bronze",
+   "level": 3,
+   "variant": 1
+  }
+ },
+ {
+  "id": "ws_bronze_3_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_bronze",
+   "level": 3,
+   "variant": 2
+  }
+ },
+ {
+  "id": "ws_pottery_1_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_pottery",
+   "level": 1,
+   "variant": 0
+  }
+ },
+ {
+  "id": "ws_pottery_1_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_pottery",
+   "level": 1,
+   "variant": 1
+  }
+ },
+ {
+  "id": "ws_pottery_1_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_pottery",
+   "level": 1,
+   "variant": 2
+  }
+ },
+ {
+  "id": "ws_pottery_2_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_pottery",
+   "level": 2,
+   "variant": 0
+  }
+ },
+ {
+  "id": "ws_pottery_2_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_pottery",
+   "level": 2,
+   "variant": 1
+  }
+ },
+ {
+  "id": "ws_pottery_2_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_pottery",
+   "level": 2,
+   "variant": 2
+  }
+ },
+ {
+  "id": "ws_pottery_3_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_pottery",
+   "level": 3,
+   "variant": 0
+  }
+ },
+ {
+  "id": "ws_pottery_3_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_pottery",
+   "level": 3,
+   "variant": 1
+  }
+ },
+ {
+  "id": "ws_pottery_3_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_pottery",
+   "level": 3,
+   "variant": 2
+  }
+ },
+ {
+  "id": "ws_salt_1_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_salt",
+   "level": 1,
+   "variant": 0
+  }
+ },
+ {
+  "id": "ws_salt_1_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_salt",
+   "level": 1,
+   "variant": 1
+  }
+ },
+ {
+  "id": "ws_salt_1_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_salt",
+   "level": 1,
+   "variant": 2
+  }
+ },
+ {
+  "id": "ws_salt_2_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_salt",
+   "level": 2,
+   "variant": 0
+  }
+ },
+ {
+  "id": "ws_salt_2_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_salt",
+   "level": 2,
+   "variant": 1
+  }
+ },
+ {
+  "id": "ws_salt_2_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_salt",
+   "level": 2,
+   "variant": 2
+  }
+ },
+ {
+  "id": "ws_salt_3_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_salt",
+   "level": 3,
+   "variant": 0
+  }
+ },
+ {
+  "id": "ws_salt_3_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_salt",
+   "level": 3,
+   "variant": 1
+  }
+ },
+ {
+  "id": "ws_salt_3_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_salt",
+   "level": 3,
+   "variant": 2
+  }
+ },
+ {
+  "id": "ws_textile_1_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_textile",
+   "level": 1,
+   "variant": 0
+  }
+ },
+ {
+  "id": "ws_textile_1_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_textile",
+   "level": 1,
+   "variant": 1
+  }
+ },
+ {
+  "id": "ws_textile_1_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_textile",
+   "level": 1,
+   "variant": 2
+  }
+ },
+ {
+  "id": "ws_textile_2_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_textile",
+   "level": 2,
+   "variant": 0
+  }
+ },
+ {
+  "id": "ws_textile_2_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_textile",
+   "level": 2,
+   "variant": 1
+  }
+ },
+ {
+  "id": "ws_textile_2_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_textile",
+   "level": 2,
+   "variant": 2
+  }
+ },
+ {
+  "id": "ws_textile_3_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_textile",
+   "level": 3,
+   "variant": 0
+  }
+ },
+ {
+  "id": "ws_textile_3_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_textile",
+   "level": 3,
+   "variant": 1
+  }
+ },
+ {
+  "id": "ws_textile_3_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_textile",
+   "level": 3,
+   "variant": 2
+  }
+ },
+ {
+  "id": "ws_lacquer_1_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_lacquer",
+   "level": 1,
+   "variant": 0
+  }
+ },
+ {
+  "id": "ws_lacquer_1_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_lacquer",
+   "level": 1,
+   "variant": 1
+  }
+ },
+ {
+  "id": "ws_lacquer_1_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_lacquer",
+   "level": 1,
+   "variant": 2
+  }
+ },
+ {
+  "id": "ws_lacquer_2_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_lacquer",
+   "level": 2,
+   "variant": 0
+  }
+ },
+ {
+  "id": "ws_lacquer_2_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_lacquer",
+   "level": 2,
+   "variant": 1
+  }
+ },
+ {
+  "id": "ws_lacquer_2_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_lacquer",
+   "level": 2,
+   "variant": 2
+  }
+ },
+ {
+  "id": "ws_lacquer_3_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_lacquer",
+   "level": 3,
+   "variant": 0
+  }
+ },
+ {
+  "id": "ws_lacquer_3_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_lacquer",
+   "level": 3,
+   "variant": 1
+  }
+ },
+ {
+  "id": "ws_lacquer_3_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_lacquer",
+   "level": 3,
+   "variant": 2
+  }
+ },
+ {
+  "id": "ws_vehicle_1_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_vehicle",
+   "level": 1,
+   "variant": 0
+  }
+ },
+ {
+  "id": "ws_vehicle_1_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_vehicle",
+   "level": 1,
+   "variant": 1
+  }
+ },
+ {
+  "id": "ws_vehicle_1_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_vehicle",
+   "level": 1,
+   "variant": 2
+  }
+ },
+ {
+  "id": "ws_vehicle_2_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_vehicle",
+   "level": 2,
+   "variant": 0
+  }
+ },
+ {
+  "id": "ws_vehicle_2_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_vehicle",
+   "level": 2,
+   "variant": 1
+  }
+ },
+ {
+  "id": "ws_vehicle_2_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_vehicle",
+   "level": 2,
+   "variant": 2
+  }
+ },
+ {
+  "id": "ws_vehicle_3_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_vehicle",
+   "level": 3,
+   "variant": 0
+  }
+ },
+ {
+  "id": "ws_vehicle_3_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_vehicle",
+   "level": 3,
+   "variant": 1
+  }
+ },
+ {
+  "id": "ws_vehicle_3_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_vehicle",
+   "level": 3,
+   "variant": 2
+  }
+ },
+ {
+  "id": "ws_weapon_1_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_weapon",
+   "level": 1,
+   "variant": 0
+  }
+ },
+ {
+  "id": "ws_weapon_1_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_weapon",
+   "level": 1,
+   "variant": 1
+  }
+ },
+ {
+  "id": "ws_weapon_1_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_weapon",
+   "level": 1,
+   "variant": 2
+  }
+ },
+ {
+  "id": "ws_weapon_2_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_weapon",
+   "level": 2,
+   "variant": 0
+  }
+ },
+ {
+  "id": "ws_weapon_2_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_weapon",
+   "level": 2,
+   "variant": 1
+  }
+ },
+ {
+  "id": "ws_weapon_2_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_weapon",
+   "level": 2,
+   "variant": 2
+  }
+ },
+ {
+  "id": "ws_weapon_3_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_weapon",
+   "level": 3,
+   "variant": 0
+  }
+ },
+ {
+  "id": "ws_weapon_3_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_weapon",
+   "level": 3,
+   "variant": 1
+  }
+ },
+ {
+  "id": "ws_weapon_3_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "ws_weapon",
+   "level": 3,
+   "variant": 2
+  }
+ },
+ {
+  "id": "barracks_1_a",
+  "kind": "procedural",
+  "generator": "militaryBuilding",
+  "params": {
+   "kind": "barracks",
+   "level": 1,
+   "variant": 0
+  }
+ },
+ {
+  "id": "barracks_1_b",
+  "kind": "procedural",
+  "generator": "militaryBuilding",
+  "params": {
+   "kind": "barracks",
+   "level": 1,
+   "variant": 1
+  }
+ },
+ {
+  "id": "barracks_1_c",
+  "kind": "procedural",
+  "generator": "militaryBuilding",
+  "params": {
+   "kind": "barracks",
+   "level": 1,
+   "variant": 2
+  }
+ },
+ {
+  "id": "barracks_2_a",
+  "kind": "procedural",
+  "generator": "militaryBuilding",
+  "params": {
+   "kind": "barracks",
+   "level": 2,
+   "variant": 0
+  }
+ },
+ {
+  "id": "barracks_2_b",
+  "kind": "procedural",
+  "generator": "militaryBuilding",
+  "params": {
+   "kind": "barracks",
+   "level": 2,
+   "variant": 1
+  }
+ },
+ {
+  "id": "barracks_2_c",
+  "kind": "procedural",
+  "generator": "militaryBuilding",
+  "params": {
+   "kind": "barracks",
+   "level": 2,
+   "variant": 2
+  }
+ },
+ {
+  "id": "barracks_3_a",
+  "kind": "procedural",
+  "generator": "militaryBuilding",
+  "params": {
+   "kind": "barracks",
+   "level": 3,
+   "variant": 0
+  }
+ },
+ {
+  "id": "barracks_3_b",
+  "kind": "procedural",
+  "generator": "militaryBuilding",
+  "params": {
+   "kind": "barracks",
+   "level": 3,
+   "variant": 1
+  }
+ },
+ {
+  "id": "barracks_3_c",
+  "kind": "procedural",
+  "generator": "militaryBuilding",
+  "params": {
+   "kind": "barracks",
+   "level": 3,
+   "variant": 2
+  }
+ },
+ {
+  "id": "stable_1_a",
+  "kind": "procedural",
+  "generator": "militaryBuilding",
+  "params": {
+   "kind": "stable",
+   "level": 1,
+   "variant": 0
+  }
+ },
+ {
+  "id": "stable_1_b",
+  "kind": "procedural",
+  "generator": "militaryBuilding",
+  "params": {
+   "kind": "stable",
+   "level": 1,
+   "variant": 1
+  }
+ },
+ {
+  "id": "stable_1_c",
+  "kind": "procedural",
+  "generator": "militaryBuilding",
+  "params": {
+   "kind": "stable",
+   "level": 1,
+   "variant": 2
+  }
+ },
+ {
+  "id": "stable_2_a",
+  "kind": "procedural",
+  "generator": "militaryBuilding",
+  "params": {
+   "kind": "stable",
+   "level": 2,
+   "variant": 0
+  }
+ },
+ {
+  "id": "stable_2_b",
+  "kind": "procedural",
+  "generator": "militaryBuilding",
+  "params": {
+   "kind": "stable",
+   "level": 2,
+   "variant": 1
+  }
+ },
+ {
+  "id": "stable_2_c",
+  "kind": "procedural",
+  "generator": "militaryBuilding",
+  "params": {
+   "kind": "stable",
+   "level": 2,
+   "variant": 2
+  }
+ },
+ {
+  "id": "stable_3_a",
+  "kind": "procedural",
+  "generator": "militaryBuilding",
+  "params": {
+   "kind": "stable",
+   "level": 3,
+   "variant": 0
+  }
+ },
+ {
+  "id": "stable_3_b",
+  "kind": "procedural",
+  "generator": "militaryBuilding",
+  "params": {
+   "kind": "stable",
+   "level": 3,
+   "variant": 1
+  }
+ },
+ {
+  "id": "stable_3_c",
+  "kind": "procedural",
+  "generator": "militaryBuilding",
+  "params": {
+   "kind": "stable",
+   "level": 3,
+   "variant": 2
+  }
+ },
+ {
+  "id": "yamen_a",
+  "kind": "procedural",
+  "generator": "structure",
+  "params": {
+   "kind": "yamen"
+  }
+ },
+ {
+  "id": "well_a",
+  "kind": "procedural",
+  "generator": "structure",
+  "params": {
+   "kind": "well"
+  }
+ },
+ {
+  "id": "canal_a",
+  "kind": "procedural",
+  "generator": "structure",
+  "params": {
+   "kind": "canal"
+  }
+ },
+ {
+  "id": "levee_a",
+  "kind": "procedural",
+  "generator": "structure",
+  "params": {
+   "kind": "levee"
+  }
+ },
+ {
+  "id": "bridge_a",
+  "kind": "procedural",
+  "generator": "structure",
+  "params": {
+   "kind": "bridge"
+  }
+ },
+ {
+  "id": "granary_a",
+  "kind": "procedural",
+  "generator": "structure",
+  "params": {
+   "kind": "granary"
+  }
+ },
+ {
+  "id": "market_hall_a",
+  "kind": "procedural",
+  "generator": "structure",
+  "params": {
+   "kind": "market_hall"
+  }
+ },
+ {
+  "id": "wall_a",
+  "kind": "procedural",
+  "generator": "structure",
+  "params": {
+   "kind": "wall"
+  }
+ },
+ {
+  "id": "gate_a",
+  "kind": "procedural",
+  "generator": "structure",
+  "params": {
+   "kind": "gate"
+  }
+ },
+ {
+  "id": "watchtower_a",
+  "kind": "procedural",
+  "generator": "structure",
+  "params": {
+   "kind": "watchtower"
+  }
+ },
+ {
+  "id": "armory_a",
+  "kind": "procedural",
+  "generator": "structure",
+  "params": {
+   "kind": "armory"
+  }
+ },
+ {
+  "id": "drill_ground_a",
+  "kind": "procedural",
+  "generator": "structure",
+  "params": {
+   "kind": "drill_ground"
+  }
+ },
+ {
+  "id": "ancestral_temple_a",
+  "kind": "procedural",
+  "generator": "structure",
+  "params": {
+   "kind": "ancestral_temple"
+  }
+ },
+ {
+  "id": "altar_a",
+  "kind": "procedural",
+  "generator": "structure",
+  "params": {
+   "kind": "altar"
+  }
+ },
+ {
+  "id": "academy_a",
+  "kind": "procedural",
+  "generator": "structure",
+  "params": {
+   "kind": "academy"
+  }
+ },
+ {
+  "id": "palace_a",
+  "kind": "procedural",
+  "generator": "structure",
+  "params": {
+   "kind": "palace"
+  }
+ },
+ {
+  "id": "customs_a",
+  "kind": "procedural",
+  "generator": "structure",
+  "params": {
+   "kind": "customs"
+  }
+ },
+ {
+  "id": "beacon_a",
+  "kind": "procedural",
+  "generator": "structure",
+  "params": {
+   "kind": "beacon"
+  }
+ },
+ {
+  "id": "post_station_a",
+  "kind": "procedural",
+  "generator": "structure",
+  "params": {
+   "kind": "post_station"
+  }
+ },
+ {
+  "id": "prison_a",
+  "kind": "procedural",
+  "generator": "structure",
+  "params": {
+   "kind": "prison"
+  }
+ },
+ {
+  "id": "dock_a",
+  "kind": "procedural",
+  "generator": "structure",
+  "params": {
+   "kind": "dock"
+  }
+ },
+ {
+  "id": "person_farmer",
+  "kind": "procedural",
+  "generator": "agent",
+  "params": {
+   "kind": "person_farmer"
+  }
+ },
+ {
+  "id": "person_artisan",
+  "kind": "procedural",
+  "generator": "agent",
+  "params": {
+   "kind": "person_artisan"
+  }
+ },
+ {
+  "id": "person_merchant",
+  "kind": "procedural",
+  "generator": "agent",
+  "params": {
+   "kind": "person_merchant"
+  }
+ },
+ {
+  "id": "person_shi",
+  "kind": "procedural",
+  "generator": "agent",
+  "params": {
+   "kind": "person_shi"
+  }
+ },
+ {
+  "id": "person_noble",
+  "kind": "procedural",
+  "generator": "agent",
+  "params": {
+   "kind": "person_noble"
+  }
+ },
+ {
+  "id": "person_soldier",
+  "kind": "procedural",
+  "generator": "agent",
+  "params": {
+   "kind": "person_soldier"
+  }
+ },
+ {
+  "id": "oxcart",
+  "kind": "procedural",
+  "generator": "agent",
+  "params": {
+   "kind": "oxcart"
+  }
+ },
+ {
+  "id": "handcart",
+  "kind": "procedural",
+  "generator": "agent",
+  "params": {
+   "kind": "handcart"
+  }
+ },
+ {
+  "id": "carriage",
+  "kind": "procedural",
+  "generator": "agent",
+  "params": {
+   "kind": "carriage"
+  }
+ },
+ {
+  "id": "boat",
+  "kind": "procedural",
+  "generator": "agent",
+  "params": {
+   "kind": "boat"
+  }
+ }
 ]

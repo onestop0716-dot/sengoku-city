@@ -1,57 +1,1019 @@
 [
-  { "id": "house_commoner", "name": "庶民の家", "category": "residential", "zone": "res_commoner", "size": [1, 1],
-    "levels": [
-      { "level": 1, "capacity": 5,  "cost": 20,  "buildDays": 10, "models": ["house_c1_a", "house_c1_b", "house_c1_c"] },
-      { "level": 2, "capacity": 8,  "cost": 40,  "buildDays": 15, "models": ["house_c2_a", "house_c2_b", "house_c2_c"] },
-      { "level": 3, "capacity": 12, "cost": 80,  "buildDays": 20, "models": ["house_c3_a", "house_c3_b", "house_c3_c"] }
-    ],
-    "residents": ["farmer", "artisan", "merchant"],
-    "note": "版築の壁に茅葺き。レベル3で瓦葺き" },
-  { "id": "house_shi", "name": "士の邸", "category": "residential", "zone": "res_shi", "size": [2, 2],
-    "levels": [
-      { "level": 1, "capacity": 6,  "cost": 120, "buildDays": 20, "models": ["house_s1_a", "house_s1_b", "house_s1_c"] },
-      { "level": 2, "capacity": 9,  "cost": 240, "buildDays": 25, "models": ["house_s2_a", "house_s2_b", "house_s2_c"] },
-      { "level": 3, "capacity": 12, "cost": 400, "buildDays": 30, "models": ["house_s3_a", "house_s3_b", "house_s3_c"] }
-    ],
-    "residents": ["shi", "merchant"],
-    "note": "門と堂を持つ院落。瓦葺き" },
-  { "id": "house_noble", "name": "卿大夫の邸", "category": "residential", "zone": "res_noble", "size": [3, 3],
-    "levels": [
-      { "level": 1, "capacity": 8,  "cost": 500,  "buildDays": 40, "models": ["house_n1_a", "house_n1_b", "house_n1_c"] },
-      { "level": 2, "capacity": 12, "cost": 900,  "buildDays": 50, "models": ["house_n2_a", "house_n2_b", "house_n2_c"] },
-      { "level": 3, "capacity": 16, "cost": 1500, "buildDays": 60, "models": ["house_n3_a", "house_n3_b", "house_n3_c"] }
-    ],
-    "residents": ["noble"],
-    "note": "版築の高台（台榭）に堂を載せる戦国式" },
-  { "id": "farmhouse", "name": "農家", "category": "farm_house", "zone": null, "size": [1, 1], "needsRoadAdjacent": true,
-    "levels": [ { "level": 1, "capacity": 4, "cost": 15, "buildDays": 8, "models": ["farmhouse_a", "farmhouse_b", "farmhouse_c"] } ],
-    "residents": ["farmer"], "note": "茅葺きと藁積み" },
-  { "id": "field_millet",    "name": "粟の畑", "category": "field", "crop": "millet", "zone": "farm_millet", "size": [1, 1],
-    "levels": [ { "level": 1, "cost": 5, "buildDays": 3, "models": ["field_millet_1_a", "field_millet_1_b", "field_millet_1_c"] },
-                { "level": 2, "cost": 5, "buildDays": 3, "models": ["field_millet_2_a", "field_millet_2_b", "field_millet_2_c"] },
-                { "level": 3, "cost": 5, "buildDays": 3, "models": ["field_millet_3_a", "field_millet_3_b", "field_millet_3_c"] } ] },
-  { "id": "field_broomcorn", "name": "黍の畑", "category": "field", "crop": "broomcorn", "zone": "farm_broomcorn", "size": [1, 1],
-    "levels": [ { "level": 1, "cost": 5, "buildDays": 3, "models": ["field_broomcorn_1_a", "field_broomcorn_1_b", "field_broomcorn_1_c"] },
-                { "level": 2, "cost": 5, "buildDays": 3, "models": ["field_broomcorn_2_a", "field_broomcorn_2_b", "field_broomcorn_2_c"] },
-                { "level": 3, "cost": 5, "buildDays": 3, "models": ["field_broomcorn_3_a", "field_broomcorn_3_b", "field_broomcorn_3_c"] } ] },
-  { "id": "field_wheat",     "name": "麦の畑", "category": "field", "crop": "wheat", "zone": "farm_wheat", "size": [1, 1],
-    "levels": [ { "level": 1, "cost": 5, "buildDays": 3, "models": ["field_wheat_1_a", "field_wheat_1_b", "field_wheat_1_c"] },
-                { "level": 2, "cost": 5, "buildDays": 3, "models": ["field_wheat_2_a", "field_wheat_2_b", "field_wheat_2_c"] },
-                { "level": 3, "cost": 5, "buildDays": 3, "models": ["field_wheat_3_a", "field_wheat_3_b", "field_wheat_3_c"] } ] },
-  { "id": "field_bean",      "name": "菽の畑", "category": "field", "crop": "bean", "zone": "farm_bean", "size": [1, 1],
-    "levels": [ { "level": 1, "cost": 5, "buildDays": 3, "models": ["field_bean_1_a", "field_bean_1_b", "field_bean_1_c"] },
-                { "level": 2, "cost": 5, "buildDays": 3, "models": ["field_bean_2_a", "field_bean_2_b", "field_bean_2_c"] },
-                { "level": 3, "cost": 5, "buildDays": 3, "models": ["field_bean_3_a", "field_bean_3_b", "field_bean_3_c"] } ] },
-  { "id": "field_rice",      "name": "水田", "category": "field", "crop": "rice", "zone": "farm_rice", "size": [1, 1],
-    "levels": [ { "level": 1, "cost": 8, "buildDays": 4, "models": ["field_rice_1_a", "field_rice_1_b", "field_rice_1_c"] },
-                { "level": 2, "cost": 8, "buildDays": 4, "models": ["field_rice_2_a", "field_rice_2_b", "field_rice_2_c"] },
-                { "level": 3, "cost": 8, "buildDays": 4, "models": ["field_rice_3_a", "field_rice_3_b", "field_rice_3_c"] } ] },
-  { "id": "field_mulberry",  "name": "桑園", "category": "field", "crop": "mulberry", "zone": "farm_mulberry", "size": [1, 1],
-    "levels": [ { "level": 1, "cost": 10, "buildDays": 6, "models": ["field_mulberry_1_a", "field_mulberry_1_b", "field_mulberry_1_c"] },
-                { "level": 2, "cost": 10, "buildDays": 6, "models": ["field_mulberry_2_a", "field_mulberry_2_b", "field_mulberry_2_c"] },
-                { "level": 3, "cost": 10, "buildDays": 6, "models": ["field_mulberry_3_a", "field_mulberry_3_b", "field_mulberry_3_c"] } ] },
-  { "id": "field_hemp",      "name": "麻の畑", "category": "field", "crop": "hemp", "zone": "farm_hemp", "size": [1, 1],
-    "levels": [ { "level": 1, "cost": 5, "buildDays": 3, "models": ["field_hemp_1_a", "field_hemp_1_b", "field_hemp_1_c"] },
-                { "level": 2, "cost": 5, "buildDays": 3, "models": ["field_hemp_2_a", "field_hemp_2_b", "field_hemp_2_c"] },
-                { "level": 3, "cost": 5, "buildDays": 3, "models": ["field_hemp_3_a", "field_hemp_3_b", "field_hemp_3_c"] } ] }
+ {
+  "id": "house_commoner",
+  "name": "庶民の家",
+  "category": "residential",
+  "zone": "res_commoner",
+  "size": [
+   1,
+   1
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "capacity": 5,
+    "cost": 20,
+    "buildDays": 10,
+    "models": [
+     "house_c1_a",
+     "house_c1_b",
+     "house_c1_c"
+    ]
+   },
+   {
+    "level": 2,
+    "capacity": 8,
+    "cost": 40,
+    "buildDays": 15,
+    "models": [
+     "house_c2_a",
+     "house_c2_b",
+     "house_c2_c"
+    ]
+   },
+   {
+    "level": 3,
+    "capacity": 12,
+    "cost": 80,
+    "buildDays": 20,
+    "models": [
+     "house_c3_a",
+     "house_c3_b",
+     "house_c3_c"
+    ]
+   }
+  ],
+  "residents": [
+   "farmer",
+   "artisan",
+   "merchant"
+  ],
+  "note": "版築の壁に茅葺き。レベル3で瓦葺き"
+ },
+ {
+  "id": "house_shi",
+  "name": "士の邸",
+  "category": "residential",
+  "zone": "res_shi",
+  "size": [
+   2,
+   2
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "capacity": 6,
+    "cost": 120,
+    "buildDays": 20,
+    "models": [
+     "house_s1_a",
+     "house_s1_b",
+     "house_s1_c"
+    ]
+   },
+   {
+    "level": 2,
+    "capacity": 9,
+    "cost": 240,
+    "buildDays": 25,
+    "models": [
+     "house_s2_a",
+     "house_s2_b",
+     "house_s2_c"
+    ]
+   },
+   {
+    "level": 3,
+    "capacity": 12,
+    "cost": 400,
+    "buildDays": 30,
+    "models": [
+     "house_s3_a",
+     "house_s3_b",
+     "house_s3_c"
+    ]
+   }
+  ],
+  "residents": [
+   "shi",
+   "merchant"
+  ],
+  "note": "門と堂を持つ院落。瓦葺き"
+ },
+ {
+  "id": "house_noble",
+  "name": "卿大夫の邸",
+  "category": "residential",
+  "zone": "res_noble",
+  "size": [
+   3,
+   3
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "capacity": 8,
+    "cost": 500,
+    "buildDays": 40,
+    "models": [
+     "house_n1_a",
+     "house_n1_b",
+     "house_n1_c"
+    ]
+   },
+   {
+    "level": 2,
+    "capacity": 12,
+    "cost": 900,
+    "buildDays": 50,
+    "models": [
+     "house_n2_a",
+     "house_n2_b",
+     "house_n2_c"
+    ]
+   },
+   {
+    "level": 3,
+    "capacity": 16,
+    "cost": 1500,
+    "buildDays": 60,
+    "models": [
+     "house_n3_a",
+     "house_n3_b",
+     "house_n3_c"
+    ]
+   }
+  ],
+  "residents": [
+   "noble"
+  ],
+  "note": "版築の高台（台榭）に堂を載せる戦国式"
+ },
+ {
+  "id": "farmhouse",
+  "name": "農家",
+  "category": "farm_house",
+  "zone": null,
+  "size": [
+   1,
+   1
+  ],
+  "needsRoadAdjacent": true,
+  "levels": [
+   {
+    "level": 1,
+    "capacity": 4,
+    "cost": 15,
+    "buildDays": 8,
+    "models": [
+     "farmhouse_a",
+     "farmhouse_b",
+     "farmhouse_c"
+    ]
+   }
+  ],
+  "residents": [
+   "farmer"
+  ],
+  "note": "茅葺きと藁積み"
+ },
+ {
+  "id": "field_millet",
+  "name": "粟の畑",
+  "category": "field",
+  "crop": "millet",
+  "zone": "farm_millet",
+  "size": [
+   1,
+   1
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "cost": 5,
+    "buildDays": 3,
+    "models": [
+     "field_millet_1_a",
+     "field_millet_1_b",
+     "field_millet_1_c"
+    ]
+   },
+   {
+    "level": 2,
+    "cost": 5,
+    "buildDays": 3,
+    "models": [
+     "field_millet_2_a",
+     "field_millet_2_b",
+     "field_millet_2_c"
+    ]
+   },
+   {
+    "level": 3,
+    "cost": 5,
+    "buildDays": 3,
+    "models": [
+     "field_millet_3_a",
+     "field_millet_3_b",
+     "field_millet_3_c"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "field_broomcorn",
+  "name": "黍の畑",
+  "category": "field",
+  "crop": "broomcorn",
+  "zone": "farm_broomcorn",
+  "size": [
+   1,
+   1
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "cost": 5,
+    "buildDays": 3,
+    "models": [
+     "field_broomcorn_1_a",
+     "field_broomcorn_1_b",
+     "field_broomcorn_1_c"
+    ]
+   },
+   {
+    "level": 2,
+    "cost": 5,
+    "buildDays": 3,
+    "models": [
+     "field_broomcorn_2_a",
+     "field_broomcorn_2_b",
+     "field_broomcorn_2_c"
+    ]
+   },
+   {
+    "level": 3,
+    "cost": 5,
+    "buildDays": 3,
+    "models": [
+     "field_broomcorn_3_a",
+     "field_broomcorn_3_b",
+     "field_broomcorn_3_c"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "field_wheat",
+  "name": "麦の畑",
+  "category": "field",
+  "crop": "wheat",
+  "zone": "farm_wheat",
+  "size": [
+   1,
+   1
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "cost": 5,
+    "buildDays": 3,
+    "models": [
+     "field_wheat_1_a",
+     "field_wheat_1_b",
+     "field_wheat_1_c"
+    ]
+   },
+   {
+    "level": 2,
+    "cost": 5,
+    "buildDays": 3,
+    "models": [
+     "field_wheat_2_a",
+     "field_wheat_2_b",
+     "field_wheat_2_c"
+    ]
+   },
+   {
+    "level": 3,
+    "cost": 5,
+    "buildDays": 3,
+    "models": [
+     "field_wheat_3_a",
+     "field_wheat_3_b",
+     "field_wheat_3_c"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "field_bean",
+  "name": "菽の畑",
+  "category": "field",
+  "crop": "bean",
+  "zone": "farm_bean",
+  "size": [
+   1,
+   1
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "cost": 5,
+    "buildDays": 3,
+    "models": [
+     "field_bean_1_a",
+     "field_bean_1_b",
+     "field_bean_1_c"
+    ]
+   },
+   {
+    "level": 2,
+    "cost": 5,
+    "buildDays": 3,
+    "models": [
+     "field_bean_2_a",
+     "field_bean_2_b",
+     "field_bean_2_c"
+    ]
+   },
+   {
+    "level": 3,
+    "cost": 5,
+    "buildDays": 3,
+    "models": [
+     "field_bean_3_a",
+     "field_bean_3_b",
+     "field_bean_3_c"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "field_rice",
+  "name": "水田",
+  "category": "field",
+  "crop": "rice",
+  "zone": "farm_rice",
+  "size": [
+   1,
+   1
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "cost": 8,
+    "buildDays": 4,
+    "models": [
+     "field_rice_1_a",
+     "field_rice_1_b",
+     "field_rice_1_c"
+    ]
+   },
+   {
+    "level": 2,
+    "cost": 8,
+    "buildDays": 4,
+    "models": [
+     "field_rice_2_a",
+     "field_rice_2_b",
+     "field_rice_2_c"
+    ]
+   },
+   {
+    "level": 3,
+    "cost": 8,
+    "buildDays": 4,
+    "models": [
+     "field_rice_3_a",
+     "field_rice_3_b",
+     "field_rice_3_c"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "field_mulberry",
+  "name": "桑園",
+  "category": "field",
+  "crop": "mulberry",
+  "zone": "farm_mulberry",
+  "size": [
+   1,
+   1
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "cost": 10,
+    "buildDays": 6,
+    "models": [
+     "field_mulberry_1_a",
+     "field_mulberry_1_b",
+     "field_mulberry_1_c"
+    ]
+   },
+   {
+    "level": 2,
+    "cost": 10,
+    "buildDays": 6,
+    "models": [
+     "field_mulberry_2_a",
+     "field_mulberry_2_b",
+     "field_mulberry_2_c"
+    ]
+   },
+   {
+    "level": 3,
+    "cost": 10,
+    "buildDays": 6,
+    "models": [
+     "field_mulberry_3_a",
+     "field_mulberry_3_b",
+     "field_mulberry_3_c"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "field_hemp",
+  "name": "麻の畑",
+  "category": "field",
+  "crop": "hemp",
+  "zone": "farm_hemp",
+  "size": [
+   1,
+   1
+  ],
+  "levels": [
+   {
+    "level": 1,
+    "cost": 5,
+    "buildDays": 3,
+    "models": [
+     "field_hemp_1_a",
+     "field_hemp_1_b",
+     "field_hemp_1_c"
+    ]
+   },
+   {
+    "level": 2,
+    "cost": 5,
+    "buildDays": 3,
+    "models": [
+     "field_hemp_2_a",
+     "field_hemp_2_b",
+     "field_hemp_2_c"
+    ]
+   },
+   {
+    "level": 3,
+    "cost": 5,
+    "buildDays": 3,
+    "models": [
+     "field_hemp_3_a",
+     "field_hemp_3_b",
+     "field_hemp_3_c"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "market_stall",
+  "name": "市の店",
+  "category": "market",
+  "zone": "market",
+  "size": [
+   1,
+   1
+  ],
+  "jobs": 3,
+  "requires": {
+   "marketAdmin": true
+  },
+  "levels": [
+   {
+    "level": 1,
+    "cost": 30,
+    "buildDays": 8,
+    "models": [
+     "stall_1_a",
+     "stall_1_b",
+     "stall_1_c"
+    ]
+   },
+   {
+    "level": 2,
+    "cost": 60,
+    "buildDays": 13,
+    "models": [
+     "stall_2_a",
+     "stall_2_b",
+     "stall_2_c"
+    ]
+   },
+   {
+    "level": 3,
+    "cost": 90,
+    "buildDays": 18,
+    "models": [
+     "stall_3_a",
+     "stall_3_b",
+     "stall_3_c"
+    ]
+   }
+  ],
+  "note": "壁で囲まれた市の中の店。市亭の範囲内"
+ },
+ {
+  "id": "ws_iron",
+  "name": "製鉄工房",
+  "category": "workshop",
+  "zone": "workshop",
+  "size": [
+   1,
+   1
+  ],
+  "jobs": 6,
+  "produces": "iron",
+  "requires": {
+   "resource": "iron",
+   "radius": 6
+  },
+  "levels": [
+   {
+    "level": 1,
+    "cost": 60,
+    "buildDays": 12,
+    "models": [
+     "ws_iron_1_a",
+     "ws_iron_1_b",
+     "ws_iron_1_c"
+    ]
+   },
+   {
+    "level": 2,
+    "cost": 120,
+    "buildDays": 17,
+    "models": [
+     "ws_iron_2_a",
+     "ws_iron_2_b",
+     "ws_iron_2_c"
+    ]
+   },
+   {
+    "level": 3,
+    "cost": 180,
+    "buildDays": 22,
+    "models": [
+     "ws_iron_3_a",
+     "ws_iron_3_b",
+     "ws_iron_3_c"
+    ]
+   }
+  ],
+  "note": "鉄器。鉄鉱の近く"
+ },
+ {
+  "id": "ws_bronze",
+  "name": "青銅器工房",
+  "category": "workshop",
+  "zone": "workshop",
+  "size": [
+   1,
+   1
+  ],
+  "jobs": 6,
+  "produces": "bronze",
+  "requires": {
+   "resource": "copper",
+   "radius": 6
+  },
+  "levels": [
+   {
+    "level": 1,
+    "cost": 60,
+    "buildDays": 12,
+    "models": [
+     "ws_bronze_1_a",
+     "ws_bronze_1_b",
+     "ws_bronze_1_c"
+    ]
+   },
+   {
+    "level": 2,
+    "cost": 120,
+    "buildDays": 17,
+    "models": [
+     "ws_bronze_2_a",
+     "ws_bronze_2_b",
+     "ws_bronze_2_c"
+    ]
+   },
+   {
+    "level": 3,
+    "cost": 180,
+    "buildDays": 22,
+    "models": [
+     "ws_bronze_3_a",
+     "ws_bronze_3_b",
+     "ws_bronze_3_c"
+    ]
+   }
+  ],
+  "note": "青銅器。銅鉱の近く"
+ },
+ {
+  "id": "ws_pottery",
+  "name": "陶器工房",
+  "category": "workshop",
+  "zone": "workshop",
+  "size": [
+   1,
+   1
+  ],
+  "jobs": 6,
+  "produces": "pottery",
+  "requires": {
+   "resource": "clay",
+   "radius": 6
+  },
+  "levels": [
+   {
+    "level": 1,
+    "cost": 60,
+    "buildDays": 12,
+    "models": [
+     "ws_pottery_1_a",
+     "ws_pottery_1_b",
+     "ws_pottery_1_c"
+    ]
+   },
+   {
+    "level": 2,
+    "cost": 120,
+    "buildDays": 17,
+    "models": [
+     "ws_pottery_2_a",
+     "ws_pottery_2_b",
+     "ws_pottery_2_c"
+    ]
+   },
+   {
+    "level": 3,
+    "cost": 180,
+    "buildDays": 22,
+    "models": [
+     "ws_pottery_3_a",
+     "ws_pottery_3_b",
+     "ws_pottery_3_c"
+    ]
+   }
+  ],
+  "note": "陶器・瓦。粘土の近く"
+ },
+ {
+  "id": "ws_salt",
+  "name": "製塩所",
+  "category": "workshop",
+  "zone": "workshop",
+  "size": [
+   1,
+   1
+  ],
+  "jobs": 6,
+  "produces": "salt",
+  "requires": {
+   "resource": "salt",
+   "radius": 6
+  },
+  "levels": [
+   {
+    "level": 1,
+    "cost": 60,
+    "buildDays": 12,
+    "models": [
+     "ws_salt_1_a",
+     "ws_salt_1_b",
+     "ws_salt_1_c"
+    ]
+   },
+   {
+    "level": 2,
+    "cost": 120,
+    "buildDays": 17,
+    "models": [
+     "ws_salt_2_a",
+     "ws_salt_2_b",
+     "ws_salt_2_c"
+    ]
+   },
+   {
+    "level": 3,
+    "cost": 180,
+    "buildDays": 22,
+    "models": [
+     "ws_salt_3_a",
+     "ws_salt_3_b",
+     "ws_salt_3_c"
+    ]
+   }
+  ],
+  "note": "塩。塩の資源の近く"
+ },
+ {
+  "id": "ws_textile",
+  "name": "織物工房",
+  "category": "workshop",
+  "zone": "workshop",
+  "size": [
+   1,
+   1
+  ],
+  "jobs": 6,
+  "produces": "silk",
+  "requires": {
+   "field": [
+    "mulberry",
+    "hemp"
+   ],
+   "radius": 8
+  },
+  "levels": [
+   {
+    "level": 1,
+    "cost": 60,
+    "buildDays": 12,
+    "models": [
+     "ws_textile_1_a",
+     "ws_textile_1_b",
+     "ws_textile_1_c"
+    ]
+   },
+   {
+    "level": 2,
+    "cost": 120,
+    "buildDays": 17,
+    "models": [
+     "ws_textile_2_a",
+     "ws_textile_2_b",
+     "ws_textile_2_c"
+    ]
+   },
+   {
+    "level": 3,
+    "cost": 180,
+    "buildDays": 22,
+    "models": [
+     "ws_textile_3_a",
+     "ws_textile_3_b",
+     "ws_textile_3_c"
+    ]
+   }
+  ],
+  "note": "絹・麻布。桑畑・麻の畑の近く"
+ },
+ {
+  "id": "ws_lacquer",
+  "name": "漆器工房",
+  "category": "workshop",
+  "zone": "workshop",
+  "size": [
+   1,
+   1
+  ],
+  "jobs": 6,
+  "produces": "lacquer",
+  "requires": {
+   "nationAny": [
+    "chu",
+    "qin"
+   ]
+  },
+  "levels": [
+   {
+    "level": 1,
+    "cost": 60,
+    "buildDays": 12,
+    "models": [
+     "ws_lacquer_1_a",
+     "ws_lacquer_1_b",
+     "ws_lacquer_1_c"
+    ]
+   },
+   {
+    "level": 2,
+    "cost": 120,
+    "buildDays": 17,
+    "models": [
+     "ws_lacquer_2_a",
+     "ws_lacquer_2_b",
+     "ws_lacquer_2_c"
+    ]
+   },
+   {
+    "level": 3,
+    "cost": 180,
+    "buildDays": 22,
+    "models": [
+     "ws_lacquer_3_a",
+     "ws_lacquer_3_b",
+     "ws_lacquer_3_c"
+    ]
+   }
+  ],
+  "note": "漆器。楚・秦の特産"
+ },
+ {
+  "id": "ws_vehicle",
+  "name": "車両工房",
+  "category": "workshop",
+  "zone": "workshop",
+  "size": [
+   1,
+   1
+  ],
+  "jobs": 6,
+  "produces": "vehicle",
+  "requires": {
+   "workshopNear": [
+    "ws_iron",
+    "ws_bronze"
+   ],
+   "radius": 8
+  },
+  "levels": [
+   {
+    "level": 1,
+    "cost": 60,
+    "buildDays": 12,
+    "models": [
+     "ws_vehicle_1_a",
+     "ws_vehicle_1_b",
+     "ws_vehicle_1_c"
+    ]
+   },
+   {
+    "level": 2,
+    "cost": 120,
+    "buildDays": 17,
+    "models": [
+     "ws_vehicle_2_a",
+     "ws_vehicle_2_b",
+     "ws_vehicle_2_c"
+    ]
+   },
+   {
+    "level": 3,
+    "cost": 180,
+    "buildDays": 22,
+    "models": [
+     "ws_vehicle_3_a",
+     "ws_vehicle_3_b",
+     "ws_vehicle_3_c"
+    ]
+   }
+  ],
+  "note": "牛車・馬車・戦車。金属工房の近く"
+ },
+ {
+  "id": "ws_weapon",
+  "name": "武器工房",
+  "category": "workshop",
+  "zone": "workshop",
+  "size": [
+   1,
+   1
+  ],
+  "jobs": 6,
+  "produces": "weapon",
+  "requires": {
+   "workshopNear": [
+    "ws_iron",
+    "ws_bronze"
+   ],
+   "radius": 8
+  },
+  "levels": [
+   {
+    "level": 1,
+    "cost": 60,
+    "buildDays": 12,
+    "models": [
+     "ws_weapon_1_a",
+     "ws_weapon_1_b",
+     "ws_weapon_1_c"
+    ]
+   },
+   {
+    "level": 2,
+    "cost": 120,
+    "buildDays": 17,
+    "models": [
+     "ws_weapon_2_a",
+     "ws_weapon_2_b",
+     "ws_weapon_2_c"
+    ]
+   },
+   {
+    "level": 3,
+    "cost": 180,
+    "buildDays": 22,
+    "models": [
+     "ws_weapon_3_a",
+     "ws_weapon_3_b",
+     "ws_weapon_3_c"
+    ]
+   }
+  ],
+  "note": "弩・戈・剣。金属工房の近く"
+ },
+ {
+  "id": "barracks",
+  "name": "兵舎",
+  "category": "military",
+  "zone": "military",
+  "size": [
+   2,
+   2
+  ],
+  "soldiers": 40,
+  "levels": [
+   {
+    "level": 1,
+    "cost": 150,
+    "buildDays": 15,
+    "models": [
+     "barracks_1_a",
+     "barracks_1_b",
+     "barracks_1_c"
+    ]
+   },
+   {
+    "level": 2,
+    "cost": 300,
+    "buildDays": 20,
+    "models": [
+     "barracks_2_a",
+     "barracks_2_b",
+     "barracks_2_c"
+    ]
+   },
+   {
+    "level": 3,
+    "cost": 450,
+    "buildDays": 25,
+    "models": [
+     "barracks_3_a",
+     "barracks_3_b",
+     "barracks_3_c"
+    ]
+   }
+  ],
+  "note": "兵の宿舎（フェーズ6）"
+ },
+ {
+  "id": "stable",
+  "name": "馬厩",
+  "category": "military",
+  "zone": "military",
+  "size": [
+   2,
+   2
+  ],
+  "horses": 20,
+  "levels": [
+   {
+    "level": 1,
+    "cost": 180,
+    "buildDays": 15,
+    "models": [
+     "stable_1_a",
+     "stable_1_b",
+     "stable_1_c"
+    ]
+   },
+   {
+    "level": 2,
+    "cost": 360,
+    "buildDays": 20,
+    "models": [
+     "stable_2_a",
+     "stable_2_b",
+     "stable_2_c"
+    ]
+   },
+   {
+    "level": 3,
+    "cost": 540,
+    "buildDays": 25,
+    "models": [
+     "stable_3_a",
+     "stable_3_b",
+     "stable_3_c"
+    ]
+   }
+  ],
+  "note": "騎兵・戦車の馬（フェーズ6）"
+ }
 ]
