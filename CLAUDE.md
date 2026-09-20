@@ -60,6 +60,7 @@ npm run vendor:three  # Three.js を vendor/ に同梱（要ネット接続）
 ```
 
 ## 8. 描画の確認について
+- `tools/touch-check.mjs` でタッチ端末（iPad 相当）とマウスの操作を自動確認できる。入力やレイアウトを変えたら実行する。
 - `tools/screenshot.mjs`（Playwright + headless Chromium）で実際の描画のスクリーンショットを撮れる。描画を変えたら必ず撮って目視で確認し、報告に改善前後の画像を添える。
 - 描画は `src/render/` に閉じる。見た目の改善でロジック（`src/sim/`）を変えてはならない。
 - 面の向き（表裏）に注意: builder の `triOut`/`quadN` は外向き・法線向きに自動で揃える。新しい形状はスクリーンショットで裏面が消えていないか確認する。

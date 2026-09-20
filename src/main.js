@@ -32,6 +32,11 @@ import { createEndingScreen } from './ui/ending.js';
 import { takePendingLoad, saveToSlot } from './app/saves.js';
 import { deserializeWorld } from './sim/save/serialize.js';
 import { restartTutorial } from './sim/advisor.js';
+import { detectDevice } from './app/device.js';
+import { createAutoQuality } from './app/auto-quality.js';
+import { createTouchBar } from './ui/touchbar.js';
+import { setupLayout } from './ui/layout.js';
+import { registerServiceWorker } from './app/sw-register.js';
 import { createDemandMeter } from './ui/demand-meter.js';
 import { createGameLoop } from './app/game-loop.js';
 import { createInput } from './app/input.js';
@@ -46,6 +51,10 @@ async function main() {
   let reg = createRegistry(raw);
   for (const w of reg.warnings) console.warn('データ警告:', w);
   const settings = loadSettings();
+  const device = detectDevice();
+  if (settings.confirmActions === null || settings.confirmActions === undefined) settings.confirmActions = device.touch;   // タッチ端末では既定で確認方式
+  setupLayout({ touch: device.touch });
+  registerServiceWorker();
   const pending = takePendingLoad();
   const start = pending ? { load: pending } : await showStartScreen(reg);
   reg = createRegistry(raw, { difficulty: start.load ? (start.load.difficulty || 'normal') : start.difficulty });   // 難易度でバランス値を上書き
@@ -65,7 +74,10 @@ async function main() {
     env.terrain.setRipple(q.ripple);
     scene.add(env.terrain.group);
   };
-  let quality = qualityFor(settings, world.map.w);
+  let quality = null;
+  const qctx = {};
+  const autoQ = createAutoQuality({ settings, device, ctx: qctx, apply: () => applyQualityChange() });
+  quality = qualityFor(settings, world.map.w, autoQ.quality());
   buildTerrain(quality);
   sc.applyQuality(quality);
   const assets = createAssetResolver(reg);
@@ -85,6 +97,7 @@ async function main() {
     onTick(flags) { if (flags.newYear) saveToSlot(world, reg, 'auto'); },
     onFrame(dt) {
       orbit.update(dt);
+      autoQ.update(dt);
       sc.followCamera(orbit.camera.position);
       env.terrain.update(dt);
       viewMode.update(dt);
@@ -92,18 +105,20 @@ async function main() {
       agentsView.update(dt, loop.speed, orbit.camera.position);
       toolbar.update();
       sc.followShadow(orbit.state.target, quality.shadowRadius);
-      hud.update(); log.update(); infoPanel.update(); demand.update(); finance.update(); population.update(); persons.update(); research.update(); nation.update(); military.update(); eventModal.update(); ending.update(); settingsPanel.update(loop.stats); advisor.update(); viewPanel.update();
+      hud.update(); log.update(); infoPanel.update(); demand.update(); finance.update(); population.update(); persons.update(); research.update(); nation.update(); military.update(); eventModal.update(); ending.update(); settingsPanel.update(loop.stats); advisor.update(); viewPanel.update(); touchBar.update();
       renderer.render(scene, orbit.camera);
     },
   });
-  const settingsPanel = createSettingsPanel(settings, () => {
-    const q = qualityFor(settings, world.map.w);
+  const applyQualityChange = () => {
+    const q = qualityFor(settings, world.map.w, autoQ.quality());
     const rebuild = q.segments !== quality.segments;
     quality = q;
     sc.applyQuality(q);
     if (rebuild) { buildTerrain(q); buildings.refreshModels(); viewMode.reapply(); } else env.terrain.setRipple(q.ripple);
     buildings.setQuality(q); agentsView.setQuality(q);
-  }, { advisorFrequencies: reg.advice.frequency });
+  };
+  const settingsPanel = createSettingsPanel(settings, applyQualityChange, { advisorFrequencies: reg.advice.frequency });
+  qctx.loop = loop; qctx.log = log;
   const finance = createFinancePanel(world, reg, tooltip);
   const population = createPopulationPanel(world, reg, tooltip);
   const demand = createDemandMeter(world, tooltip);
@@ -118,7 +133,9 @@ async function main() {
   const viewPanel = createViewModePanel(world, reg, viewMode, { button: hud.viewButton });
   viewMode.onChange((m) => hud.setViewMode(viewPanel.nameOf(m)));
   const toolbar = createToolbar(reg, world, () => { radiusOverlay.clear(); });
-  createInput({ canvas, picker, overlay, radiusOverlay, world, reg, toolbar, infoPanel, log, orbit, viewMode, viewPanel });
+  const input = createInput({ canvas, picker, overlay, radiusOverlay, world, reg, toolbar, infoPanel, log, orbit, viewMode, viewPanel, settings, onPending: (a, n) => touchBar.setPending(a, n) });
+  const touchBar = createTouchBar({ loop, orbit, toolbar, viewMode, input, show: device.touch });
+  touchBar.setPending(null, 0);
 
   window.addEventListener('resize', () => { const s = sc.resize(); orbit.setAspect(s.w / s.h); });
   window.addEventListener('keydown', (e) => { if (e.code === 'Space' && e.target.tagName !== 'INPUT') { e.preventDefault(); loop.togglePause(); } });
@@ -131,7 +148,7 @@ async function main() {
   window.addEventListener('pagehide', () => saveToSlot(world, reg, 'auto'));
   loop.start();
   assets.loadExternal(() => buildings.refreshModels());
-  window.__game = { world, reg, loop, THREE, settings, orbit, env, agentsView, advisor, viewMode, rendererInfo: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles }) }; // デバッグ用
+  window.__game = { world, reg, loop, THREE, settings, orbit, env, agentsView, advisor, viewMode, input, device, autoQ, rendererInfo: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles }) }; // デバッグ用
 }
 
 main().catch((err) => { console.error(err); showError(`起動に失敗しました: ${err.message}`); });

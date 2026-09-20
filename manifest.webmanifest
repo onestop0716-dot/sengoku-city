@@ -1,0 +1,16 @@
+{
+  "name": "戦国七雄・都市開発シミュレーション",
+  "short_name": "戦国七雄",
+  "description": "戦国時代の県令として都市を育てる3D都市開発シミュレーション",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#1a130c",
+  "theme_color": "#261e16",
+  "icons": [
+    { "src": "assets/ui/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/ui/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

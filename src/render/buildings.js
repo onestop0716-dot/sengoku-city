@@ -33,7 +33,7 @@ export function createBuildingsView(world, reg, scene, assets, env) {
     let s = sets.get(modelId);
     if (s && s.capacity >= count) return s;
     const capacity = Math.max(64, Math.ceil(count * 1.5));
-    if (s) { group.remove(s.near); group.remove(s.far); }
+    if (s) { group.remove(s.near); group.remove(s.far); s.near.dispose(); s.far.dispose(); }
     s = { capacity, near: makeMesh(assets.procedural(modelId, 'high').geometry, capacity, quality.shadows), far: makeMesh(assets.procedural(modelId, 'low').geometry, capacity, false), items: [], isTree: modelId.startsWith('tree_') };
     sets.set(modelId, s);
     return s;
@@ -153,7 +153,7 @@ export function createBuildingsView(world, reg, scene, assets, env) {
     },
     /** 地形の作り直しや glTF 差し替え後に全て作り直す */
     refreshModels() {
-      for (const s of sets.values()) { group.remove(s.near); group.remove(s.far); }
+      for (const s of sets.values()) { group.remove(s.near); group.remove(s.far); s.near.dispose(); s.far.dispose(); }
       sets.clear();
       collectBuildings(); collectTrees(); rebuildSets();
     },

@@ -14,7 +14,14 @@ export function createTooltip(reg) {
     if (text) show(text, e.clientX, e.clientY);
   });
   document.addEventListener('mouseout', (e) => { if (e.target.closest('[data-term], [data-tip]')) hide(); });
-  document.addEventListener('mousemove', (e) => { if (el.style.display === 'block') show(el.textContent, e.clientX, e.clientY); });
+  document.addEventListener('mousemove', (e) => { if (el.style.display === 'block' && !pinned) show(el.textContent, e.clientX, e.clientY); });
+  // タッチ: 用語をタップで開閉、他をタップで閉じる
+  let pinned = false;
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest('[data-term], [data-tip]');
+    if (t) { const text = t.dataset.tip || reg.termById.get(t.dataset.term)?.desc; if (!text) return; if (pinned && el.style.display === 'block') { hide(); pinned = false; } else { show(text, e.clientX, e.clientY); pinned = true; } }
+    else if (pinned) { hide(); pinned = false; }
+  });
   /** 用語をツールチップ付きで表示する HTML を返す */
   return { show, hide, termHtml: (termId, label) => { const t = reg.termById.get(termId); return t ? `<span class="term" data-term="${termId}">${label || t.term}</span>` : (label || termId); } };
 }

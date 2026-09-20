@@ -29,6 +29,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - name: Service Worker のキャッシュ版をコミットの SHA にする
+        run: sed -i "s/__BUILD__/${GITHUB_SHA::12}/" sw.js
       - uses: actions/configure-pages@v5
         with: { enablement: true }
       - uses: actions/upload-pages-artifact@v3

@@ -7,16 +7,16 @@ export const QUALITIES = {
 const KEY = 'sengoku-city.settings';
 
 export function loadSettings() {
-  let s = { quality: 'high', advisor: 'normal' };
+  let s = { quality: 'auto', advisor: 'normal', confirmActions: null };   // confirmActions: null = 端末で決める
   try { const raw = localStorage.getItem(KEY); if (raw) s = { ...s, ...JSON.parse(raw) }; } catch { /* 保存なし */ }
-  if (!QUALITIES[s.quality]) s.quality = 'high';
+  if (s.quality !== 'auto' && !QUALITIES[s.quality]) s.quality = 'auto';
   if (!['many', 'normal', 'few', 'off'].includes(s.advisor)) s.advisor = 'normal';
   return s;
 }
 export function saveSettings(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch { /* 保存できない環境 */ } }
 /** マップの大きさに応じて地形の分割数を抑える（頂点数の上限 ≈ 60万） */
-export function qualityFor(s, mapSize) {
-  const q = { ...QUALITIES[s.quality] };
+export function qualityFor(s, mapSize, base = null) {
+  const q = { ...(base || QUALITIES[s.quality] || QUALITIES.high) };
   const maxSeg = Math.max(1, Math.floor(Math.sqrt(600000) / mapSize));
   q.segments = Math.min(q.segments, maxSeg);
   const k = mapSize / 96;
