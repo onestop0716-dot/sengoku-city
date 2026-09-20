@@ -323,3 +323,7 @@ body:has(#log.collapsed) #view-legend { bottom: calc(72px + env(safe-area-inset-
 }
 @media (pointer: coarse) { #hud { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; } }
 @media (max-width: 900px) { #touchbar { left: auto; right: calc(170px + env(safe-area-inset-right)); transform: none; } #confirm-bar { max-width: calc(100vw - 32px); flex-wrap: wrap; justify-content: center; } }
+#touchbar .grip { display: flex; align-items: center; padding: 0 6px; cursor: grab; opacity: .7; font-size: 16px; letter-spacing: -2px; touch-action: none; user-select: none; -webkit-user-select: none; }
+#touchbar .grip:active { cursor: grabbing; }
+#touchbar-tab { position: absolute; right: calc(160px + env(safe-area-inset-right)); bottom: calc(124px + env(safe-area-inset-bottom)); min-width: 44px; min-height: 44px; background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; font-size: 14px; z-index: 4; }
+body:has(#log.collapsed) #touchbar-tab { bottom: calc(40px + env(safe-area-inset-bottom)); }

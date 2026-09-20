@@ -58,7 +58,9 @@ const y0 = await page.evaluate(() => window.__game.orbit.state.yaw);
 await pinch(page, [600, 400], 200, 200, 0.6);
 const y1 = await page.evaluate(() => window.__game.orbit.state.yaw);
 check('2本指のひねりで回転', Math.abs(y1 - y0) > 0.3, `yaw ${y0.toFixed(2)} → ${y1.toFixed(2)}`);
-// 道路ツール: 1本指ドラッグ → 決定バー → 決定 → 元に戻す
+// 道路ツール: 1本指ドラッグ → 決定バー → 決定 → 元に戻す（カメラを初期位置に戻してから）
+await page.evaluate(() => { const o = window.__game.orbit; o.state.target.set(64, 0, 64); o.state.distance = 45; o.state.yaw = Math.PI * 0.25; o.state.pitch = 0.85; o.update(0); });
+await page.waitForTimeout(4000);
 await page.tap('#toolbar button[data-tool="road"]');
 const roads0 = await page.evaluate(() => window.__game.world.roads.reduce((a, b) => a + b, 0));
 await touchDrag(page, [500, 420], [700, 430]);
@@ -105,6 +107,23 @@ check('もう一度タップで閉じる', await page.evaluate(() => getComputed
 await page.tap('.collapse-tab[data-for="toolbar"]');
 check('建物一覧を閉じられる', await page.evaluate(() => document.getElementById('toolbar').classList.contains('collapsed')));
 await page.tap('.collapse-tab[data-for="toolbar"]');
+// 操作パネルの移動と非表示
+{
+  const r0 = await page.evaluate(() => { const r = document.getElementById('touchbar').getBoundingClientRect(); return [r.left, r.top]; });
+  const g = await page.evaluate(() => { const r = document.querySelector('#touchbar .grip').getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; });
+  await touchDrag(page, g, [g[0] - 200, g[1] - 150]);
+  const r1 = await page.evaluate(() => { const r = document.getElementById('touchbar').getBoundingClientRect(); return [r.left, r.top]; });
+  check('操作パネルをドラッグで動かせる', Math.abs(r1[0] - r0[0] + 200) < 30 && Math.abs(r1[1] - r0[1] + 150) < 30, `${r0.map(Math.round)} → ${r1.map(Math.round)}`);
+  await page.tap('#touchbar [data-act="hide"]');
+  check('－ で操作パネルが隠れて「操作」タブが出る', await page.evaluate(() => getComputedStyle(document.getElementById('touchbar')).display === 'none' && getComputedStyle(document.getElementById('touchbar-tab')).display !== 'none'));
+  await page.tap('#touchbar-tab');
+  check('「操作」タブで戻る', await page.evaluate(() => getComputedStyle(document.getElementById('touchbar')).display === 'flex'));
+  await page.reload(); await page.waitForSelector('#start-btn'); await page.selectOption('#start-size', '128'); await page.click('#start-btn');
+  await page.waitForFunction(() => window.__game && window.__game.world.day > 1, null, { timeout: 20000 });
+  await page.evaluate(() => window.__game.loop.setSpeedIndex(0));
+  const r2 = await page.evaluate(() => { const r = document.getElementById('touchbar').getBoundingClientRect(); return [r.left, r.top]; });
+  check('位置が記憶される', Math.abs(r2[0] - r1[0]) < 5 && Math.abs(r2[1] - r1[1]) < 5, `${r2.map(Math.round)}`);
+}
 // 一時停止・速度ボタン
 await page.tap('#touchbar [data-act="pause"]');
 check('一時停止ボタンで再開', await page.evaluate(() => window.__game.loop.speedIndex > 0));
