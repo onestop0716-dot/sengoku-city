@@ -1,5 +1,5 @@
 {
-  "_comment": "案内役（県令を見守る物知りなフクロウ）の助言。条件は metric（src/sim/advisor.js の computeMetrics が返す値）で書く。all/any/not で組み合わせる。文中の {name} は指標の値に置き換わる。名前・設定・画像は character で変えられる。 view は「表示モードで確認」ボタンで開く表示モード（zones / water / security / prosperity / market / food / fertility / loyalty / environment）。",
+  "_comment": "案内役（県令を見守る物知りなフクロウ）の助言。条件は metric（src/sim/advisor.js の computeMetrics が返す値）で書く。all/any/not で組み合わせる。文中の {name} は指標の値に置き換わる。名前・設定・画像は character で変えられる。 view は「表示モードで確認」ボタンで開く表示モード（zones / water / security / prosperity / market / food / fertility / loyalty / environment）。 view には {blockerView} のように指標を埋め込める。",
   "character": {
     "name": "ホウ",
     "reading": "ほう",
@@ -220,7 +220,7 @@
       "title": "区画に家が建たないね",
       "text": "空いた区画が {zonedUnbuilt} マスあるよ。いちばん多い理由は「{blockerReason}」。こうしよう: {blockerTip}",
       "todo": "建たない区画を直す（{blockerReason}）",
-      "view": "prosperity"
+      "view": "{blockerView}"
     },
     {
       "id": "housing_full",

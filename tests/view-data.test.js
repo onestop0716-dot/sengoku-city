@@ -90,3 +90,21 @@ test('全モードが値を返し、効果種別からモードが引ける', as
   assert.equal(modeForEffects(reg.structureById.get('bridge').effects), null);
   assert.ok(worstTile(world, reg, 'zones'));
 });
+
+test('道路が届かない区画は区画モードで点線、道路モードで値が低く、集計に「道路なし」が出る', async () => {
+  const reg = await getRegistry();
+  const world = createWorld({ seed: 11, cityId: 'chen', reg, size: 128, village: false });
+  const cx = 64, cy = 64;
+  applyCommand(world, reg, { type: 'zone.set', rect: { x0: cx + 20, y0: cy + 20, x1: cx + 24, y1: cy + 22 }, zoneId: 'res_commoner' });   // 道路なし
+  applyCommand(world, reg, { type: 'zone.set', rect: { x0: cx - 4, y0: cy + 1, x1: cx + 4, y1: cy + 1 }, zoneId: 'res_commoner' });         // 中央の道路沿い
+  tick(world, reg);
+  const zm = computeZoneMap(world, reg);
+  const w = world.map.w;
+  const st = zm.stats.find((s) => s.id === 'res_commoner');
+  assert.ok(st.noRoad >= 10 && st.noRoad < st.tiles, JSON.stringify(st));
+  assert.ok(zm.flags[(cy + 21) * w + cx + 22] & FLAG.BELOW_THRESHOLD, '遠い区画は点線');
+  assert.ok(!(zm.flags[(cy + 1) * w + cx + 2] & FLAG.BELOW_THRESHOLD), '道路沿いは点線なし');
+  const d = STATE_MODES.road.compute(world, reg);
+  assert.ok(d.values[(cy + 21) * w + cx + 22] < 0.3 && d.values[(cy + 1) * w + cx + 2] > 0.6);
+  assert.ok(STATE_MODES.road.describe(world, reg, (cy + 21) * w + cx + 22).parts.some(([k, v]) => k === '判定' && v.includes('建たない')));
+});

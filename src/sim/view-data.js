@@ -4,8 +4,9 @@ import { idx, inBounds } from '../core/grid.js';
 import { computeProsperity, zoneDefAt, hasWater } from './zones.js';
 import { fieldYield } from './farming.js';
 import { structureName } from './structures.js';
+import { ensureRoadDist } from './roads.js';
 
-export const FLAG = { UNBUILT: 1, BELOW_THRESHOLD: 2, PREVIEW: 4, WATER_TILE: 8, NONE: 16 };   // NONE: 値がない（灰色で描く）
+export const FLAG = { UNBUILT: 1, BELOW_THRESHOLD: 2, PREVIEW: 4, WATER_TILE: 8, NONE: 16 };   // NONE: 値がない（灰色で描く）。BELOW_THRESHOLD は点線（基準未満・道路なし）
 
 /** 区画モードのマス種別。ZONE_BASE 以上は区画（index + ZONE_BASE） */
 export const ZONE_KIND = { NONE: 0, ROAD: 1, STRUCTURE: 2, WATER: 3, UNBUILDABLE: 4, SHORE: 5, ZONE_BASE: 10 };
@@ -24,8 +25,9 @@ export function computeZoneMap(world, reg) {
   const { w, h } = world.map;
   const n = w * h;
   const kind = new Uint8Array(n), flags = new Uint8Array(n);
-  const stats = reg.zones.map((z) => ({ id: z.id, name: z.name, color: z.color, tiles: 0, built: 0 }));
+  const stats = reg.zones.map((z) => ({ id: z.id, name: z.name, color: z.color, tiles: 0, built: 0, noRoad: 0 }));
   const shore = reg.balance.zoning?.shoreDistance ?? 1;
+  ensureRoadDist(world, reg);
   for (let i = 0; i < n; i++) {
     const t = reg.tiles[world.map.tile[i]];
     if (world.zones[i]) {
@@ -33,6 +35,8 @@ export function computeZoneMap(world, reg) {
       kind[i] = ZONE_KIND.ZONE_BASE + zi;
       stats[zi].tiles++;
       if (world.buildingAt[i] !== -1) stats[zi].built++; else flags[i] |= FLAG.UNBUILT;
+      // 道路が届かない区画（家が建たない）: 点線で示す
+      if (world.roadDist[i] > reg.zones[zi].roadDistance) { flags[i] |= FLAG.BELOW_THRESHOLD; stats[zi].noRoad++; }
     } else if (world.roads[i]) kind[i] = ZONE_KIND.ROAD;
     else if (world.structAt && world.structAt[i] !== -1) kind[i] = ZONE_KIND.STRUCTURE;
     else if (t.water) { kind[i] = ZONE_KIND.WATER; flags[i] |= FLAG.WATER_TILE; }
@@ -65,6 +69,29 @@ const fmt = (n) => (n > 0 ? '+' : '') + Math.round(n);
  * structures は強調する建築の効果種別。effects はこの効果を持つ建築を選んだとき自動でこのモードに切り替える。
  */
 export const STATE_MODES = {
+  road: {
+    name: '道路', legend: ['道路が遠い', '', '道路のそば'], effects: [],
+    compute(world, reg) {
+      const n = world.map.w * world.map.h, values = new Float32Array(n), flags = new Uint8Array(n);
+      ensureRoadDist(world, reg);
+      const maxD = reg.balance.road?.maxRoadDistance ?? 4;
+      for (let i = 0; i < n; i++) {
+        if (reg.tiles[world.map.tile[i]].water) { flags[i] |= FLAG.WATER_TILE; continue; }
+        const rd = world.roadDist[i];
+        values[i] = rd >= 0xffff ? 0 : Math.max(0, 1 - rd / (maxD + 1));
+        const zd = zoneDefAt(world, reg, i);
+        if (zd && rd > zd.roadDistance) flags[i] |= FLAG.BELOW_THRESHOLD;   // 区画はあるが道路が届かない
+      }
+      return { values, flags };
+    },
+    describe(world, reg, i) {
+      ensureRoadDist(world, reg);
+      const rd = world.roadDist[i], zd = zoneDefAt(world, reg, i);
+      if (world.roads[i]) return { value: '道路', parts: [] };
+      const far = rd >= 0xffff;
+      return { value: far ? '道路が届いていない' : `道路まで ${rd} マス`, parts: zd ? [['区画', zd.name], ['必要な近さ', `${zd.roadDistance} マス以内`], ['判定', rd > zd.roadDistance ? '道路が遠くて建たない' : '建てられる']] : [['区画', 'なし']] };
+    },
+  },
   water: {
     name: '水', legend: ['水なし', '川の近く', '井戸・水路の範囲'], effects: ['water'],
     compute(world, reg) {

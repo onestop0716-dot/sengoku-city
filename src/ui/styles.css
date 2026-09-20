@@ -207,3 +207,5 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #dfe7ee; col
 .frow select, .frow input, .ptable input, .ptable select { background: #2a2018; color: var(--fg); border: 1px solid var(--line); border-radius: 4px; padding: 3px 5px; font-size: 12px; }
 .ptable th { text-align: left; font-weight: normal; opacity: .7; font-size: 11px; padding-right: 8px; }
 #hud .rank { font-size: 11px; color: var(--accent); border: 1px solid var(--accent); border-radius: 3px; padding: 0 4px; margin-left: 4px; }
+#view-legend .sw-dots { background: repeating-conic-gradient(#3a0c0c 0 25%, #c8b070 0 50%) 0 0 / 6px 6px; }
+#view-legend .vl-bad { color: #ff8a7a; }

@@ -98,6 +98,7 @@ export function computeMetrics(world, reg, opts = {}) {
     loyalty: Math.round(world.loyalty), security: Math.round(world.security), loyaltyDrop, securityDrop,
     demandResidential: world.demand.residential, demandFarm: world.demand.farm, demandMarket: world.demand.market, demandWorkshop: world.demand.workshop,
     zonedUnbuilt: st.blockers.unbuilt, blockerReason: st.blockers.reason, blockerTip: st.blockers.tip,
+    blockerView: st.blockers.reason ? (st.blockers.reason.startsWith('道路') ? 'road' : st.blockers.reason.startsWith('繁栄度') ? 'prosperity' : st.blockers.reason.startsWith('市亭') ? 'market' : 'zones') : 'zones',
     roads, zones, farmZones, houses, fields, workshops, markets, wells: S.well, granaries: S.granary, marketHalls: S.market_hall, walls: S.wall, docks: S.dock, structuresBuilding,
     roadsAdded: roads - st.base.roads, zonesAdded: zones - st.base.zones, farmZonesAdded: farmZones - st.base.farmZones, wellsAdded: S.well - st.base.wells,
     daysSinceStep: world.day - st.stepStartDay,
@@ -184,7 +185,7 @@ export function evaluate(world, reg, opts = {}) {
 function present(entry, m, st, world, kind) {
   st.shown[entry.id] = world.day;
   st.lastAnyDay = world.day;
-  const out = { id: entry.id, kind, day: world.day, expression: entry.expression || 'normal', title: fillText(entry.title, m), text: fillText(entry.text, m), priority: entry.priority ?? 0, view: entry.view || null };
+  const out = { id: entry.id, kind, day: world.day, expression: entry.expression || 'normal', title: fillText(entry.title, m), text: fillText(entry.text, m), priority: entry.priority ?? 0, view: entry.view ? (fillText(entry.view, m) || null) : null };
   st.history.push(out);
   while (st.history.length > 40) st.history.shift();
   return out;

@@ -126,7 +126,7 @@ export function createViewMode(world, reg, scene, env, assets) {
       if (mode === 'zones') {
         const zm = cache;
         const k = zm.kind[i];
-        if (k >= ZONE_KIND.ZONE_BASE) { const z = reg.zones[k - ZONE_KIND.ZONE_BASE]; const b = world.buildingAt[i] !== -1 ? world.buildings.get(world.buildingAt[i]) : null; return { title: z.name, value: b ? `${reg.buildingById.get(b.buildingType)?.name || ''}${b.state === 'built' ? ` L${b.level}` : '（建設中）'}` : '未建築', parts: [] }; }
+        if (k >= ZONE_KIND.ZONE_BASE) { const z = reg.zones[k - ZONE_KIND.ZONE_BASE]; const b = world.buildingAt[i] !== -1 ? world.buildings.get(world.buildingAt[i]) : null; const noRoad = !!(zm.flags[i] & FLAG.BELOW_THRESHOLD); const rd = world.roadDist ? world.roadDist[i] : 0; return { title: z.name, value: b ? `${reg.buildingById.get(b.buildingType)?.name || ''}${b.state === 'built' ? ` L${b.level}` : '（建設中）'}` : noRoad ? '未建築 — 道路が届いていない' : '未建築', parts: [['道路まで', rd >= 0xffff ? '届いていない' : `${rd} マス（${z.roadDistance} マス以内が必要）`]] }; }
         const names = { [ZONE_KIND.ROAD]: '道路', [ZONE_KIND.STRUCTURE]: '特殊建築', [ZONE_KIND.WATER]: '水面', [ZONE_KIND.UNBUILDABLE]: '建てられない地形', [ZONE_KIND.SHORE]: '岸辺（区画不可）' };
         return { title: names[k] || '区画なし', value: k === 0 ? reg.tiles[world.map.tile[i]].name : '', parts: [] };
       }

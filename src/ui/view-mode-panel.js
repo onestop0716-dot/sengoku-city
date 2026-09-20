@@ -25,16 +25,16 @@ export function createViewModePanel(world, reg, viewMode, { button } = {}) {
     let html = `<div class="vl-title">表示: <b>${m === 'zones' ? '区画' : '状態 › ' + STATE_MODES[m].name}</b> <span class="vm-key">Tab / Esc</span></div>`;
     if (m === 'zones') {
       const stats = viewMode.zoneStats();
-      const stamp = 'z' + stats.map((s) => `${s.id}:${s.tiles}:${s.built}`).join(',');
+      const stamp = 'z' + stats.map((s) => `${s.id}:${s.tiles}:${s.built}:${s.noRoad}`).join(',');
       if (stamp === legendStamp) return; legendStamp = stamp;
-      html += stats.length ? `<table class="vl-table">${stats.map((s) => `<tr><td><span class="sw" style="background:${s.color}"></span>${s.name}</td><td>${s.tiles} マス</td><td>${s.tiles ? Math.round((s.built / s.tiles) * 100) : 0}% 建築</td></tr>`).join('')}</table>` : '<div class="note">区画はまだありません</div>';
-      html += `<div class="vl-row">${Object.entries(ZONE_KIND_COLORS).map(([k, c]) => `<span><span class="sw" style="background:${c}"></span>${ZONE_KIND_NAMES[k]}</span>`).join('')}<span><span class="sw sw-hatch"></span>未建築の区画（斜線）</span></div>`;
+      html += stats.length ? `<table class="vl-table">${stats.map((s) => `<tr><td><span class="sw" style="background:${s.color}"></span>${s.name}</td><td>${s.tiles} マス</td><td>${s.tiles ? Math.round((s.built / s.tiles) * 100) : 0}% 建築</td><td>${s.noRoad ? `<span class="vl-bad">道路なし ${s.noRoad}</span>` : ''}</td></tr>`).join('')}</table>` : '<div class="note">区画はまだありません</div>';
+      html += `<div class="vl-row">${Object.entries(ZONE_KIND_COLORS).map(([k, c]) => `<span><span class="sw" style="background:${c}"></span>${ZONE_KIND_NAMES[k]}</span>`).join('')}<span><span class="sw sw-hatch"></span>未建築の区画（斜線）</span><span><span class="sw sw-dots"></span>道路が届かない区画（点線・家が建たない）</span></div>`;
     } else {
       const stamp = 's' + m;
       if (stamp === legendStamp) return; legendStamp = stamp;
       const L = STATE_MODES[m].legend;
       html += `<div class="vl-grad"><span>${L[0]}</span><span class="vl-bar" style="background:linear-gradient(90deg,${rgbCss(gradientColor(0))},${rgbCss(gradientColor(0.5))},${rgbCss(gradientColor(1))})"></span><span>${L[2]}</span></div>`;
-      const notes = { water: '輪: 井戸・水路の効果範囲', security: '輪: 官府・獄・望楼などの効果範囲', prosperity: '点線: 区画はあるが建物が建つ基準に届いていないマス', market: '枠: 市・市亭の範囲', food: '枠: 官倉・水路', loyalty: '枠: 民忠を上げる建築', fertility: '', environment: '隣の工房で下がり、貴族の邸などで上がる' };
+      const notes = { road: '点線: 区画はあるが道路が遠くて建たないマス。道路を延ばすと直ります', water: '輪: 井戸・水路の効果範囲', security: '輪: 官府・獄・望楼などの効果範囲', prosperity: '点線: 区画はあるが建物が建つ基準に届いていないマス', market: '枠: 市・市亭の範囲', food: '枠: 官倉・水路', loyalty: '枠: 民忠を上げる建築', fertility: '', environment: '隣の工房で下がり、貴族の邸などで上がる' };
       if (notes[m]) html += `<div class="note">${notes[m]}</div>`;
       html += `<div class="note">建築を選ぶと、置いたときに改善するマスが明滅します</div>`;
     }
