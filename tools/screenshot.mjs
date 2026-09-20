@@ -10,7 +10,8 @@ const [,, outPath, seed = '12345', city = 'chen', size = '96', extra = '', quali
 const server = spawn('node', [root + '/tools/serve.mjs'], { env: { ...process.env, PORT: '8092' }, stdio: 'ignore' });
 await new Promise((r) => setTimeout(r, 800));
 const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
-const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+const [vw, vh] = (process.env.VIEWPORT || '1280x800').split('x').map(Number);
+const page = await browser.newPage({ viewport: { width: vw, height: vh } });
 const errors = [];
 page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); else if (m.text().startsWith('DBG')) console.log(m.text()); });
 page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));

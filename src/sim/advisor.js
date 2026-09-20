@@ -1,4 +1,4 @@
-// 案内役（書記官）の助言ロジック。表示は ui/advisor.js。条件と文は data/advice.json にある。
+// 案内役（フクロウ）の助言ロジック。表示は ui/advisor.js。条件と文は data/advice.json にある。
 // computeMetrics が世界の状態を指標にまとめ、evaluate が「いま出す助言」「やるべきことの一覧」を決める。
 import { idx } from '../core/grid.js';
 import { explainBuildBlockers, zoneDefAt } from './zones.js';
@@ -101,6 +101,7 @@ export function computeMetrics(world, reg, opts = {}) {
     daysSinceStep: world.day - st.stepStartDay,
     newUnlock, rank: world.rank, disaster: world.disaster || null, fine,
     cityName: reg.cityById.get(world.cityId)?.name || '',
+    name: reg.advice?.character?.name || '',
   };
 }
 

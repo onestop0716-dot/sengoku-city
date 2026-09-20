@@ -87,27 +87,45 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #dfe7ee; col
 #settings .note { font-size: 12px; opacity: 0.75; margin: 6px 0 10px; }
 #error { position: absolute; top: 60px; left: 50%; transform: translateX(-50%); background: #7a1e1e; color: #fff; padding: 10px 16px; border-radius: 6px; display: none; z-index: 30; max-width: 80%; white-space: pre-wrap; }
 
-/* 案内役（右下の書記官） */
-#advisor { position: absolute; right: 8px; bottom: 124px; display: flex; align-items: flex-end; gap: 6px; z-index: 3; pointer-events: none; }
+/* 案内役（右下のフクロウ。画像1枚 + 動きと記号で状態を表す） */
+#advisor { position: absolute; right: 8px; bottom: 124px; display: flex; align-items: flex-end; gap: 6px; z-index: 3; pointer-events: none; --adv-h: clamp(64px, calc(100vh - 560px), 136px); }
 #advisor > * { pointer-events: auto; }
-.adv-char { position: relative; width: 96px; height: 112px; cursor: pointer; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.35)); transition: transform .15s; }
-.adv-char:hover { transform: translateY(-2px); }
-.adv-char.adv-pop { animation: adv-pop .5s ease-out; }
-@keyframes adv-pop { 0% { transform: translateY(0); } 30% { transform: translateY(-8px) scale(1.04); } 60% { transform: translateY(0); } 80% { transform: translateY(-3px); } 100% { transform: translateY(0); } }
-.adv-char svg .ex { display: none; }
-.adv-char svg[data-ex="normal"] .ex-normal, .adv-char svg[data-ex="happy"] .ex-happy, .adv-char svg[data-ex="troubled"] .ex-troubled, .adv-char svg[data-ex="warning"] .ex-warning { display: block; }
-.adv-char svg[data-ex="warning"] .adv-brush { animation: adv-wave .6s ease-in-out infinite alternate; transform-origin: 72px 92px; }
-@keyframes adv-wave { from { transform: translate(72px, 92px) rotate(-8deg); } to { transform: translate(72px, 92px) rotate(10deg); } }
+.adv-char { position: relative; height: var(--adv-h); cursor: pointer; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.35)); transform-origin: 50% 90%; }
+.adv-img { display: block; height: 100%; width: auto; user-select: none; -webkit-user-drag: none; }
+.adv-char.state-normal { animation: adv-float 3.2s ease-in-out infinite; }
+.adv-char.state-happy { animation: adv-hop .7s ease-in-out infinite; }
+.adv-char.state-troubled { animation: adv-tilt 2.4s ease-in-out infinite; }
+.adv-char.state-warning { animation: adv-shake .35s linear infinite; }
+.adv-char.adv-pop { animation: adv-pop .55s ease-out; }
+@keyframes adv-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@keyframes adv-hop { 0%, 100% { transform: translateY(0) scale(1, 1); } 30% { transform: translateY(-9px) scale(0.97, 1.04); } 60% { transform: translateY(0) scale(1.03, 0.97); } }
+@keyframes adv-tilt { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-9deg) translateY(2px); } }
+@keyframes adv-shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-2px) rotate(-1.5deg); } 75% { transform: translateX(2px) rotate(1.5deg); } }
+@keyframes adv-pop { 0% { transform: translateY(0); } 30% { transform: translateY(-12px) scale(1.06); } 60% { transform: translateY(0) scale(0.98, 1.02); } 80% { transform: translateY(-4px); } 100% { transform: translateY(0); } }
+/* 記号: 画像の上に重ねる（画像自体は加工しない） */
+.adv-mark { position: absolute; top: -4px; right: 10px; pointer-events: none; }
+.adv-mark > * { display: none; position: absolute; right: 0; top: 0; }
+.adv-mark svg { filter: drop-shadow(0 0 2px #fff) drop-shadow(0 1px 1px rgba(0,0,0,0.4)); }
+.adv-char.state-happy .adv-mark-note { display: block; right: -6px; top: -8px; animation: adv-note 1.4s ease-in-out infinite; }
+.adv-char.state-troubled .adv-mark-sweat { display: block; right: 4px; top: 8px; animation: adv-sweat 1.6s ease-in-out infinite; }
+.adv-char.state-warning .adv-mark-bang { display: block; right: -4px; top: -10px; transform-origin: 50% 100%; animation: adv-bang .7s ease-in-out infinite; }
+@keyframes adv-note { 0%, 100% { transform: translateY(0) rotate(-8deg); opacity: 1; } 50% { transform: translateY(-8px) rotate(8deg); opacity: .85; } }
+@keyframes adv-sweat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+@keyframes adv-bang { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.25); } }
 .adv-mini { position: absolute; top: 0; right: -2px; width: 18px; height: 18px; padding: 0; font-size: 12px; line-height: 16px; background: rgba(38,30,22,0.85); color: var(--fg); border: 1px solid var(--line); border-radius: 3px; cursor: pointer; opacity: 0; }
 .adv-char:hover .adv-mini { opacity: 1; }
 .adv-badge { position: absolute; top: 4px; left: 4px; min-width: 18px; height: 18px; border-radius: 9px; background: #e05a3a; color: #fff; font-size: 11px; line-height: 18px; text-align: center; padding: 0 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.4); }
-#advisor.mini .adv-char { width: 44px; height: 52px; overflow: hidden; }
-#advisor.mini .adv-char svg { width: 44px; height: 52px; }
+#advisor.mini .adv-char { height: 48px; animation: none; }
+#advisor.mini .adv-mark { display: none; }
 #advisor.mini .adv-mini { opacity: 1; }
-.adv-bubble { position: relative; max-width: 320px; background: #f7efd9; color: #2a1e0e; border: 1px solid #c9a96a; border-radius: 8px; padding: 8px 26px 8px 12px; font-size: 13px; line-height: 1.55; box-shadow: 0 2px 6px rgba(0,0,0,0.3); margin-bottom: 30px; }
+.adv-bubble { position: relative; max-width: min(320px, calc(100vw - 560px)); background: #f7efd9; color: #2a1e0e; border: 1px solid #c9a96a; border-radius: 8px; padding: 8px 26px 8px 12px; font-size: 13px; line-height: 1.55; box-shadow: 0 2px 6px rgba(0,0,0,0.3); margin-bottom: 30px; }
 .adv-bubble::after { content: ''; position: absolute; right: -9px; bottom: 14px; border: 6px solid transparent; border-left: 9px solid #f7efd9; border-right: 0; }
 .adv-bubble::before { content: ''; position: absolute; right: -11px; bottom: 13px; border: 7px solid transparent; border-left: 10px solid #c9a96a; border-right: 0; }
 .adv-bubble .adv-title { display: block; color: #8b4a1a; margin-bottom: 2px; }
+.adv-bubble.warn { background: #fbe4dc; border-color: #c0392b; }
+.adv-bubble.warn::after { border-left-color: #fbe4dc; }
+.adv-bubble.warn::before { border-left-color: #c0392b; }
+.adv-bubble.warn .adv-title { color: #b22a1c; }
 .adv-close { position: absolute; top: 4px; right: 6px; border: none; background: none; color: #8b6a3a; font-size: 14px; cursor: pointer; padding: 0 2px; }
 #advisor-panel h4 { margin: 12px 0 4px; font-size: 12px; opacity: .75; font-weight: normal; }
 .adv-todo { margin: 0; padding-left: 20px; }
