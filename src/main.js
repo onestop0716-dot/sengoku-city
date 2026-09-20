@@ -18,7 +18,7 @@ import { showStartScreen } from './ui/start-screen.js';
 import { createSettingsPanel } from './ui/settings-panel.js';
 import { createGameLoop } from './app/game-loop.js';
 import { createInput } from './app/input.js';
-import { loadSettings, qualityOf } from './app/settings.js';
+import { loadSettings, qualityFor } from './app/settings.js';
 
 const showError = (msg) => { const el = document.getElementById('error'); el.textContent = msg; el.style.display = 'block'; };
 window.addEventListener('error', (e) => showError(`エラー: ${e.message}`));
@@ -36,16 +36,16 @@ async function main() {
   const { renderer, scene } = sc;
   const { w, h } = sc.resize();
   const maxDistance = Math.max(60, Math.round(world.map.w * 1.35));   // ズームアウトの上限（マップ外が大きく見えすぎない）
-  const orbit = createOrbitCamera(canvas, { centerX: world.map.w / 2, centerZ: world.map.h / 2, aspect: w / h, maxDistance });
+  const orbit = createOrbitCamera(canvas, { centerX: world.map.w / 2, centerZ: world.map.h / 2, aspect: w / h, maxDistance, bounds: { minX: 0, maxX: world.map.w, minZ: 0, maxZ: world.map.h, margin: 12 } });
   sc.setFog(maxDistance * 1.4, maxDistance * 3.4);
   const env = { terrain: null };
   const buildTerrain = (q) => {
     if (env.terrain) { scene.remove(env.terrain.group); env.terrain.dispose(); }
-    env.terrain = createTerrainMesh(world, reg, { segments: q.segments, sunDir: sc.sunDir });
+    env.terrain = createTerrainMesh(world, reg, { segments: q.segments, sunDir: sc.sunDir, fog: scene.fog });
     env.terrain.setRipple(q.ripple);
     scene.add(env.terrain.group);
   };
-  let quality = qualityOf(settings);
+  let quality = qualityFor(settings, world.map.w);
   buildTerrain(quality);
   sc.applyQuality(quality);
   const assets = createAssetResolver(reg);
@@ -70,7 +70,7 @@ async function main() {
     },
   });
   const settingsPanel = createSettingsPanel(settings, () => {
-    const q = qualityOf(settings);
+    const q = qualityFor(settings, world.map.w);
     const rebuild = q.segments !== quality.segments;
     quality = q;
     sc.applyQuality(q);

@@ -16,6 +16,14 @@ export function tree({ species = 'pine', variant = 0, lod = 'high' }) {
   const seg = hi ? 9 : 5, rings = hi ? 6 : 3;
   const v = vary(variant);
   const leaf = (hex) => shadeHex(hex, [1.0, 0.92, 1.08][variant % 3]);
+  if (!hi) {                                        // 遠景: 幹1本 + 樹冠1つ（約40三角形）
+    const col = { pine: 0x3f6b3a, cypress: 0x2f5a30, sophora: 0x5f9a3c, elm: 0x6a9d45, willow: 0x8fb35a }[species] || 0x4f8f3e;
+    const tall = species === 'cypress' ? 1.5 : species === 'elm' ? 1.4 : 1.1;
+    B.cylinder(0, 0, 0, 0.06, 0.45, C.trunk, 4);
+    if (species === 'pine' || species === 'cypress') B.cone(0, 0.35, 0, 0.32 * v, tall * v, leaf(col), 5);
+    else B.blob(0, 0.35 + 0.4 * v, 0, 0.42 * v, 0.4 * v, leaf(col), 5, 3);
+    return B.build();
+  }
   switch (species) {
     case 'pine': {                                   // 松: 幹は少し曲がり、傘形の層を2〜3段
       B.lathe(0, 0, 0, [[0.07, 0], [0.06, 0.5], [0.045, 0.95], [0.03, 1.25]], C.trunk, seg, { twist: 0.15 });

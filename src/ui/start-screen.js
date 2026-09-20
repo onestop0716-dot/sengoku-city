@@ -5,7 +5,7 @@ export function showStartScreen(reg) {
   return new Promise((resolve) => {
     const el = document.getElementById('start');
     const nationSel = el.querySelector('#start-nation'), citySel = el.querySelector('#start-city'), seedIn = el.querySelector('#start-seed'), sizeSel = el.querySelector('#start-size'), note = el.querySelector('#start-note');
-    nationSel.innerHTML = reg.nations.map((n) => `<option value="${n.id}">${n.name}（${n.currencyName}）</option>`).join('');
+    nationSel.innerHTML = reg.nations.map((n) => `<option value="${n.id}">${n.name}</option>`).join('');
     const fillCities = () => {
       const n = reg.nationById.get(nationSel.value);
       citySel.innerHTML = n.startCities.map((cid) => { const c = reg.cityById.get(cid); return `<option value="${cid}">${c.name}${c.isCapital ? '（首都）' : ''}</option>`; }).join('');

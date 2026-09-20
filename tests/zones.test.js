@@ -51,11 +51,15 @@ test('繁栄度の内訳が返り、水がないと低い', async () => {
   const { reg, world } = await makeWorld();
   const zone = reg.zoneById.get('res_commoner');
   world.services.water = new Uint8Array(world.map.w * world.map.h);
-  const far = computeProsperity(world, reg, 33, 33, zone);
+  // 水辺から十分離れた平地のマスを探す
+  let tx = -1, ty = -1;
+  for (let y = 2; y < 62 && tx < 0; y++) for (let x = 2; x < 62; x++) if (world.map.waterDist[y * world.map.w + x] > 8 && reg.tiles[world.map.tile[y * world.map.w + x]].buildable) { tx = x; ty = y; break; }
+  assert.ok(tx >= 0);
+  const far = computeProsperity(world, reg, tx, ty, zone);
   assert.ok('水' in far.parts && far.parts['水'] < 0);
   world.services.water.fill(1);
-  const near = computeProsperity(world, reg, 33, 33, zone);
-  assert.ok(near.total > far.total);
+  const near = computeProsperity(world, reg, tx, ty, zone);
+  assert.ok(near.parts['水'] > far.parts['水']);
 });
 
 test('2×2 の士の邸は矩形が小さいと建たず、十分なら建つ', async () => {

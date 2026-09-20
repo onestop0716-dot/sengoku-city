@@ -23,28 +23,39 @@ await page.selectOption('#start-size', size);
 await page.click('#start-btn');
 await page.waitForFunction(() => window.__game && window.__game.world.day > 1, null, { timeout: 15000 });
 // 見本の街を作る（ロジックのコマンドで）
-await page.evaluate(async (extra) => {
+const perf = await page.evaluate(async (extra) => {
   const { world, reg, loop } = window.__game;
   const { applyCommand } = await import('./src/sim/commands.js');
-  const cx = world.map.w >> 1, cy = world.map.h >> 1;
-  applyCommand(world, reg, { type: 'road.build', x0: cx - 12, y0: cy + 4, x1: cx + 12, y1: cy + 4 });
-  applyCommand(world, reg, { type: 'road.build', x0: cx - 12, y0: cy - 4, x1: cx + 12, y1: cy - 4 });
-  applyCommand(world, reg, { type: 'road.build', x0: cx + 8, y0: cy - 8, x1: cx + 8, y1: cy + 8 });
-  applyCommand(world, reg, { type: 'zone.set', rect: { x0: cx - 11, y0: cy + 1, x1: cx + 7, y1: cy + 3 }, zoneId: 'res_commoner' });
-  applyCommand(world, reg, { type: 'zone.set', rect: { x0: cx - 11, y0: cy - 3, x1: cx - 1, y1: cy - 1 }, zoneId: 'res_shi' });
-  applyCommand(world, reg, { type: 'zone.set', rect: { x0: cx + 1, y0: cy - 3, x1: cx + 7, y1: cy - 1 }, zoneId: 'res_noble' });
-  applyCommand(world, reg, { type: 'zone.set', rect: { x0: cx - 11, y0: cy + 5, x1: cx + 7, y1: cy + 9 }, zoneId: 'farm_millet' });
-  applyCommand(world, reg, { type: 'zone.set', rect: { x0: cx + 9, y0: cy - 7, x1: cx + 14, y1: cy + 7 }, zoneId: 'farm_rice' });
-  world.services.water = new Uint8Array(world.map.w * world.map.h).fill(1);
-  world.money = 1e9;
   const { tick } = await import('./src/sim/world.js');
+  const cx = world.map.w >> 1, cy = world.map.h >> 1;
+  world.money = 1e9;
+  world.services.water = new Uint8Array(world.map.w * world.map.h).fill(1);
+  // 見本の街: マップの大きさに応じた碁盤目の道路と区画
+  const R = Math.round(world.map.w * 0.28);
+  for (let y = cy - R; y <= cy + R; y += 8) applyCommand(world, reg, { type: 'road.build', x0: cx - R, y0: y, x1: cx + R, y1: y });
+  for (let x = cx - R; x <= cx + R; x += 12) applyCommand(world, reg, { type: 'road.build', x0: x, y0: cy - R, x1: x, y1: cy + R });
+  const zonesList = ['res_commoner', 'res_commoner', 'farm_millet', 'res_shi', 'farm_rice', 'res_commoner', 'res_noble', 'farm_wheat'];
+  let zi = 0;
+  for (let y = cy - R; y < cy + R; y += 8) for (let x = cx - R; x < cx + R; x += 12) {
+    applyCommand(world, reg, { type: 'zone.set', rect: { x0: x + 1, y0: y + 1, x1: x + 11, y1: y + 3 }, zoneId: zonesList[zi++ % zonesList.length] });
+    applyCommand(world, reg, { type: 'zone.set', rect: { x0: x + 1, y0: y + 5, x1: x + 11, y1: y + 7 }, zoneId: zonesList[zi++ % zonesList.length] });
+  }
+  const t0 = performance.now();
   for (let d = 0; d < 400; d++) tick(world, reg);
+  const tickMs = (performance.now() - t0) / 400;
   loop.setSpeedIndex(0);
   if (extra) await new Function('world', 'reg', 'return (async () => {' + extra + '})()')(world, reg);
+  return { tickMs: +tickMs.toFixed(2), buildings: world.buildings.size, map: world.map.w };
 }, extra);
 if (quality) { await page.click('#hud-settings'); await page.click(`input[name=quality][value=${quality}]`); await page.click('#settings-close'); }
 await page.waitForTimeout(1500);
 await page.screenshot({ path: outPath });
-const info = await page.evaluate(() => ({ buildings: window.__game.world.buildings.size, renderer: window.__game.rendererInfo?.() }));
-console.log(outPath, JSON.stringify(info), 'errors:', errors.length ? errors : 'なし');
+// 描画時間の目安: 30フレーム描いて平均（この環境はソフトウェア描画なので実機より大幅に遅い）
+const frame = await page.evaluate(async () => {
+  const { orbit, THREE } = window.__game;
+  const t0 = performance.now(); let n = 0;
+  await new Promise((r) => { const step = () => { n++; if (performance.now() - t0 > 2000 || n >= 30) r(); else requestAnimationFrame(step); }; requestAnimationFrame(step); });
+  return { msPerFrame: +((performance.now() - t0) / n).toFixed(1), renderer: window.__game.rendererInfo?.(), fps: +window.__game.loop.stats.fps.toFixed(1) };
+});
+console.log(outPath, JSON.stringify({ ...perf, ...frame }), 'errors:', errors.length ? errors : 'なし');
 await browser.close(); server.kill();

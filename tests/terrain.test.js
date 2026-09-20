@@ -40,3 +40,20 @@ test('各都市テンプレートで地形が妥当な比率になる', async ()
     }
   }
 });
+
+test('大きなマップ（192・256）でも比率が妥当で、支流や湖で水が増えすぎない', async () => {
+  const reg = await getRegistry();
+  const T = (id) => reg.tileIndex.get(id);
+  for (const [cid, size] of [['chen', 192], ['xianyang', 256], ['linzi', 192]]) {
+    const city = reg.cityById.get(cid);
+    const m = generateTerrain({ w: size, h: size, seed: 3, profile: city.terrainProfile, reg });
+    const n = m.tile.length;
+    const count = (id) => Array.from(m.tile).filter((t) => t === T(id)).length / n;
+    const water = count('river') + count('lake') + count('sea');
+    assert.ok(count('plain') > 0.3, `${cid}: 平地 ${count('plain')}`);
+    assert.ok(water > 0.01 && water < 0.3, `${cid}: 水 ${water}`);
+    assert.ok(count('forest') < 0.45, `${cid}: 森 ${count('forest')}`);
+    assert.ok(count('mountain') < 0.25, `${cid}: 山 ${count('mountain')}`);
+    assert.equal(m.tile[(size / 2) * size + size / 2], T('plain'));
+  }
+});

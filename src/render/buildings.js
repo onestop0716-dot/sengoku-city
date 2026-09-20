@@ -13,7 +13,7 @@ export function createBuildingsView(world, reg, scene, assets, env) {
   const sets = new Map(); // modelId → { near, far, items:[{x,y,z,rot,scale}] }
   const m4 = new THREE.Matrix4(), pos = new THREE.Vector3(), quat = new THREE.Quaternion(), scl = new THREE.Vector3();
   const up = new THREE.Vector3(0, 1, 0);
-  let quality = { buildingLod: 110, treeLod: [70, 140], shadows: true };
+  let quality = { buildingLod: 110, treeLod: [70, 140], shadows: true, nearCap: 900, treeNearCap: 1500 };
   let lastCam = new THREE.Vector3(Infinity, 0, 0);
   let treeItems = [];
   let buildingItems = new Map();
@@ -43,9 +43,23 @@ export function createBuildingsView(world, reg, scene, assets, env) {
   };
 
   /** 全セットについて、カメラ距離で近景/遠景に振り分けて行列を書く */
-  const distribute = (camPos) => {
+  /** 近景に入れる距離のしきい値。数が多すぎるときは近い順に上限まで */
+  const nearThreshold = (isTree, camPos) => {
+    const lodDist = isTree ? quality.treeLod[0] : quality.buildingLod;
+    const cap = isTree ? quality.treeNearCap : quality.nearCap;
+    const ds = [];
     for (const s of sets.values()) {
-      const lodDist = s.isTree ? quality.treeLod[0] : quality.buildingLod;
+      if (s.isTree !== isTree) continue;
+      for (const it of s.items) { const d = Math.hypot(it.x - camPos.x, it.y - camPos.y, it.z - camPos.z); if (d < lodDist) ds.push(d); }
+    }
+    if (ds.length <= cap) return lodDist;
+    ds.sort((a, b) => a - b);
+    return ds[cap];
+  };
+  const distribute = (camPos) => {
+    const thr = { tree: nearThreshold(true, camPos), building: nearThreshold(false, camPos) };
+    for (const s of sets.values()) {
+      const lodDist = s.isTree ? thr.tree : thr.building;
       const cull = s.isTree ? quality.treeLod[1] * 2.2 : Infinity;
       let n = 0, f = 0;
       for (const it of s.items) {

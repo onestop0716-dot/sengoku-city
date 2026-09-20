@@ -16,14 +16,20 @@ export function generateTerrain({ w, h, seed, profile, reg }) {
   const fertility = new Float32Array(w * h);
   const resource = new Uint8Array(w * h);
   const cx = (w - 1) / 2, cy = (h - 1) / 2;
+  const K = Math.max(1, Math.min(w, h) / 96);            // 96 を基準にした大きさの倍率
+  const big = Math.min(w, h) >= 160;                     // 大きなマップでは支流・湖・丘の群れを足す
 
-  // 1. 基本起伏
+  // 1. 基本起伏（大きな起伏 + 細かい起伏。大きなマップでは丘の群れも）
   const relief = profile.relief || 'plain';
   const amp = { plain: 0.5, plain_north_hills: 0.6, plain_west_mountains: 0.6, hills: 1.5, plateau: 0.9, basin: 0.5, coastal_plain: 0.35 }[relief] ?? 0.6;
   const base = relief === 'plateau' ? 0.8 : 0;
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-    let v = (fbm(x / 22, y / 22, seed) - 0.5) * 2 * amp + base;
+    let v = (fbm(x / (22 * Math.pow(K, 0.6)), y / (22 * Math.pow(K, 0.6)), seed) - 0.5) * 2 * amp + (fbm(x / 9, y / 9, seed + 3) - 0.5) * 0.3 + base;
     const nx = x / (w - 1), ny = y / (h - 1);
+    if (big) {
+      const hm = fbm(x / (38 * K), y / (38 * K), seed + 41);
+      if (hm > 0.54) v += ((hm - 0.54) / 0.3) * 3.2 * (0.7 + fbm(x / 7, y / 7, seed + 42) * 0.6);
+    }
     if (relief === 'plain_north_hills') v += 3.2 * Math.max(0, 0.22 - ny) / 0.22 * (0.6 + fbm(x / 9, y / 9, seed + 7));
     if (relief === 'plain_west_mountains') v += 3.2 * Math.max(0, 0.2 - nx) / 0.2 * (0.6 + fbm(x / 9, y / 9, seed + 7));
     if (relief === 'basin') { const e = Math.max(Math.abs(nx - 0.5), Math.abs(ny - 0.5)) * 2; v += 3.5 * Math.pow(Math.max(0, e - 0.6) / 0.4, 2) * (0.7 + fbm(x / 9, y / 9, seed + 7)); }
@@ -43,37 +49,68 @@ export function generateTerrain({ w, h, seed, profile, reg }) {
 
   // 3. 川（中心から少しずらして通す。中心は官府用に空けておく）
   const river = profile.river || 'none';
+  const mainLine = [];                                    // 本流の中心線（支流の合流先）
+  const carve = (x, y, width) => {
+    const R = Math.ceil(width + 1.2);
+    for (let dy = -R; dy <= R; dy++) for (let dx = -R; dx <= R; dx++) {
+      const xx = x + dx, yy = y + dy;
+      if (!inBounds(w, h, xx, yy)) continue;
+      const i = yy * w + xx;
+      const d = Math.hypot(dx, dy);
+      if (d <= width - 0.5 || (d < width + 0.3 && rng.chance(0.55))) {
+        if (tile[i] !== T('sea')) tile[i] = T('river');
+        height[i] = bal.riverLevel;
+      } else if (d < width + 1.2) height[i] = Math.min(height[i], bal.riverLevel + 0.4);
+    }
+  };
   if (river !== 'none') {
-    const width = river.startsWith('large') ? 3 : rng.int(1, 2);
+    const width = river.startsWith('large') ? (big ? 2.4 : 1.8) : 1.0;
     const ew = river.endsWith('ew');
     const len = ew ? w : h;
     const offsetBase = (ew ? h : w) * (rng.chance(0.5) ? 0.36 : 0.64);
     for (let t = 0; t < len; t++) {
-      const meander = (fbm(t / 18, 0.5, seed + 53) - 0.5) * (ew ? h : w) * 0.3;
+      const meander = (fbm(t / (18 * K), 0.5, seed + 53) - 0.5) * (ew ? h : w) * 0.3 + (fbm(t / 6, 0.7, seed + 54) - 0.5) * 3;
       const c = Math.round(offsetBase + meander);
-      for (let k = -width; k <= width; k++) {
-        const p = c + k;
-        const [x, y] = ew ? [t, p] : [p, t];
-        if (!inBounds(w, h, x, y)) continue;
-        const i = y * w + x;
-        const inner = Math.abs(k) <= (width - 1) / 2 + 0.01 || width === 1 && k === 0;
-        if (inner || (Math.abs(k) < width && rng.chance(0.7))) {
-          if (tile[i] !== T('sea')) tile[i] = T('river');
-          height[i] = bal.riverLevel;
-        } else {
-          height[i] = Math.min(height[i], bal.riverLevel + 0.4);
+      const [x, y] = ew ? [t, c] : [c, t];
+      mainLine.push([x, y]);
+      carve(x, y, width);
+    }
+    // 支流（大きなマップ）: マップの縁から本流へ合流する細い川
+    if (big) {
+      const n = w >= 240 ? 2 : 1;
+      for (let s = 0; s < n; s++) {
+        const side = rng.chance(0.5) ? -1 : 1;
+        const start = ew ? [Math.round(w * rng.range(0.15, 0.85)), side < 0 ? 0 : h - 1] : [side < 0 ? 0 : w - 1, Math.round(h * rng.range(0.15, 0.85))];
+        const cand = mainLine.filter((p) => Math.abs((ew ? p[0] : p[1]) - (ew ? start[0] : start[1])) < (ew ? w : h) * 0.3);
+        if (!cand.length) continue;
+        const end = cand[rng.int(0, cand.length - 1)];
+        const L = Math.hypot(end[0] - start[0], end[1] - start[1]);
+        const px = -(end[1] - start[1]) / L, py = (end[0] - start[0]) / L;   // 直交方向
+        const steps = Math.ceil(L * 1.5);
+        for (let k = 0; k <= steps; k++) {
+          const t = k / steps;
+          const m = (fbm(t * 6, s + 0.3, seed + 61 + s) - 0.5) * L * 0.25 * Math.sin(Math.PI * t);
+          const x = Math.round(start[0] + (end[0] - start[0]) * t + px * m), y = Math.round(start[1] + (end[1] - start[1]) * t + py * m);
+          if (Math.hypot(x - cx, y - cy) < bal.centerClearRadius + 3) continue;
+          carve(x, y, 0.9);
         }
       }
     }
   }
 
-  // 4. 湖
-  if (profile.lake) {
-    const lx = Math.round(w * (rng.chance(0.5) ? 0.25 : 0.75)), ly = Math.round(h * (rng.chance(0.5) ? 0.25 : 0.75));
-    const r = rng.int(5, 8);
-    for (let y = ly - r - 2; y <= ly + r + 2; y++) for (let x = lx - r - 2; x <= lx + r + 2; x++) {
+  // 4. 湖（プロファイル指定に加え、大きなマップでは 1〜2 個を自動で置く）
+  const lakes = (profile.lake ? 1 : 0) + (big ? (w >= 240 ? 2 : 1) : 0);
+  for (let n = 0; n < lakes; n++) {
+    let lx = 0, ly = 0, ok = false;
+    for (let tries = 0; tries < 30 && !ok; tries++) {
+      lx = rng.int(Math.round(w * 0.12), Math.round(w * 0.88)); ly = rng.int(Math.round(h * 0.12), Math.round(h * 0.88));
+      ok = Math.hypot(lx - cx, ly - cy) > bal.centerClearRadius + 16 && !reg.tiles[tile[ly * w + lx]].water;
+    }
+    if (!ok) continue;
+    const r = rng.int(5, 8) * Math.sqrt(K);
+    for (let y = Math.floor(ly - r - 2); y <= ly + r + 2; y++) for (let x = Math.floor(lx - r - 2); x <= lx + r + 2; x++) {
       if (!inBounds(w, h, x, y)) continue;
-      const d = Math.hypot(x - lx, y - ly) + (fbm(x / 5, y / 5, seed + 77) - 0.5) * 4;
+      const d = Math.hypot(x - lx, y - ly) + (fbm(x / 5, y / 5, seed + 77 + n) - 0.5) * 5;
       if (d < r) { tile[y * w + x] = T('lake'); height[y * w + x] = bal.riverLevel; }
     }
   }
@@ -118,7 +155,8 @@ export function generateTerrain({ w, h, seed, profile, reg }) {
     if (waterDist[i] <= 2 && tile[i] === T('plain') && (climate === 'south' || (climate === 'central' && rng.chance(0.4))) && fbm(x / 6, y / 6, seed + 91) > 0.5) {
       tile[i] = T('marsh'); continue;
     }
-    if (fbm(x / 12, y / 12, seed + 113) > forestThreshold) tile[i] = T('forest');
+    const patch = big ? fbm(x / (34 * K), y / (34 * K), seed + 117) : 0.5;          // 大きなむら
+    if (fbm(x / 12, y / 12, seed + 113) > forestThreshold - (patch - 0.5) * 0.35) tile[i] = T('forest');
   }
 
   // 9. 肥沃度
@@ -156,7 +194,8 @@ export function generateTerrain({ w, h, seed, profile, reg }) {
       const x = i % w, y = (i / w) | 0;
       if (resource[i] === 0 && tile[i] === T('plain') && waterDist[i] >= 3 && Math.hypot(x - cx, y - cy) > R + 6) cands.push(i);
     }
-    for (let c = 0; c < count && cands.length; c++) {
+    const scaled = Math.max(count, Math.round(count * K * K));
+    for (let c = 0; c < scaled && cands.length; c++) {
       const start = cands[rng.int(0, cands.length - 1)];
       const x0 = start % w, y0 = (start / w) | 0;
       resource[start] = resIndex.get(kind);
