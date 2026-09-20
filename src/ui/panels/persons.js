@@ -41,5 +41,7 @@ export function createPersonsPanel(world, reg, tooltip, log) {
     el.querySelectorAll('[data-dismiss]').forEach((b) => b.addEventListener('click', () => run({ type: 'person.dismiss', personId: b.dataset.dismiss })));
     el.querySelectorAll('[data-person]').forEach((b) => b.addEventListener('click', () => { detailId = b.dataset.person; render(); }));
   };
-  return { el, render, toggle() { el.style.display = el.style.display === 'block' ? 'none' : 'block'; if (el.style.display === 'block') render(); }, update() { if (el.style.display === 'block' && world.day % 10 === 0) render(); } };
+  // 描き直しは日付が変わった 10 日ごとだけ。プルダウンなどを操作中（パネル内に焦点がある）は描き直さない
+  let lastDay = -1;
+  return { el, render, toggle() { el.style.display = el.style.display === 'block' ? 'none' : 'block'; if (el.style.display === 'block') { lastDay = world.day; render(); } }, update() { if (el.style.display !== 'block' || world.day === lastDay) return; lastDay = world.day; if (world.day % 10 === 0 && !el.contains(document.activeElement)) render(); } };
 }

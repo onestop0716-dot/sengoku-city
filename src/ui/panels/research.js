@@ -37,5 +37,6 @@ export function createResearchPanel(world, reg, tooltip, log) {
     el.querySelector('[data-cancel]')?.addEventListener('click', () => run({ type: 'research.cancel' }));
     el.querySelectorAll('[data-start]').forEach((b) => b.addEventListener('click', () => run({ type: 'research.start', techId: b.dataset.start })));
   };
-  return { el, render, toggle() { el.style.display = el.style.display === 'block' ? 'none' : 'block'; if (el.style.display === 'block') render(); }, update() { if (el.style.display === 'block' && world.day % 5 === 0) render(); } };
+  let lastDay = -1;
+  return { el, render, toggle() { el.style.display = el.style.display === 'block' ? 'none' : 'block'; if (el.style.display === 'block') { lastDay = world.day; render(); } }, update() { if (el.style.display !== 'block' || world.day === lastDay) return; lastDay = world.day; if (world.day % 5 === 0 && !el.contains(document.activeElement)) render(); } };
 }
