@@ -32,7 +32,7 @@ export function sendCaravan(world, reg, { to, goods, buy = null }) {
   for (const [id, q] of Object.entries(cargo)) { if (id === 'grain') world.grain.civil -= q; else world.goods[id] -= q; }
   const days = Math.max(2, Math.round(dist(reg.cityById.get(world.cityId), dest) / B.speedPerDay));
   const c = { id: N.nextCaravanId++, to, cargo, buy, phase: 'out', progress: 0, days, revenue: 0, bought: {}, fee, sentDay: world.day, log: [] };
-  N.caravans.push(c);
+  N.caravans.push(c); N.stats.caravansSent = (N.stats.caravansSent || 0) + 1;
   world.log.push({ day: world.day, text: `商隊が${dest.name}へ出発しました（片道 ${days} 日、費用 ${fee} 銭）` });
   return { ok: true, id: c.id, days };
 }

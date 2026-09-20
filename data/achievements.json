@@ -1,0 +1,128 @@
+[
+ {
+  "id": "pop_1000",
+  "name": "千戸の県",
+  "desc": "人口 1,000 人",
+  "condition": {
+   "metric": "population",
+   "gte": 1000
+  }
+ },
+ {
+  "id": "pop_5000",
+  "name": "大県",
+  "desc": "人口 5,000 人",
+  "condition": {
+   "metric": "population",
+   "gte": 5000
+  }
+ },
+ {
+  "id": "pop_10000",
+  "name": "万戸の県",
+  "desc": "人口 10,000 人",
+  "condition": {
+   "metric": "population",
+   "gte": 10000
+  }
+ },
+ {
+  "id": "rank_governor",
+  "name": "郡守",
+  "desc": "郡守に昇進する",
+  "condition": {
+   "metric": "rankIndex",
+   "gte": 1
+  }
+ },
+ {
+  "id": "rank_top",
+  "name": "国の柱",
+  "desc": "相邦か大将軍に昇進する",
+  "condition": {
+   "metric": "rankIndex",
+   "gte": 2
+  }
+ },
+ {
+  "id": "first_victory",
+  "name": "初陣",
+  "desc": "初めて戦いに勝つ",
+  "condition": {
+   "metric": "victories",
+   "gte": 1
+  }
+ },
+ {
+  "id": "conquer",
+  "name": "領土拡大",
+  "desc": "他国の都市を領有する",
+  "condition": {
+   "metric": "conquered",
+   "gte": 1
+  }
+ },
+ {
+  "id": "all_techs",
+  "name": "百工の極み",
+  "desc": "すべての技術を研究する",
+  "condition": {
+   "metric": "techsLeft",
+   "eq": 0
+  }
+ },
+ {
+  "id": "rich",
+  "name": "富国",
+  "desc": "銭 100,000 を蓄える",
+  "condition": {
+   "metric": "money",
+   "gte": 100000
+  }
+ },
+ {
+  "id": "traders",
+  "name": "商隊の道",
+  "desc": "商隊を 10 回送る",
+  "condition": {
+   "metric": "caravansSent",
+   "gte": 10
+  }
+ },
+ {
+  "id": "scholars",
+  "name": "賢者の館",
+  "desc": "人材を 5 人登用する",
+  "condition": {
+   "metric": "hiredCount",
+   "gte": 5
+  }
+ },
+ {
+  "id": "calm_decade",
+  "name": "十年の平穏",
+  "desc": "10 年間災害に遭わない",
+  "condition": {
+   "metric": "yearsWithoutDisaster",
+   "gte": 10
+  }
+ },
+ {
+  "id": "walled",
+  "name": "城郭",
+  "desc": "城壁で内城を囲む",
+  "condition": {
+   "metric": "insideCount",
+   "gte": 50
+  }
+ },
+ {
+  "id": "unification",
+  "name": "天下統一",
+  "desc": "所属国が七雄の全首都を領有する",
+  "condition": {
+   "metric": "unified",
+   "truthy": true
+  }
+ }
+]

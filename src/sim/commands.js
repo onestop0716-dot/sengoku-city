@@ -10,6 +10,7 @@ import { sendGift, propose } from './nation/diplomacy.js';
 import { fulfillOrder, setCityPolicy } from './nation/state.js';
 import { conscript, disband, setFormation } from './military/army.js';
 import { startCampaign } from './military/campaign.js';
+import { resolveEvent } from './events.js';
 
 /**
  * @param {object} world @param {object} reg
@@ -75,6 +76,7 @@ export function applyCommand(world, reg, cmd) {
     case 'army.disband': return disband(world, reg, cmd.unitId, cmd.count);
     case 'army.formation': return setFormation(world, reg, cmd.formation);
     case 'army.campaign': return startCampaign(world, reg, cmd);
+    case 'event.choose': return resolveEvent(world, reg, cmd.choice);
     default:
       return { ok: false, message: `不明なコマンド: ${cmd.type}` };
   }

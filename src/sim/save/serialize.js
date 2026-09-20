@@ -27,6 +27,7 @@ export function serializeWorld(world) {
     advisor: world.advisor ? JSON.parse(JSON.stringify(world.advisor)) : null,
     nation: world.nation ? JSON.parse(JSON.stringify(world.nation)) : null,
     army: world.army ? JSON.parse(JSON.stringify(world.army)) : null,
+    events: world.events ? JSON.parse(JSON.stringify(world.events)) : null, achievements: { ...(world.achievements || {}) }, ending: world.ending || null,
     persons: JSON.parse(JSON.stringify(world.persons || { hired: [], visitors: [], gone: [] })), offices: { ...(world.offices || {}) }, research: { ...(world.research || { current: null, progress: 0 }) },
   };
 }
@@ -58,6 +59,7 @@ export function deserializeWorld(data, reg) {
   world.structures = new Map(); world.structAt.fill(-1);
   for (const s of d.structures || []) { world.structures.set(s.id, { ...s }); for (let yy = s.y; yy < s.y + s.h; yy++) for (let xx = s.x; xx < s.x + s.w; xx++) world.structAt[yy * w + xx] = s.id; }
   if (d.nextStructureId) world.nextStructureId = d.nextStructureId;
+  if (d.difficulty) world.difficulty = d.difficulty;
   if (d.rank) world.rank = d.rank; if (d.techs) world.techs = d.techs; if (d.goods) world.goods = { ...d.goods };
   recomputeServices(world, reg);
   world.day = d.day; world.calendar = { ...d.calendar };
@@ -67,6 +69,7 @@ export function deserializeWorld(data, reg) {
   if (d.advisor) world.advisor = d.advisor;
   if (d.nation) world.nation = d.nation;
   if (d.army) world.army = d.army;
+  if (d.events) world.events = d.events; if (d.achievements) world.achievements = d.achievements; if (d.ending) world.ending = d.ending;
   if (d.persons) world.persons = d.persons; if (d.offices) world.offices = { ...world.offices, ...d.offices }; if (d.research) world.research = { ...d.research };
   if (d.population) world.population = { ...world.population, ...d.population };
   if (d.grain) world.grain = { ...world.grain, ...d.grain };

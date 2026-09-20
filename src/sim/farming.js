@@ -18,7 +18,7 @@ export function fieldYield(world, reg, b) {
   const worker = world.stats.farmWorkerRatio ?? 1;          // 働き手が足りないと減る
   const M = modsOf(world);
   const irrigated = world.services.irrigation && world.services.irrigation[i] ? 1 + (crop.irrigationBonus ?? 0.3) + M.irrigationBonus : 1;
-  const tech = M.farmYield * (1 + (M.cropYield[crop.id] || 0));   // 技術（鉄製農具など）と田嗇夫
+  const tech = M.farmYield * (1 + (M.cropYield[crop.id] || 0)) * (1 - Math.min(0.8, world.events && world.day <= world.events.farmPenaltyUntil ? world.events.farmPenalty : 0));   // 技術（鉄製農具など）と田嗇夫、災害の減収
   const factor = terrain * climate * affinity * fert * level * worker * irrigated * tech;
   if (crop.baseYield > 0) return { grain: crop.baseYield * factor, value: 0, crop };
   return { grain: 0, value: (E.productValuePerTile[crop.id] || 0) * factor, crop };

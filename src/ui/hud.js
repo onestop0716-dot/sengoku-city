@@ -23,11 +23,11 @@ export function createHud(world, reg, loop, tooltip, { onSettings, onPanel } = {
     <button data-panel="nation">全国</button>
     <button data-panel="military">軍</button>
     <button id="hud-view" title="表示モード（Tab で順送り、Esc で通常）">表示</button>
-    <button id="hud-settings" title="設定">設定</button>
+    <button id="hud-menu" title="メニュー（保存・実績・設定）">≡</button>
     <div id="hud-speed">${speeds.map((s, i) => `<button data-speed="${i}" title="${s === 0 ? '一時停止 (Space)' : s + '倍速'}">${s === 0 ? '❚❚' : '▶'.repeat(Math.log2(s) + 1)}</button>`).join('')}</div>
   `;
   el.querySelectorAll('[data-speed]').forEach((b) => b.addEventListener('click', () => loop.setSpeedIndex(Number(b.dataset.speed))));
-  el.querySelector('#hud-settings').addEventListener('click', () => onSettings?.());
+  el.querySelector('#hud-menu').addEventListener('click', () => onSettings?.());
   el.querySelectorAll('[data-panel]').forEach((b) => b.addEventListener('click', () => onPanel?.(b.dataset.panel)));
   const q = (id) => el.querySelector(id);
   const viewBtn = q('#hud-view'), rankEl = q('#hud-rank');

@@ -63,6 +63,7 @@ export function createAdvisorUi(world, reg, settings, { onOpenSettings, onOpen, 
 
   return {
     el: panel,
+    restart() { tutorial = true; lastDay = -1; },
     /** 毎フレーム。日が変わったときだけ判断する */
     update() {
       if (world.day === lastDay) { if (hideAt && performance.now() > hideAt) { bubble.style.display = 'none'; hideAt = 0; } return; }

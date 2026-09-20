@@ -1,5 +1,6 @@
 // 開始画面: 国 → 都市 → シード → 開始。
 import { hashString } from '../core/rng.js';
+import { listSlots, loadFromSlot, setPendingLoad, importFromFile } from '../app/saves.js';
 
 export function showStartScreen(reg) {
   return new Promise((resolve) => {
@@ -19,6 +20,13 @@ export function showStartScreen(reg) {
     nationSel.addEventListener('change', fillCities);
     citySel.addEventListener('change', showNote);
     seedIn.value = String(Math.floor(Math.random() * 1e9)); // 初期シードだけはブラウザ乱数で良い（以後はシード付き乱数）
+    // 続きから（スロット / ファイル）
+    const cont = el.querySelector('#start-continue');
+    const slots = listSlots().filter((s) => !s.empty);
+    cont.innerHTML = `<label>続きから</label>${slots.length ? slots.map((s) => `<button class="btn wide" data-slot="${s.slot}">${s.slot === 'auto' ? 'オートセーブ' : `スロット ${s.slot}`}: ${s.meta.nationName}・${s.meta.cityName} ${s.meta.year < 0 ? '前' + -s.meta.year : s.meta.year}年${s.meta.month}月（人口 ${(s.meta.population || 0).toLocaleString('ja-JP')}）</button>`).join('') : '<div class="note">保存データはありません</div>'}<label class="btn wide">ファイルから読み込む<input type="file" accept=".json,application/json" data-import style="display:none"></label>`;
+    cont.querySelectorAll('[data-slot]').forEach((b) => b.addEventListener('click', () => { const d = loadFromSlot(b.dataset.slot); if (d) { el.style.display = 'none'; resolve({ load: d }); } }));
+    cont.querySelector('[data-import]').addEventListener('change', async (e) => { const f = e.target.files?.[0]; if (!f) return; try { const d = await importFromFile(f); el.style.display = 'none'; resolve({ load: d }); } catch (err) { note.textContent = `読み込めません: ${err.message}`; } });
+    void setPendingLoad;
     fillCities();
     el.querySelector('#start-btn').addEventListener('click', () => {
       const seedText = seedIn.value.trim();

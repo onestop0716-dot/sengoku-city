@@ -1,0 +1,745 @@
+{
+ "_comment": "イベント。trigger: seasons/months/requiresRiver/baseChance（月あたり）/ minMonths / conditions（metric 条件、advisor と同じ書式）/ year+nation（史実、once）。mitigation は備えによる軽減。choices の effects は選ぶと適用。effects は発生時に自動で適用。難易度の balance.disasterRate で災害の確率が変わる",
+ "events": [
+  {
+   "id": "flood",
+   "name": "洪水",
+   "kind": "disaster",
+   "text": "長雨で川が氾濫し、岸辺の畑と家が水に浸かりました。",
+   "trigger": {
+    "seasons": [
+     "summer"
+    ],
+    "requiresRiver": true,
+    "baseChance": 0.03,
+    "minMonths": 6
+   },
+   "mitigation": [
+    {
+     "structure": "levee",
+     "factor": 0.4,
+     "text": "堤防が被害を減らした"
+    }
+   ],
+   "effects": [
+    {
+     "type": "destroy_buildings",
+     "near": "river",
+     "ratio": 0.08
+    },
+    {
+     "type": "hygiene",
+     "value": -10
+    }
+   ],
+   "choices": [
+    {
+     "text": "官倉を開いて被災者を救う（穀物 300 石）",
+     "requires": {
+      "grain": 300
+     },
+     "effects": [
+      {
+       "type": "grain",
+       "value": -300
+      },
+      {
+       "type": "loyalty",
+       "value": 6
+      },
+      {
+       "type": "merit",
+       "value": 40
+      }
+     ]
+    },
+    {
+     "text": "何もしない",
+     "effects": [
+      {
+       "type": "loyalty",
+       "value": -8
+      }
+     ]
+    }
+   ],
+   "note": "黄河・淮水の水害。堤防（防）で軽減"
+  },
+  {
+   "id": "drought",
+   "name": "旱魃",
+   "kind": "disaster",
+   "text": "夏の雨が降らず、畑が干上がりました。今年の収穫は減ります。",
+   "trigger": {
+    "seasons": [
+     "summer"
+    ],
+    "baseChance": 0.02,
+    "minMonths": 6
+   },
+   "mitigation": [
+    {
+     "structure": "canal",
+     "factor": 0.6,
+     "text": "灌漑水路のある畑は持ちこたえた"
+    }
+   ],
+   "effects": [
+    {
+     "type": "grain_ratio",
+     "value": -0.15
+    },
+    {
+     "type": "farm_penalty",
+     "value": 0.3,
+     "months": 4
+    }
+   ],
+   "choices": [
+    {
+     "text": "雨乞いの祭を行う（200 銭）",
+     "requires": {
+      "money": 200
+     },
+     "effects": [
+      {
+       "type": "money",
+       "value": -200
+      },
+      {
+       "type": "loyalty",
+       "value": 4
+      }
+     ]
+    },
+    {
+     "text": "官倉を開く（穀物 200 石）",
+     "requires": {
+      "grain": 200
+     },
+     "effects": [
+      {
+       "type": "grain",
+       "value": -200
+      },
+      {
+       "type": "loyalty",
+       "value": 5
+      }
+     ]
+    },
+    {
+     "text": "何もしない",
+     "effects": [
+      {
+       "type": "loyalty",
+       "value": -5
+      }
+     ]
+    }
+   ],
+   "note": "『春秋』に旱と雩祭（雨乞い）の記事が多い"
+  },
+  {
+   "id": "locust",
+   "name": "蝗害",
+   "kind": "disaster",
+   "text": "蝗（いなご）の大群が畑を食い荒らしました。",
+   "trigger": {
+    "seasons": [
+     "autumn"
+    ],
+    "baseChance": 0.012,
+    "minMonths": 6
+   },
+   "effects": [
+    {
+     "type": "grain_ratio",
+     "value": -0.2
+    },
+    {
+     "type": "farm_penalty",
+     "value": 0.4,
+     "months": 3
+    }
+   ],
+   "choices": [
+    {
+     "text": "民を総出で蝗を捕らえさせる",
+     "effects": [
+      {
+       "type": "farm_penalty",
+       "value": -0.15,
+       "months": 3
+      },
+      {
+       "type": "loyalty",
+       "value": -2
+      }
+     ]
+    },
+    {
+     "text": "何もしない",
+     "effects": []
+    }
+   ],
+   "note": "戦国期の蝗害の記録は『呂氏春秋』などに見える"
+  },
+  {
+   "id": "plague",
+   "name": "疫病",
+   "kind": "disaster",
+   "text": "疫病が広がり、多くの民が倒れました。",
+   "trigger": {
+    "seasons": [
+     "summer",
+     "autumn"
+    ],
+    "baseChance": 0.012,
+    "minMonths": 12,
+    "conditions": {
+     "metric": "population",
+     "gte": 200
+    }
+   },
+   "mitigation": [
+    {
+     "structure": "well",
+     "factor": 0.7,
+     "text": "井戸の清い水が広がりを抑えた"
+    }
+   ],
+   "effects": [
+    {
+     "type": "population_ratio",
+     "value": -0.05
+    },
+    {
+     "type": "loyalty",
+     "value": -4
+    }
+   ],
+   "choices": [
+    {
+     "text": "病人を隔離し薬を配る（400 銭）",
+     "requires": {
+      "money": 400
+     },
+     "effects": [
+      {
+       "type": "money",
+       "value": -400
+      },
+      {
+       "type": "population_ratio",
+       "value": 0.02
+      },
+      {
+       "type": "loyalty",
+       "value": 3
+      }
+     ]
+    },
+    {
+     "text": "何もしない",
+     "effects": [
+      {
+       "type": "population_ratio",
+       "value": -0.02
+      }
+     ]
+    }
+   ],
+   "note": "衛生（井戸）で軽減"
+  },
+  {
+   "id": "earthquake",
+   "name": "地震",
+   "kind": "disaster",
+   "text": "大地が揺れ、家々が倒れました。",
+   "trigger": {
+    "baseChance": 0.004,
+    "minMonths": 12
+   },
+   "effects": [
+    {
+     "type": "destroy_buildings",
+     "near": "any",
+     "ratio": 0.05
+    },
+    {
+     "type": "loyalty",
+     "value": -3
+    }
+   ],
+   "choices": [
+    {
+     "text": "復旧を急がせる（300 銭）",
+     "requires": {
+      "money": 300
+     },
+     "effects": [
+      {
+       "type": "money",
+       "value": -300
+      },
+      {
+       "type": "loyalty",
+       "value": 4
+      }
+     ]
+    },
+    {
+     "text": "民に任せる",
+     "effects": []
+    }
+   ],
+   "note": "『史記』六国年表に地震の記事"
+  },
+  {
+   "id": "bandits",
+   "name": "盗賊",
+   "kind": "social",
+   "text": "治安が乱れ、盗賊の一団が街道を荒らしています。",
+   "trigger": {
+    "baseChance": 0.03,
+    "minMonths": 6,
+    "conditions": {
+     "metric": "security",
+     "lt": 45
+    }
+   },
+   "effects": [
+    {
+     "type": "money_ratio",
+     "value": -0.05
+    }
+   ],
+   "choices": [
+    {
+     "text": "兵を出して討伐する（兵 30 以上）",
+     "requires": {
+      "soldiers": 30
+     },
+     "effects": [
+      {
+       "type": "soldiers",
+       "value": -8
+      },
+      {
+       "type": "security",
+       "value": 8
+      },
+      {
+       "type": "merit",
+       "value": 60
+      }
+     ]
+    },
+    {
+     "text": "賠償金で追い払う（300 銭）",
+     "requires": {
+      "money": 300
+     },
+     "effects": [
+      {
+       "type": "money",
+       "value": -300
+      }
+     ]
+    },
+    {
+     "text": "放っておく",
+     "effects": [
+      {
+       "type": "security",
+       "value": -6
+      },
+      {
+       "type": "loyalty",
+       "value": -3
+      }
+     ]
+    }
+   ],
+   "note": "治安が低いと起きる"
+  },
+  {
+   "id": "refugees",
+   "name": "流民の到来",
+   "kind": "social",
+   "text": "戦乱を逃れた流民が県に流れ込んできました。",
+   "trigger": {
+    "baseChance": 0.02,
+    "minMonths": 6,
+    "conditions": {
+     "all": [
+      {
+       "metric": "loyalty",
+       "gte": 55
+      },
+      {
+       "metric": "vacancyRatio",
+       "gte": 0.1
+      }
+     ]
+    }
+   },
+   "choices": [
+    {
+     "text": "受け入れて住まわせる",
+     "effects": [
+      {
+       "type": "population_ratio",
+       "value": 0.05
+      },
+      {
+       "type": "security",
+       "value": -4
+      }
+     ]
+    },
+    {
+     "text": "追い返す",
+     "effects": [
+      {
+       "type": "loyalty",
+       "value": -2
+      }
+     ]
+    }
+   ],
+   "note": "人口が増えるが治安が下がる"
+  },
+  {
+   "id": "rebellion",
+   "name": "民の蜂起",
+   "kind": "social",
+   "text": "重税と飢えに耐えかねた民が蜂起し、役所に押し寄せました。",
+   "trigger": {
+    "baseChance": 0.06,
+    "minMonths": 6,
+    "conditions": {
+     "metric": "loyalty",
+     "lt": 25
+    }
+   },
+   "effects": [
+    {
+     "type": "security",
+     "value": -15
+    },
+    {
+     "type": "destroy_buildings",
+     "near": "any",
+     "ratio": 0.03
+    }
+   ],
+   "choices": [
+    {
+     "text": "兵で鎮圧する（兵 50 以上）",
+     "requires": {
+      "soldiers": 50
+     },
+     "effects": [
+      {
+       "type": "population_ratio",
+       "value": -0.02
+      },
+      {
+       "type": "loyalty",
+       "value": -5
+      },
+      {
+       "type": "security",
+       "value": 10
+      }
+     ]
+    },
+    {
+     "text": "減税を約束して収める",
+     "effects": [
+      {
+       "type": "tax_cut",
+       "value": 0.05
+      },
+      {
+       "type": "loyalty",
+       "value": 12
+      }
+     ]
+    }
+   ],
+   "note": "民忠が 25 未満で起きる"
+  },
+  {
+   "id": "scholar_visit",
+   "name": "諸子百家の来訪",
+   "kind": "visitor",
+   "text": "遊説の士が県を訪れ、県令に面会を求めています。",
+   "trigger": {
+    "baseChance": 0.02,
+    "minMonths": 6,
+    "conditions": {
+     "any": [
+      {
+       "metric": "academy",
+       "truthy": true
+      },
+      {
+       "metric": "prestige",
+       "gte": 30
+      }
+     ]
+    }
+   },
+   "choices": [
+    {
+     "text": "講義を聞く（研究が進む）",
+     "effects": [
+      {
+       "type": "research_progress",
+       "value": 30
+      }
+     ]
+    },
+    {
+     "text": "客館に泊めて登用を勧める",
+     "effects": [
+      {
+       "type": "visitor",
+       "value": 1
+      }
+     ]
+    },
+    {
+     "text": "丁重に断る",
+     "effects": []
+    }
+   ],
+   "note": "儒・法・墨・兵・縦横・農・陰陽の諸家"
+  },
+  {
+   "id": "royal_envoy",
+   "name": "王の使者",
+   "kind": "political",
+   "text": "王の使者が視察に訪れました。県の治め方を見て王に報告するそうです。",
+   "trigger": {
+    "baseChance": 0.015,
+    "minMonths": 12
+   },
+   "choices": [
+    {
+     "text": "盛大にもてなす（300 銭）",
+     "requires": {
+      "money": 300
+     },
+     "effects": [
+      {
+       "type": "money",
+       "value": -300
+      },
+      {
+       "type": "favor",
+       "value": 8
+      },
+      {
+       "type": "prestige",
+       "value": 3
+      }
+     ]
+    },
+    {
+     "text": "ありのままを見せる",
+     "effects": [
+      {
+       "type": "favor_by_loyalty",
+       "value": 1
+      }
+     ]
+    }
+   ],
+   "note": "王の信任が変わる"
+  },
+  {
+   "id": "h_zhengguo",
+   "name": "鄭国渠の着工",
+   "kind": "historical",
+   "year": -246,
+   "nation": "qin",
+   "text": "韓の水工・鄭国の献策で、涇水から洛水へ引く大水路の工事が始まりました。県にも労役の割り当てが来ています。",
+   "choices": [
+    {
+     "text": "労役を出す（300 銭、人口 1%）",
+     "requires": {
+      "money": 300
+     },
+     "effects": [
+      {
+       "type": "money",
+       "value": -300
+      },
+      {
+       "type": "population_ratio",
+       "value": -0.01
+      },
+      {
+       "type": "merit",
+       "value": 150
+      },
+      {
+       "type": "favor",
+       "value": 10
+      }
+     ]
+    },
+    {
+     "text": "断る",
+     "effects": [
+      {
+       "type": "favor",
+       "value": -10
+      }
+     ]
+    }
+   ],
+   "note": "『史記』河渠書。前246年"
+  },
+  {
+   "id": "h_lu_buwei",
+   "name": "呂不韋の失脚",
+   "kind": "historical",
+   "year": -237,
+   "nation": "qin",
+   "text": "嫪毐の乱に連座して相邦・呂不韋が罷免され、河南に退きました。",
+   "effects": [
+    {
+     "type": "favor",
+     "value": -5
+    }
+   ],
+   "choices": [
+    {
+     "text": "新しい体制に従う",
+     "effects": [
+      {
+       "type": "merit",
+       "value": 50
+      }
+     ]
+    }
+   ],
+   "note": "『史記』呂不韋列伝。前237年"
+  },
+  {
+   "id": "h_laoai",
+   "name": "嫪毐の乱",
+   "kind": "historical",
+   "year": -238,
+   "nation": "qin",
+   "text": "咸陽で嫪毐が兵を挙げましたが、昌平君・昌文君らが鎮圧しました。県にも忠誠を示す機会です。",
+   "choices": [
+    {
+     "text": "王側に兵を送る（兵 20 以上）",
+     "requires": {
+      "soldiers": 20
+     },
+     "effects": [
+      {
+       "type": "merit",
+       "value": 200
+      },
+      {
+       "type": "favor",
+       "value": 15
+      }
+     ]
+    },
+    {
+     "text": "静観する",
+     "effects": [
+      {
+       "type": "favor",
+       "value": -5
+      }
+     ]
+    }
+   ],
+   "note": "『史記』秦始皇本紀。前238年"
+  },
+  {
+   "id": "h_chu_move",
+   "name": "楚の寿春遷都",
+   "kind": "historical",
+   "year": -241,
+   "nation": "chu",
+   "text": "秦の圧迫を避け、楚は都を陳から寿春へ移しました。",
+   "effects": [
+    {
+     "type": "move_capital",
+     "nation": "chu",
+     "city": "shouchun"
+    }
+   ],
+   "choices": [
+    {
+     "text": "承知した",
+     "effects": []
+    }
+   ],
+   "note": "『史記』楚世家。前241年"
+  },
+  {
+   "id": "h_hezong",
+   "name": "五国合従",
+   "kind": "historical",
+   "year": -241,
+   "text": "春申君の主導で趙・魏・韓・楚・燕の五国が合従し、秦を攻めましたが函谷関で敗れました。諸国と秦の関係が悪化しています。",
+   "effects": [
+    {
+     "type": "relation",
+     "a": "qin",
+     "b": [
+      "zhao",
+      "wei",
+      "han",
+      "chu",
+      "yan"
+     ],
+     "value": -15
+    }
+   ],
+   "choices": [
+    {
+     "text": "承知した",
+     "effects": []
+    }
+   ],
+   "note": "『史記』春申君列伝。前241年"
+  },
+  {
+   "id": "h_jingke",
+   "name": "荊軻の刺秦",
+   "kind": "historical",
+   "year": -227,
+   "text": "燕の太子丹が送った刺客・荊軻が秦王政を刺そうとして失敗し、秦は燕を攻めました。",
+   "effects": [
+    {
+     "type": "relation",
+     "a": "qin",
+     "b": [
+      "yan"
+     ],
+     "value": -40
+    }
+   ],
+   "choices": [
+    {
+     "text": "承知した",
+     "effects": []
+    }
+   ],
+   "note": "『史記』刺客列伝。前227年"
+  }
+ ]
+}

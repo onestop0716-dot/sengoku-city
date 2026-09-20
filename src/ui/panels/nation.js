@@ -70,7 +70,7 @@ export function createNationPanel(world, reg, tooltip, log) {
     }
     // 国名
     ctx.font = 'bold 15px sans-serif';
-    for (const n of reg.nations) { const cap = reg.cityById.get(n.capital); ctx.fillStyle = n.color; ctx.fillText(n.name, X(cap.mapPos[0]) - 24, Y(cap.mapPos[1]) - 12); }
+    for (const n of reg.nations) { const cap = reg.cityById.get(N.capitals?.[n.id] || n.capital); ctx.fillStyle = n.color; ctx.fillText(n.name, X(cap.mapPos[0]) - 24, Y(cap.mapPos[1]) - 12); }
     ctx.fillStyle = '#5a4a3a'; ctx.font = '10px sans-serif'; ctx.fillText('都市を押すと商隊の行き先になります。■ 首都　◎ あなたの県　点線の輪 郡内の都市　緑の破線 不可侵　赤の破線 同盟', 8, H - 6);
   };
 

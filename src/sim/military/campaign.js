@@ -114,7 +114,7 @@ export function tickInvasionMonthly(world, reg) {
     const rel = N.relations[n.id][world.nationId];
     if (rel >= I.relationBelow) continue;
     if (N.treaties[[n.id, world.nationId].sort().join(':')]) continue;
-    const chance = I.baseChance * (0.5 + (n.aiTraits?.aggression || 0)) * (1 + (-rel - 30) / 70);
+    const chance = I.baseChance * (reg.balance.aiAggression ?? 1) * (0.5 + (n.aiTraits?.aggression || 0)) * (1 + (-rel - 30) / 70);
     if (world.rng.next() >= chance) continue;
     const from = reg.cities.filter((c) => N.cities[c.id].nation === n.id).sort((a, b) => dist(a, reg.cityById.get(world.cityId)) - dist(b, reg.cityById.get(world.cityId)))[0];
     if (!from) continue;

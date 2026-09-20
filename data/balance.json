@@ -258,5 +258,10 @@
       "commanderyIncomeRate": 0.02,
       "commanderyCount": 3
     }
+  },
+  "events": {
+    "_note": "イベント全体の確率係数（難易度の disasterRate も掛かる）",
+    "chanceScale": 1.0,
+    "autosaveYearly": true
   }
 }

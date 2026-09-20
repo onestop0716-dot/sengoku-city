@@ -17,6 +17,8 @@ import { ensureNationState, tickNationMonthly } from './nation/state.js';
 import { tickCaravansDaily } from './nation/trade.js';
 import { ensureArmy } from './military/army.js';
 import { tickCampaignDaily, tickInvasionMonthly } from './military/campaign.js';
+import { ensureEventsState, tickEventsMonthly } from './events.js';
+import { tickAchievementsMonthly, checkEnding } from './achievements.js';
 
 /**
  * @param {{seed:number, cityId:string, reg:object, size?:number, money?:number}} opts
@@ -65,7 +67,7 @@ export function createWorld({ seed, cityId, reg, size, money, village = true }) 
   if (village) placeStartingVillage(world, reg);
   ensureRoadDist(world, reg);
   recomputeServices(world, reg);
-  ensurePersonsState(world, reg); ensureResearchState(world); ensureNationState(world, reg); ensureArmy(world, reg); refreshModifiers(world, reg);
+  ensurePersonsState(world, reg); ensureResearchState(world); ensureNationState(world, reg); ensureArmy(world, reg); ensureEventsState(world); world.achievements = {}; refreshModifiers(world, reg);
   world.log.push({ day: 0, text: `${reg.nationById.get(city.nation).name}の${city.name}に県令として着任しました` });
   return world;
 }
@@ -92,6 +94,9 @@ export function tick(world, reg) {
     updateDemand(world, reg);
     tickNationMonthly(world, reg);
     tickInvasionMonthly(world, reg);
+    flags.event = tickEventsMonthly(world, reg);
+    tickAchievementsMonthly(world, reg);
+    checkEnding(world, reg);
   }
   if (world.log.length > 200) world.log.splice(0, world.log.length - 200);
   return flags;

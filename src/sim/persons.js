@@ -67,6 +67,7 @@ export function recruit(world, reg, personId) {
   world.finance.month.expense['俸禄'] += cand.gift;
   const p = cand.person;
   st.hired.push({ id: p.id, loyalty: p.loyaltyBase ?? 60, since: world.day, salary: cand.salary });
+  if (world.nation) world.nation.stats.hiredTotal = (world.nation.stats.hiredTotal || 0) + 1;
   st.visitors = st.visitors.filter((v) => v.id !== p.id);
   world.log.push({ day: world.day, text: `${p.name}を登用しました（俸禄 ${cand.salary} 銭/月）` });
   return { ok: true };

@@ -26,6 +26,12 @@ import { createPersonsPanel } from './ui/panels/persons.js';
 import { createResearchPanel } from './ui/panels/research.js';
 import { createNationPanel } from './ui/panels/nation.js';
 import { createMilitaryPanel } from './ui/panels/military.js';
+import { createSystemPanel } from './ui/panels/system.js';
+import { createEventModal } from './ui/event-modal.js';
+import { createEndingScreen } from './ui/ending.js';
+import { takePendingLoad, saveToSlot } from './app/saves.js';
+import { deserializeWorld } from './sim/save/serialize.js';
+import { restartTutorial } from './sim/advisor.js';
 import { createDemandMeter } from './ui/demand-meter.js';
 import { createGameLoop } from './app/game-loop.js';
 import { createInput } from './app/input.js';
@@ -40,9 +46,10 @@ async function main() {
   let reg = createRegistry(raw);
   for (const w of reg.warnings) console.warn('データ警告:', w);
   const settings = loadSettings();
-  const start = await showStartScreen(reg);
-  reg = createRegistry(raw, { difficulty: start.difficulty });   // 難易度でバランス値を上書き
-  const world = createWorld({ seed: start.seed, cityId: start.cityId, reg, size: start.size });
+  const pending = takePendingLoad();
+  const start = pending ? { load: pending } : await showStartScreen(reg);
+  reg = createRegistry(raw, { difficulty: start.load ? (start.load.difficulty || 'normal') : start.difficulty });   // 難易度でバランス値を上書き
+  const world = start.load ? deserializeWorld(start.load, reg) : createWorld({ seed: start.seed, cityId: start.cityId, reg, size: start.size });
 
   const canvas = document.getElementById('view');
   const sc = createScene(canvas);
@@ -75,7 +82,7 @@ async function main() {
   const log = createLog(world);
   const infoPanel = createInfoPanel(world, reg, tooltip);
   const loop = createGameLoop(world, reg, {
-    onTick() {},
+    onTick(flags) { if (flags.newYear) saveToSlot(world, reg, 'auto'); },
     onFrame(dt) {
       orbit.update(dt);
       sc.followCamera(orbit.camera.position);
@@ -85,7 +92,7 @@ async function main() {
       agentsView.update(dt, loop.speed, orbit.camera.position);
       toolbar.update();
       sc.followShadow(orbit.state.target, quality.shadowRadius);
-      hud.update(); log.update(); infoPanel.update(); demand.update(); finance.update(); population.update(); persons.update(); research.update(); nation.update(); military.update(); settingsPanel.update(loop.stats); advisor.update(); viewPanel.update();
+      hud.update(); log.update(); infoPanel.update(); demand.update(); finance.update(); population.update(); persons.update(); research.update(); nation.update(); military.update(); eventModal.update(); ending.update(); settingsPanel.update(loop.stats); advisor.update(); viewPanel.update();
       renderer.render(scene, orbit.camera);
     },
   });
@@ -100,13 +107,14 @@ async function main() {
   const finance = createFinancePanel(world, reg, tooltip);
   const population = createPopulationPanel(world, reg, tooltip);
   const demand = createDemandMeter(world, tooltip);
-  const advisor = createAdvisorUi(world, reg, settings, { onOpenSettings: () => settingsPanel.toggle(), onOpen: () => { for (const p of [finance, population, persons, research, nation, military]) p.el.style.display = 'none'; }, onView: (id) => { const t = viewMode.focusProblem(id); if (t) { orbit.state.target.set(t[0] + 0.5, env.terrain.heightAt(t[0] + 0.5, t[1] + 0.5), t[1] + 0.5); orbit.state.distance = Math.min(orbit.state.distance, 40); } } });
+  const advisor = createAdvisorUi(world, reg, settings, { onOpenSettings: () => settingsPanel.toggle(), onOpen: () => { for (const p of [finance, population, persons, research, nation, military, system]) p.el.style.display = 'none'; }, onView: (id) => { const t = viewMode.focusProblem(id); if (t) { orbit.state.target.set(t[0] + 0.5, env.terrain.heightAt(t[0] + 0.5, t[1] + 0.5), t[1] + 0.5); orbit.state.distance = Math.min(orbit.state.distance, 40); } } });
   const persons = createPersonsPanel(world, reg, tooltip, log);
   const research = createResearchPanel(world, reg, tooltip, log);
   const nation = createNationPanel(world, reg, tooltip, log);
   const military = createMilitaryPanel(world, reg, tooltip, log);
-  const panels = { finance, population, persons, research, nation, military, advisor };
-  const hud = createHud(world, reg, loop, tooltip, { onSettings: () => settingsPanel.toggle(), onPanel: (name) => { for (const [k, p] of Object.entries(panels)) if (k !== name) p.el.style.display = 'none'; panels[name].toggle(); } });
+  const system = createSystemPanel(world, reg, log, { onSettings: () => settingsPanel.toggle(), onRestartTutorial: () => { restartTutorial(world); advisor.restart(); } });
+  const panels = { finance, population, persons, research, nation, military, system, advisor };
+  const hud = createHud(world, reg, loop, tooltip, { onSettings: () => { for (const [k, p] of Object.entries(panels)) if (k !== 'system') p.el.style.display = 'none'; system.toggle(); }, onPanel: (name) => { for (const [k, p] of Object.entries(panels)) if (k !== name) p.el.style.display = 'none'; panels[name].toggle(); } });
   const viewPanel = createViewModePanel(world, reg, viewMode, { button: hud.viewButton });
   viewMode.onChange((m) => hud.setViewMode(viewPanel.nameOf(m)));
   const toolbar = createToolbar(reg, world, () => { radiusOverlay.clear(); });
@@ -115,6 +123,12 @@ async function main() {
   window.addEventListener('resize', () => { const s = sc.resize(); orbit.setAspect(s.w / s.h); });
   window.addEventListener('keydown', (e) => { if (e.code === 'Space' && e.target.tagName !== 'INPUT') { e.preventDefault(); loop.togglePause(); } });
 
+  const eventModal = createEventModal(world, reg, loop, log);
+  const ending = createEndingScreen(world, reg, loop);
+  // 画面を閉じたり別アプリへ切り替えたら一時停止してオートセーブ
+  let pausedByHide = false;
+  document.addEventListener('visibilitychange', () => { if (document.hidden) { if (loop.speedIndex !== 0) { pausedByHide = true; loop.setSpeedIndex(0); } saveToSlot(world, reg, 'auto'); } else if (pausedByHide) { pausedByHide = false; loop.setSpeedIndex(1); } });
+  window.addEventListener('pagehide', () => saveToSlot(world, reg, 'auto'));
   loop.start();
   assets.loadExternal(() => buildings.refreshModels());
   window.__game = { world, reg, loop, THREE, settings, orbit, env, agentsView, advisor, viewMode, rendererInfo: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles }) }; // デバッグ用
