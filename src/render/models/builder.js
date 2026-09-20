@@ -11,24 +11,38 @@ const cross = (u, v) => [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u
 const norm = (v) => { const l = Math.hypot(v[0], v[1], v[2]) || 1; return [v[0] / l, v[1] / l, v[2] / l]; };
 const dot = (u, v) => u[0] * v[0] + u[1] * v[1] + u[2] * v[2];
 
+/** 質感の種類: 0 なし / 1 木 / 2 土・版築 / 3 瓦 / 4 茅・藁 / 5 葉 / 6 草地 / 7 布 / 8 石 */
+export const TEX = { none: 0, wood: 1, earth: 2, tile: 3, thatch: 4, leaf: 5, grass: 6, cloth: 7, stone: 8 };
+const TEX_BY_COLOR = new Map([
+  [0x8b5a2b, 1], [0x6b4423, 1], [0x6b4a2a, 1], [0x5a3d22, 1],
+  [0xc9a978, 2], [0xb08f5f, 2], [0x8b6b3f, 2], [0x6f5535, 2], [0xa0522d, 2], [0xe8dcc0, 2],
+  [0x6b6b70, 3], [0x55555a, 3],
+  [0xb89b5e, 4], [0x9c8148, 4], [0xd9c27a, 4],
+  [0x4f8f3e, 5], [0x3f7332, 5], [0x6faa4a, 5], [0x3f6b3a, 5], [0x2f5a30, 5], [0x5f9a3c, 5], [0x6a9d45, 5], [0x8fb35a, 5], [0x6aa646, 5], [0x54903a, 5],
+  [0x8a8a8a, 8], [0x5c5c5c, 8],
+]);
+export function texOfColor(hex) { return typeof hex === 'number' ? (TEX_BY_COLOR.get(hex) ?? 0) : 0; }
+
 export function createBuilder() {
-  const pos = [], nor = [], col = [];
-  const push = (p, n, c) => { pos.push(p[0], p[1], p[2]); nor.push(n[0], n[1], n[2]); col.push(c[0], c[1], c[2]); };
+  const pos = [], nor = [], col = [], tex = [];
+  let curTex = -1;                       // -1 なら色から自動判定
+  const push = (p, n, c, t) => { pos.push(p[0], p[1], p[2]); nor.push(n[0], n[1], n[2]); col.push(c[0], c[1], c[2]); tex.push(t); };
+  const texFor = (color) => (curTex >= 0 ? curTex : texOfColor(color));
   const tri = (a, b, c, color) => {
     const raw = cross(sub(b, a), sub(c, a));
     if (Math.hypot(raw[0], raw[1], raw[2]) < 1e-9) return;   // 潰れた三角形は捨てる
     const n = norm(raw);
-    const cc = toCol(color);
-    push(a, n, cc); push(b, n, cc); push(c, n, cc);
+    const cc = toCol(color), t = texFor(color);
+    push(a, n, cc, t); push(b, n, cc, t); push(c, n, cc, t);
   };
   const quad = (a, b, c, d, color) => { tri(a, b, c, color); tri(a, c, d, color); };
   /** 頂点ごとに法線を指定する四角形（滑らかな面用） */
   const quadN = (a, b, c, d, na, nb, nc, nd, color) => {
-    const cc = toCol(color);
+    const cc = toCol(color), t = texFor(color);
     const geo = cross(sub(b, a), sub(c, a));
     if (dot(geo, na) < 0) { [b, d] = [d, b]; [nb, nd] = [nd, nb]; }   // 表裏を法線に合わせる
-    push(a, na, cc); push(b, nb, cc); push(c, nc, cc);
-    push(a, na, cc); push(c, nc, cc); push(d, nd, cc);
+    push(a, na, cc, t); push(b, nb, cc, t); push(c, nc, cc, t);
+    push(a, na, cc, t); push(c, nc, cc, t); push(d, nd, cc, t);
   };
   /** 外向きになるよう向きを直してから三角形を追加 */
   const triOut = (a, b, c, color, center) => {
@@ -40,6 +54,27 @@ export function createBuilder() {
 
   const B = {
     tri, quad, quadN,
+    /** 以後の質感を固定する（TEX.wood など）。-1 で自動に戻す */
+    tex(t) { curTex = t; return B; },
+    /** 点 a から b への管（枝・轅・柄など）。r0→r1 に細くなる */
+    tube(a, b, r0, r1, color, seg = 6) {
+      const d = sub(b, a), len = Math.hypot(d[0], d[1], d[2]) || 1e-6;
+      const ax = [d[0] / len, d[1] / len, d[2] / len];
+      const ref = Math.abs(ax[1]) < 0.9 ? [0, 1, 0] : [1, 0, 0];
+      const u = norm(cross(ref, ax)), v = cross(ax, u);
+      const cc = toCol(color), t = texFor(color);
+      for (let k = 0; k < seg; k++) {
+        const t0 = (k / seg) * Math.PI * 2, t1 = ((k + 1) / seg) * Math.PI * 2;
+        const n0 = [u[0] * Math.cos(t0) + v[0] * Math.sin(t0), u[1] * Math.cos(t0) + v[1] * Math.sin(t0), u[2] * Math.cos(t0) + v[2] * Math.sin(t0)];
+        const n1 = [u[0] * Math.cos(t1) + v[0] * Math.sin(t1), u[1] * Math.cos(t1) + v[1] * Math.sin(t1), u[2] * Math.cos(t1) + v[2] * Math.sin(t1)];
+        const p00 = [a[0] + n0[0] * r0, a[1] + n0[1] * r0, a[2] + n0[2] * r0], p01 = [a[0] + n1[0] * r0, a[1] + n1[1] * r0, a[2] + n1[2] * r0];
+        const p10 = [b[0] + n0[0] * r1, b[1] + n0[1] * r1, b[2] + n0[2] * r1], p11 = [b[0] + n1[0] * r1, b[1] + n1[1] * r1, b[2] + n1[2] * r1];
+        push(p01, n1, cc, t); push(p00, n0, cc, t); push(p10, n0, cc, t);
+        push(p01, n1, cc, t); push(p10, n0, cc, t); push(p11, n1, cc, t);
+      }
+      if (r1 > 0.001) for (let k = 0; k < seg; k++) { const t0 = (k / seg) * Math.PI * 2, t1 = ((k + 1) / seg) * Math.PI * 2; const q = (tt) => [b[0] + (u[0] * Math.cos(tt) + v[0] * Math.sin(tt)) * r1, b[1] + (u[1] * Math.cos(tt) + v[1] * Math.sin(tt)) * r1, b[2] + (u[2] * Math.cos(tt) + v[2] * Math.sin(tt)) * r1]; tri(b, q(t1), q(t0), color); }
+      return B;
+    },
     /** 直方体（中心 cx,cz、底面 y0） */
     box(cx, y0, cz, sx, sy, sz, color, rotY = 0) { return B.chamferBox(cx, y0, cz, sx, sy, sz, color, { chamfer: 0, rotY }); },
     /** 面取りした直方体 */
@@ -201,8 +236,9 @@ export function createBuilder() {
           const c = [cx + r1 * Math.cos(t1b), y0 + h1, cz + r1 * Math.sin(t1b)], d = [cx + r1 * Math.cos(t0b), y0 + h1, cz + r1 * Math.sin(t0b)];
           const na = [nr0 * Math.cos(t0), ny0, nr0 * Math.sin(t0)], nb = [nr0 * Math.cos(t1), ny0, nr0 * Math.sin(t1)];
           const nc = [nr1 * Math.cos(t1b), ny1, nr1 * Math.sin(t1b)], nd = [nr1 * Math.cos(t0b), ny1, nr1 * Math.sin(t0b)];
-          push(b, nb, c0); push(a, na, c0); push(d, nd, c1);
-          push(b, nb, c0); push(d, nd, c1); push(c, nc, c1);
+          const tt0 = texFor(colors ? colors[i] : color), tt1 = texFor(colors ? colors[i + 1] : color);
+          push(b, nb, c0, tt0); push(a, na, c0, tt0); push(d, nd, c1, tt1);
+          push(b, nb, c0, tt0); push(d, nd, c1, tt1); push(c, nc, c1, tt1);
         }
       }
       // 上端・下端を閉じる
@@ -240,7 +276,7 @@ export function createBuilder() {
       return B;
     },
     build() {
-      return { positions: new Float32Array(pos), normals: new Float32Array(nor), colors: new Float32Array(col), vertexCount: pos.length / 3 };
+      return { positions: new Float32Array(pos), normals: new Float32Array(nor), colors: new Float32Array(col), tex: new Float32Array(tex), vertexCount: pos.length / 3 };
     },
   };
   return B;

@@ -2,12 +2,14 @@
 // lod='low' は遠景用（樹木は簡略生成、建物は外形の箱）。
 import * as THREE from 'three';
 import { generateModel } from '../models/index.js';
+import { createTexturedMaterial } from '../materials.js';
 
 function toGeometry(m) {
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(m.positions, 3));
   g.setAttribute('normal', new THREE.BufferAttribute(m.normals, 3));
   g.setAttribute('color', new THREE.BufferAttribute(m.colors, 3));
+  if (m.tex) g.setAttribute('tex', new THREE.BufferAttribute(m.tex, 1));
   return g;
 }
 
@@ -31,7 +33,7 @@ function blockFromModel(m) {
 
 export function createAssetResolver(reg) {
   const cache = new Map();
-  const material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85, metalness: 0 });
+  const material = createTexturedMaterial({ roughness: 0.85 });
   let gltfLoader = null;
 
   async function loadGltf(asset) {
@@ -55,9 +57,11 @@ export function createAssetResolver(reg) {
     procedural(assetId, lod = 'high') {
       const key = `${assetId}:${lod}`;
       if (cache.has(key)) return cache.get(key);
-      const asset = reg.assetById.get(assetId);
-      if (!asset) throw new Error(`アセット ${assetId} がありません`);
-      const params = asset.kind === 'procedural' ? asset.params : asset.params;
+      const at = assetId.indexOf('@');
+      const baseId = at >= 0 ? assetId.slice(0, at) : assetId;
+      const asset = reg.assetById.get(baseId);
+      if (!asset) throw new Error(`アセット ${baseId} がありません`);
+      const params = at >= 0 ? { ...asset.params, stage: assetId.slice(at + 1) } : asset.params;
       const generator = asset.kind === 'procedural' ? asset.generator : (asset.fallbackGenerator || 'scaffold');
       let geometry;
       if (lod === 'low' && generator === 'tree') geometry = toGeometry(generateModel({ generator, params: { ...params, lod: 'low' } }));

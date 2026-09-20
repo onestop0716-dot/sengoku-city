@@ -9,7 +9,7 @@ const FORBIDDEN_WORDS = ['紙', '椅子', '茶', '綿', '仏', '寺院', '火薬
 export function validateData(raw) {
   const errors = [], warnings = [];
   const req = (name) => { if (!raw[name]) errors.push(`${name}.json がありません`); };
-  ['nations', 'cities', 'terrain', 'zones', 'buildings', 'crops', 'assets', 'balance', 'terms', 'structures', 'difficulties'].forEach(req);
+  ['nations', 'cities', 'terrain', 'zones', 'buildings', 'crops', 'assets', 'balance', 'terms', 'structures', 'difficulties', 'advice'].forEach(req);
   if (errors.length) return { errors, warnings };
 
   const ids = (arr, name) => {
@@ -74,18 +74,37 @@ export function validateData(raw) {
     if (a.kind === 'gltf' && !a.credit) warnings.push(`assets/${a.id}: 外部素材は credit（CREDITS.md への参照）を書いてください`);
   }
   for (const t of raw.terrain.tiles) if (!t.color) errors.push(`terrain/${t.id}: color がありません`);
+  // 案内役の助言
+  if (raw.advice) {
+    const A = raw.advice, ex = new Set(A.expressions || []);
+    if (!A.advices || !Array.isArray(A.advices)) errors.push('advice: advices がありません');
+    if (!A.frequency?.normal) errors.push('advice: frequency.normal が必要です');
+    ids(A.advices || [], 'advice/advices'); ids(A.tutorial || [], 'advice/tutorial');
+    const checkCond = (c, where) => {
+      if (!c || typeof c !== 'object') { errors.push(`${where}: 条件が不正です`); return; }
+      if (c.all) c.all.forEach((x) => checkCond(x, where)); else if (c.any) c.any.forEach((x) => checkCond(x, where)); else if (c.not) checkCond(c.not, where);
+      else if (!c.metric) errors.push(`${where}: metric がありません`);
+    };
+    for (const e of A.advices || []) {
+      if (!ex.has(e.expression)) errors.push(`advice/${e.id}: expression "${e.expression}" は expressions にありません`);
+      if (typeof e.priority !== 'number') errors.push(`advice/${e.id}: priority がありません`);
+      if (!e.text) errors.push(`advice/${e.id}: text がありません`);
+      checkCond(e.when, `advice/${e.id}`);
+    }
+    for (const t of A.tutorial || []) { if (!t.text) errors.push(`advice/tutorial/${t.id}: text がありません`); if (t.done) checkCond(t.done, `advice/tutorial/${t.id}`); if (t.expression && !ex.has(t.expression)) errors.push(`advice/tutorial/${t.id}: expression が不正です`); }
+  }
   if (!tileIds.has('plain') || !tileIds.has('river')) errors.push('terrain: plain と river は必須です');
 
   // 時代考証の禁止語（表示文字列のみ）
   const check = (file, e) => {
     const allow = String(e.note || '').match(/allow:([^\s]+)/g)?.map((s) => s.slice(6)) || [];
-    for (const key of ['name', 'desc', 'bio', 'term']) {
+    for (const key of ['name', 'desc', 'bio', 'term', 'title', 'text', 'todo']) {
       const text = e[key];
       if (typeof text !== 'string') continue;
       for (const w of FORBIDDEN_WORDS) if (text.includes(w) && !allow.includes(w)) warnings.push(`${file}/${e.id}: ${key} に禁止語「${w}」が含まれています`);
     }
   };
-  for (const [file, arr] of [['nations', raw.nations], ['cities', raw.cities], ['zones', raw.zones], ['buildings', raw.buildings], ['crops', raw.crops], ['terms', raw.terms], ['structures', raw.structures]]) arr.forEach((e) => check(file, e));
+  for (const [file, arr] of [['nations', raw.nations], ['cities', raw.cities], ['zones', raw.zones], ['buildings', raw.buildings], ['crops', raw.crops], ['terms', raw.terms], ['structures', raw.structures], ['advice', raw.advice?.advices || []], ['advice/tutorial', raw.advice?.tutorial || []]]) arr.forEach((e) => check(file, e));
 
   return { errors, warnings };
 }

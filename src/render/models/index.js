@@ -5,8 +5,10 @@ import { tree, scaffold } from './nature.js';
 import { structure } from './structures.js';
 import { marketStall, workshop, militaryBuilding } from './commerce.js';
 import { agent } from './agents.js';
+import { personStatic } from './people.js';
+import { VEHICLE_PARTS } from './vehicles.js';
 
-export const GENERATORS = { houseCommoner, houseShi, houseNoble, farmhouse, field, tree, scaffold, structure, marketStall, workshop, militaryBuilding, agent };
+export const GENERATORS = { houseCommoner, houseShi, houseNoble, farmhouse, field, tree, scaffold, structure, marketStall, workshop, militaryBuilding, agent, personStatic, vehiclePart: ({ part, ...params }) => VEHICLE_PARTS[part](params) };
 
 /** アセット定義からローポリ形状（配列）を作る */
 export function generateModel(asset) {

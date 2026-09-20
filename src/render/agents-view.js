@@ -4,8 +4,10 @@
 import * as THREE from 'three';
 import { idx, inBounds, N4 } from '../core/grid.js';
 import { createPeopleView, makeLook } from './people-view.js';
+import { createVehiclesView } from './vehicles-view.js';
+import { PERSON_SCALE } from './models/people.js';
 
-const KINDS = ['person_farmer', 'person_artisan', 'person_merchant', 'person_shi', 'person_noble', 'person_soldier', 'oxcart', 'handcart', 'carriage', 'boat'];
+const PERSON_KINDS = ['person_farmer', 'person_artisan', 'person_merchant', 'person_shi', 'person_noble', 'person_soldier'];
 
 export function createAgentsView(world, reg, scene, assets, env) {
   const group = new THREE.Group();
@@ -27,7 +29,7 @@ export function createAgentsView(world, reg, scene, assets, env) {
     group.add(m); meshes.set(kind, m);
     return m;
   };
-  KINDS.forEach(ensure);
+  for (const k of PERSON_KINDS) for (let v = 0; v < 3; v++) ensure(`${k}_${v}`);
 
   const W = world.map.w, H = world.map.h;
   const isRoad = (x, y) => inBounds(W, H, x, y) && world.roads[idx(W, x, y)] === 1;
@@ -94,8 +96,9 @@ export function createAgentsView(world, reg, scene, assets, env) {
     if (!from) return false;
     let path = findPath(from, to, passable, 4000) || wander(from, passable, 20 + Math.floor(rnd() * 20));
     if (!path || path.length < 2) return false;
-    const look = kind.startsWith('person_') ? makeLook(kind, lookSeed++) : null;
-    agents.push({ kind, path, t: rnd() * (path.length - 1), dir: 1, speed: speed * (0.8 + rnd() * 0.4) * (look?.age === 'child' ? 0.8 : look?.age === 'elder' ? 0.7 : 1), wait: 0, life: 60 + rnd() * 120, look, phase: rnd() * 6.28, clock: rnd() * 10 });
+    const seed = lookSeed++;
+    const look = kind.startsWith('person_') ? makeLook(kind, seed) : null;
+    agents.push({ kind, path, t: rnd() * (path.length - 1), dir: 1, speed: speed * (0.8 + rnd() * 0.4) * (look?.age === 'child' ? 0.8 : look?.age === 'elder' ? 0.7 : 1), wait: 0, life: 60 + rnd() * 120, look, seed, variant: seed % 3, phase: rnd() * 6.28, clock: rnd() * 10, odo: 0 });
     return true;
   };
 
@@ -131,13 +134,15 @@ export function createAgentsView(world, reg, scene, assets, env) {
         const d1 = pick(work.dock); const d2 = work.dock.length > 1 ? pick(work.dock.filter((d) => d !== d1)) : null;
         const waterNear = (s) => { for (let y = s.y - 1; y <= s.y + s.h; y++) for (let x = s.x - 1; x <= s.x + s.w; x++) if (isWater(x, y)) return [x, y]; return null; };
         const a = waterNear(d1), b = d2 ? waterNear(d2) : null;
-        if (a) { if (b) spawn('boat', a, b, isWater, 1.4); else { const p = wander(a, isWater, 30); if (p) agents.push({ kind: 'boat', path: p, t: 0, dir: 1, speed: 1.2, wait: 0, life: 200 }); } }
+        if (a) { if (b) spawn('boat', a, b, isWater, 1.4); else { const p = wander(a, isWater, 30); if (p) agents.push({ kind: 'boat', path: p, t: 0, dir: 1, speed: 1.2, wait: 0, life: 200, seed: lookSeed++, variant: 0, phase: 0, clock: 0, odo: 0 }); } }
       } else if (work.field.length) { const f = pick(work.field); spawn('oxcart', doorTile(f), doorTile(pick(work.yamen) || f), roadPass, 1.0); }
       if (agents.length > before) n++;
     }
   };
 
   const tmp = new THREE.Vector3();
+  const vehicles = createVehiclesView(group, assets, people, makeLook);
+  const angleTo = (from, to) => { let d = to - from; while (d > Math.PI) d -= Math.PI * 2; while (d < -Math.PI) d += Math.PI * 2; return d; };
   return {
     group,
     debug() { return { agents: agents.length, shown: Array.from(meshes.values()).map((m) => m.count).reduce((a, b) => a + b, 0) }; },
@@ -147,46 +152,64 @@ export function createAgentsView(world, reg, scene, assets, env) {
       if (now >= nextRefresh) { nextRefresh = now + 2000; refresh(); }
       const spd = gameSpeed > 0 ? Math.sqrt(gameSpeed) : 0;
       const counts = new Map();
-      people.begin();
+      people.begin(); vehicles.begin();
       for (let i = agents.length - 1; i >= 0; i--) {
         const a = agents[i];
         a.life -= dt;
-        if (a.life <= 0) { agents.splice(i, 1); continue; }
+        if (a.life <= 0) { vehicles.forget(a); agents.splice(i, 1); continue; }
         a.clock += dt;
+        let moving = false;
         if (a.wait > 0) a.wait -= dt;
         else {
-          a.t += a.dir * a.speed * spd * dt;
-          a.phase += a.speed * spd * dt * 7;
+          const step = a.speed * spd * dt;
+          a.t += a.dir * step;
+          a.odo = (a.odo || 0) + step;
+          a.phase += step * (a.look ? 7 : 5);
+          moving = step > 0;
           if (a.t >= a.path.length - 1) { a.t = a.path.length - 1; a.dir = -1; a.wait = 8 + rnd() * 20; }
           else if (a.t <= 0) { a.t = 0; a.dir = 1; a.wait = 5 + rnd() * 15; }
         }
         const i0 = Math.floor(a.t), i1 = Math.min(a.path.length - 1, i0 + 1), f = a.t - i0;
         const p0 = a.path[i0], p1 = a.path[i1];
         const x = p0[0] + 0.5 + (p1[0] - p0[0]) * f, z = p0[1] + 0.5 + (p1[1] - p0[1]) * f;
-        // 経路上のマス列が同じ道路でも複数の住民が重ならないように、少し横にずらす
-        const side = ((i * 7919) % 5 - 2) * 0.12;
+        // 進行方向。角では急に向きを変えず、なめらかに回る
         const dx = (p1[0] - p0[0]) * a.dir, dz = (p1[1] - p0[1]) * a.dir;
-        const rot = (dx || dz) ? Math.atan2(dx, dz) : 0;
-        const y = a.kind === 'boat' ? env.terrain.field.waterLevel + 0.02 : env.terrain.heightAt(x, z);
-        tmp.set(x - Math.cos(rot) * side, y, z + Math.sin(rot) * side);
+        const target = (dx || dz) ? Math.atan2(dx, dz) : (a.heading ?? 0);
+        if (a.heading === undefined) a.heading = target;
+        else if (a.wait <= 0 || a.kind === 'boat') a.heading += angleTo(a.heading, target) * Math.min(1, dt * (a.look ? 8 : 5));
+        const rot = a.heading;
+        // 経路上のマス列が同じ道路でも複数の住民が重ならないように、少し横にずらす
+        const side = ((i * 7919) % 5 - 2) * (a.look ? 0.12 : 0.05);
+        const px = x - Math.cos(rot) * side, pz = z + Math.sin(rot) * side;
+        const isBoat = a.kind === 'boat';
+        const y = isBoat ? env.terrain.field.waterLevel + 0.02 + Math.sin(a.clock * 1.7) * 0.012 : env.terrain.heightAt(px, pz);
+        tmp.set(px, y, pz);
         const dist = camPos ? tmp.distanceTo(camPos) : 0;
         if (dist > 140) continue;
-        if (a.look && dist < nearDist) {
+        // 坂: 前後の地面の高さの差から傾きを求める（舟は波で少し揺れる）
+        let pitch = 0;
+        if (isBoat) pitch = Math.sin(a.clock * 1.3) * 0.02;
+        else if (dist < nearDist * 2) { const hx = Math.sin(rot) * 0.35, hz = Math.cos(rot) * 0.35; pitch = -Math.atan2(env.terrain.heightAt(px + hx, pz + hz) - env.terrain.heightAt(px - hx, pz - hz), 0.7); }
+        if (!a.look) {
+          vehicles.draw(a, { x: px, y, z: pz, heading: rot, pitch, odo: a.odo || 0, phase: a.phase, moving, t: a.clock });
+          continue;
+        }
+        if (dist < nearDist) {
           // 近景: 関節つきの人。仕事場に着いた農民は作業、商人は客と話す
           const atWork = a.wait > 0 && a.dir === -1;
           const action = a.wait <= 0 && spd > 0 ? 'walk' : atWork && a.kind === 'person_farmer' && a.look.item === 'hoe' ? 'work' : atWork && (a.kind === 'person_merchant' || a.kind === 'person_official') ? 'talk' : 'idle';
-          people.draw(a.look, { x: tmp.x, y: tmp.y, z: tmp.z, rot, phase: a.phase, action, t: a.clock });
+          people.draw(a.look, { x: px, y, z: pz, rot, pitch: pitch * 0.5, phase: a.phase, action, t: a.clock });
           continue;
         }
-        const kindKey = a.kind === 'person_official' ? 'person_shi' : a.kind;
+        // 遠景: 組み立て済みの静止モデル
+        const kindKey = `${a.kind === 'person_official' ? 'person_shi' : a.kind}_${a.variant}`;
         const mesh = ensure(kindKey);
         const n = counts.get(kindKey) || 0;
-        pos.copy(tmp); quat.setFromAxisAngle(up, rot);
-        if (a.look) scl.setScalar(a.look.scale); else scl.setScalar(1);
+        pos.copy(tmp); quat.setFromAxisAngle(up, rot); scl.setScalar(a.look.scale / PERSON_SCALE);
         m4.compose(pos, quat, scl); mesh.setMatrixAt(n, m4); counts.set(kindKey, n + 1);
       }
       for (const [kind, mesh] of meshes) { mesh.count = counts.get(kind) || 0; mesh.instanceMatrix.needsUpdate = true; }
-      people.end();
+      people.end(); vehicles.end();
     },
   };
 }

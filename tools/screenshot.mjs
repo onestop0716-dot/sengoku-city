@@ -44,7 +44,7 @@ const perf = await page.evaluate(async (extra) => {
   for (let d = 0; d < 400; d++) tick(world, reg);
   const tickMs = (performance.now() - t0) / 400;
   loop.setSpeedIndex(0);
-  if (extra) await new Function('world', 'reg', 'return (async () => {' + extra + '})()')(world, reg);
+  if (extra) await new Function('world', 'reg', 'tick', 'applyCommand', 'return (async () => {' + extra + '})()')(world, reg, tick, applyCommand);
   return { tickMs: +tickMs.toFixed(2), buildings: world.buildings.size, map: world.map.w };
 }, extra);
 if (quality) { await page.click('#hud-settings'); await page.click(`input[name=quality][value=${quality}]`); await page.click('#settings-close'); }

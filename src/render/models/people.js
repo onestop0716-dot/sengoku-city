@@ -138,4 +138,32 @@ export const WARDROBE = {
   person_soldier:  { head: ['helmet'], torso: 'armor', arm: 'narrow', items: ['ge'], cloth: [0x7a5a3a, 0x8a4a3a, 0x6a5a4a], trousers: [0x4a3a2a], female: 0 },
 };
 export const SKIN_TONES = [0xf0d0b0, 0xe0be98, 0xd0ac88, 0xc09a78];
+/** 人の基本の大きさ（1マス ≈ 4m、身長 ≈ 0.45 マス） */
+export const PERSON_SCALE = 0.46;
+
+const srgbLin = (c) => (c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+const hexLin = (h) => [srgbLin(((h >> 16) & 255) / 255), srgbLin(((h >> 8) & 255) / 255), srgbLin((h & 255) / 255)];
+
+/** 遠景用: 部品を静止ポーズで1つに組み立て、服の色を焼き込む */
+export function personStatic({ kind = 'person_farmer', variant = 0 }) {
+  const W = WARDROBE[kind] || WARDROBE.person_farmer;
+  const cloth = hexLin(W.cloth[variant % W.cloth.length]), trousers = hexLin(W.trousers[variant % W.trousers.length]), skin = hexLin(SKIN_TONES[variant % SKIN_TONES.length]);
+  const parts = [
+    { m: torso({ variant: W.torso }), y: 0.42, tint: cloth },
+    { m: head({ variant: W.head[variant % W.head.length] }), y: 0.8, tint: skin },
+    { m: arm({ variant: W.arm }), y: 0.76, x: 0.15, tint: cloth }, { m: arm({ variant: W.arm }), y: 0.76, x: -0.15, tint: cloth },
+    { m: hand(), y: 0.76, x: 0.15, tint: skin }, { m: hand(), y: 0.76, x: -0.15, tint: skin },
+    { m: leg(), y: 0.42, x: 0.06, tint: trousers }, { m: leg(), y: 0.42, x: -0.06, tint: trousers },
+  ];
+  const pos = [], nor = [], col = [], tex = [];
+  for (const p of parts) {
+    for (let i = 0; i < p.m.vertexCount; i++) {
+      pos.push((p.m.positions[i * 3] + (p.x || 0)) * PERSON_SCALE, (p.m.positions[i * 3 + 1] + p.y) * PERSON_SCALE, p.m.positions[i * 3 + 2] * PERSON_SCALE);
+      nor.push(p.m.normals[i * 3], p.m.normals[i * 3 + 1], p.m.normals[i * 3 + 2]);
+      col.push(p.m.colors[i * 3] * p.tint[0], p.m.colors[i * 3 + 1] * p.tint[1], p.m.colors[i * 3 + 2] * p.tint[2]);
+      tex.push(p.m.tex ? p.m.tex[i] : 0);
+    }
+  }
+  return { positions: new Float32Array(pos), normals: new Float32Array(nor), colors: new Float32Array(col), tex: new Float32Array(tex), vertexCount: pos.length / 3 };
+}
 export const PART_GENERATORS = { head, torso, arm, hand, leg, item };

@@ -3,6 +3,7 @@
 import * as THREE from 'three';
 import { hash2 } from '../core/rng.js';
 import { modelIdFor } from '../sim/zones.js';
+import { cropStage } from './crop-stage.js';
 
 const SPECIES = ['pine', 'cypress', 'sophora', 'elm', 'willow'];
 const SPECIES_WEIGHT = { north: [32, 18, 28, 22, 0], central: [22, 12, 34, 24, 8], south: [14, 10, 36, 22, 18] };
@@ -17,6 +18,7 @@ export function createBuildingsView(world, reg, scene, assets, env) {
   let lastCam = new THREE.Vector3(Infinity, 0, 0);
   let treeItems = [];
   let buildingItems = new Map();
+  let lastMonth = world.calendar.month;
 
   const makeMesh = (geometry, capacity, cast) => {
     const mesh = new THREE.InstancedMesh(geometry, assets.material, capacity);
@@ -75,7 +77,8 @@ export function createBuildingsView(world, reg, scene, assets, env) {
   const collectBuildings = () => {
     buildingItems = new Map();
     for (const b of world.buildings.values()) {
-      const modelId = b.state === 'built' ? modelIdFor(world, reg, b) : 'scaffold';
+      let modelId = b.state === 'built' ? modelIdFor(world, reg, b) : 'scaffold';
+      if (b.category === 'field' && b.state === 'built') modelId += '@' + cropStage(reg.cropById.get(reg.buildingById.get(b.buildingType).crop), world.calendar.month);
       if (!buildingItems.has(modelId)) buildingItems.set(modelId, []);
       const cx = b.x + b.w / 2, cz = b.y + b.h / 2;
       // 足元の高さは足跡の中心と四隅の最小値（斜面で浮かないように）
@@ -143,7 +146,7 @@ export function createBuildingsView(world, reg, scene, assets, env) {
     },
     update(camPos) {
       let changed = false;
-      if (world.dirty.buildings) { collectBuildings(); world.dirty.buildings = false; changed = true; }
+      if (world.dirty.buildings || world.calendar.month !== lastMonth) { collectBuildings(); world.dirty.buildings = false; lastMonth = world.calendar.month; changed = true; }
       if (world.dirty.trees) { collectTrees(); world.dirty.trees = false; changed = true; }
       if (changed) rebuildSets();
       if (changed || camPos.distanceToSquared(lastCam) > 4) { distribute(camPos); lastCam.copy(camPos); }

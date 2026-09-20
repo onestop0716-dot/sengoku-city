@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import { createTerrainField, PAL, CHUNK } from './terrain-field.js';
 import { fbm } from '../sim/terrain/noise.js';
+import { createTexturedMaterial } from './materials.js';
 
 const hexToLinear = (hexStr) => new THREE.Color(hexStr).convertSRGBToLinear();
 
@@ -57,7 +58,7 @@ export function createTerrainMesh(world, reg, { segments = 4, sunDir, fog } = {}
   const field = createTerrainField(world, reg, { segments });
   const S = field.S;
   const group = new THREE.Group();
-  const terrainMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95, metalness: 0 });
+  const terrainMat = createTexturedMaterial({ defaultTex: 6, roughness: 0.95 });
   const zoneMat = new THREE.ShaderMaterial({ vertexShader: ZONE_VERT, fragmentShader: ZONE_FRAG, transparent: true, depthWrite: false, side: THREE.DoubleSide });
   const zoneColors = reg.zones.map((z) => hexToLinear(z.color));
 
@@ -218,7 +219,7 @@ export function createTerrainMesh(world, reg, { segments = 4, sunDir, fog } = {}
     g.computeVertexNormals();
     return g;
   })();
-  const outer = new THREE.Mesh(outerGeom, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1, metalness: 0 }));
+  const outer = new THREE.Mesh(outerGeom, createTexturedMaterial({ defaultTex: 6, roughness: 1 }));
   outer.receiveShadow = true; outer.renderOrder = -1; outer.frustumCulled = false;
   group.add(outer);
   const outerWaterGeom = waterGrid(-E, -E, w + E, h + E, CELL, outerHeight, (x, z, st) => x >= 0 && z >= 0 && x + st <= w && z + st <= h);

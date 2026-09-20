@@ -2152,83 +2152,267 @@
   }
  },
  {
-  "id": "person_farmer",
+  "id": "person_farmer_0",
   "kind": "procedural",
-  "generator": "agent",
+  "generator": "personStatic",
   "params": {
-   "kind": "person_farmer"
+   "kind": "person_farmer",
+   "variant": 0
   }
  },
  {
-  "id": "person_artisan",
+  "id": "person_farmer_1",
   "kind": "procedural",
-  "generator": "agent",
+  "generator": "personStatic",
   "params": {
-   "kind": "person_artisan"
+   "kind": "person_farmer",
+   "variant": 1
   }
  },
  {
-  "id": "person_merchant",
+  "id": "person_farmer_2",
   "kind": "procedural",
-  "generator": "agent",
+  "generator": "personStatic",
   "params": {
-   "kind": "person_merchant"
+   "kind": "person_farmer",
+   "variant": 2
   }
  },
  {
-  "id": "person_shi",
+  "id": "person_artisan_0",
   "kind": "procedural",
-  "generator": "agent",
+  "generator": "personStatic",
   "params": {
-   "kind": "person_shi"
+   "kind": "person_artisan",
+   "variant": 0
   }
  },
  {
-  "id": "person_noble",
+  "id": "person_artisan_1",
   "kind": "procedural",
-  "generator": "agent",
+  "generator": "personStatic",
   "params": {
-   "kind": "person_noble"
+   "kind": "person_artisan",
+   "variant": 1
   }
  },
  {
-  "id": "person_soldier",
+  "id": "person_artisan_2",
   "kind": "procedural",
-  "generator": "agent",
+  "generator": "personStatic",
   "params": {
-   "kind": "person_soldier"
+   "kind": "person_artisan",
+   "variant": 2
   }
  },
  {
-  "id": "oxcart",
+  "id": "person_merchant_0",
   "kind": "procedural",
-  "generator": "agent",
+  "generator": "personStatic",
   "params": {
+   "kind": "person_merchant",
+   "variant": 0
+  }
+ },
+ {
+  "id": "person_merchant_1",
+  "kind": "procedural",
+  "generator": "personStatic",
+  "params": {
+   "kind": "person_merchant",
+   "variant": 1
+  }
+ },
+ {
+  "id": "person_merchant_2",
+  "kind": "procedural",
+  "generator": "personStatic",
+  "params": {
+   "kind": "person_merchant",
+   "variant": 2
+  }
+ },
+ {
+  "id": "person_shi_0",
+  "kind": "procedural",
+  "generator": "personStatic",
+  "params": {
+   "kind": "person_shi",
+   "variant": 0
+  }
+ },
+ {
+  "id": "person_shi_1",
+  "kind": "procedural",
+  "generator": "personStatic",
+  "params": {
+   "kind": "person_shi",
+   "variant": 1
+  }
+ },
+ {
+  "id": "person_shi_2",
+  "kind": "procedural",
+  "generator": "personStatic",
+  "params": {
+   "kind": "person_shi",
+   "variant": 2
+  }
+ },
+ {
+  "id": "person_official_0",
+  "kind": "procedural",
+  "generator": "personStatic",
+  "params": {
+   "kind": "person_official",
+   "variant": 0
+  }
+ },
+ {
+  "id": "person_official_1",
+  "kind": "procedural",
+  "generator": "personStatic",
+  "params": {
+   "kind": "person_official",
+   "variant": 1
+  }
+ },
+ {
+  "id": "person_official_2",
+  "kind": "procedural",
+  "generator": "personStatic",
+  "params": {
+   "kind": "person_official",
+   "variant": 2
+  }
+ },
+ {
+  "id": "person_noble_0",
+  "kind": "procedural",
+  "generator": "personStatic",
+  "params": {
+   "kind": "person_noble",
+   "variant": 0
+  }
+ },
+ {
+  "id": "person_noble_1",
+  "kind": "procedural",
+  "generator": "personStatic",
+  "params": {
+   "kind": "person_noble",
+   "variant": 1
+  }
+ },
+ {
+  "id": "person_noble_2",
+  "kind": "procedural",
+  "generator": "personStatic",
+  "params": {
+   "kind": "person_noble",
+   "variant": 2
+  }
+ },
+ {
+  "id": "person_soldier_0",
+  "kind": "procedural",
+  "generator": "personStatic",
+  "params": {
+   "kind": "person_soldier",
+   "variant": 0
+  }
+ },
+ {
+  "id": "person_soldier_1",
+  "kind": "procedural",
+  "generator": "personStatic",
+  "params": {
+   "kind": "person_soldier",
+   "variant": 1
+  }
+ },
+ {
+  "id": "person_soldier_2",
+  "kind": "procedural",
+  "generator": "personStatic",
+  "params": {
+   "kind": "person_soldier",
+   "variant": 2
+  }
+ },
+ {
+  "id": "veh_ox_body",
+  "kind": "procedural",
+  "generator": "vehiclePart",
+  "params": {
+   "part": "oxBody"
+  }
+ },
+ {
+  "id": "veh_ox_leg",
+  "kind": "procedural",
+  "generator": "vehiclePart",
+  "params": {
+   "part": "oxLeg"
+  }
+ },
+ {
+  "id": "veh_horse_body",
+  "kind": "procedural",
+  "generator": "vehiclePart",
+  "params": {
+   "part": "horseBody"
+  }
+ },
+ {
+  "id": "veh_horse_leg",
+  "kind": "procedural",
+  "generator": "vehiclePart",
+  "params": {
+   "part": "horseLeg"
+  }
+ },
+ {
+  "id": "veh_wheel",
+  "kind": "procedural",
+  "generator": "vehiclePart",
+  "params": {
+   "part": "wheel"
+  }
+ },
+ {
+  "id": "veh_boat",
+  "kind": "procedural",
+  "generator": "vehiclePart",
+  "params": {
+   "part": "boat"
+  }
+ },
+ {
+  "id": "veh_cart_oxcart",
+  "kind": "procedural",
+  "generator": "vehiclePart",
+  "params": {
+   "part": "cartBody",
    "kind": "oxcart"
   }
  },
  {
-  "id": "handcart",
+  "id": "veh_cart_handcart",
   "kind": "procedural",
-  "generator": "agent",
+  "generator": "vehiclePart",
   "params": {
+   "part": "cartBody",
    "kind": "handcart"
   }
  },
  {
-  "id": "carriage",
+  "id": "veh_cart_carriage",
   "kind": "procedural",
-  "generator": "agent",
+  "generator": "vehiclePart",
   "params": {
+   "part": "cartBody",
    "kind": "carriage"
-  }
- },
- {
-  "id": "boat",
-  "kind": "procedural",
-  "generator": "agent",
-  "params": {
-   "kind": "boat"
   }
  }
 ]

@@ -1,7 +1,7 @@
 // 住民の近景表示: 部品ごとの InstancedMesh を関節で動かす（歩行・作業・待機）。
 // agents-view から「見た目（look）」と「姿勢（pose）」を受け取って毎フレーム行列を書く。
 import * as THREE from 'three';
-import { PART_GENERATORS, WARDROBE, SKIN_TONES } from './models/people.js';
+import { PART_GENERATORS, WARDROBE, SKIN_TONES, PERSON_SCALE } from './models/people.js';
 
 const HEADS = ['bun', 'cap', 'crown', 'tall_crown', 'helmet', 'female'];
 const TORSOS = ['short', 'robe', 'wide_robe', 'armor'];
@@ -13,6 +13,7 @@ function toGeometry(m) {
   g.setAttribute('position', new THREE.BufferAttribute(m.positions, 3));
   g.setAttribute('normal', new THREE.BufferAttribute(m.normals, 3));
   g.setAttribute('color', new THREE.BufferAttribute(m.colors, 3));
+  if (m.tex) g.setAttribute('tex', new THREE.BufferAttribute(m.tex, 1));
   return g;
 }
 
@@ -26,7 +27,7 @@ export function makeLook(kind, seed) {
   const female = rnd01(seed) < (W.female ?? 0);
   const ageR = rnd01(seed + 1);
   const age = ageR < 0.08 ? 'child' : ageR > 0.9 ? 'elder' : 'adult';
-  const scale = (age === 'child' ? 0.62 : age === 'elder' ? 0.94 : 0.96 + rnd01(seed + 2) * 0.1) * (female ? 0.95 : 1);
+  const scale = PERSON_SCALE * (age === 'child' ? 0.62 : age === 'elder' ? 0.94 : 0.96 + rnd01(seed + 2) * 0.1) * (female ? 0.95 : 1);
   const cloth = new THREE.Color(pick(W.cloth, rnd01(seed + 3))).convertSRGBToLinear();
   cloth.multiplyScalar(0.9 + rnd01(seed + 4) * 0.2);
   const trousers = new THREE.Color(pick(W.trousers, rnd01(seed + 5))).convertSRGBToLinear();
@@ -82,16 +83,31 @@ export function createPeopleView(scene, material) {
       const s = look.scale;
       pos.set(pose.x, pose.y, pose.z); quat.setFromAxisAngle(up, pose.rot); scl.set(s, s, s);
       root.compose(pos, quat, scl);
+      if (pose.pitch) { tmp.makeRotationX(pose.pitch); root.multiply(tmp); }
+      this.drawPosed(look, pose);
+    },
+    /** 親の行列（乗り物など）の中に描く。pose.x/y/z は親の座標系 */
+    drawInFrame(look, parent, pose) {
+      const s = look.scale;
+      pos.set(pose.x, pose.y, pose.z); quat.setFromAxisAngle(up, pose.rot || 0); scl.set(s, s, s);
+      local.compose(pos, quat, scl);
+      root.multiplyMatrices(parent, local);
+      this.drawPosed(look, pose);
+    },
+    drawPosed(look, pose) {
       const hip = 0.42, shoulder = 0.42 + 0.34, neck = 0.42 + 0.38;
       let legSwing = 0, armSwing = 0, torsoPitch = look.stoop, armR = 0, armL = 0, bob = 0;
       if (pose.action === 'walk') { legSwing = Math.sin(pose.phase) * 0.65; armSwing = Math.sin(pose.phase) * 0.45; bob = Math.abs(Math.cos(pose.phase)) * 0.02; }
       else if (pose.action === 'work') { const k = Math.sin(pose.t * 5); torsoPitch += 0.35 + k * 0.1; armR = -1.6 + k * 0.7; armL = -1.3 + k * 0.6; }
       else if (pose.action === 'talk') { armR = -0.5 + Math.sin(pose.t * 3) * 0.2; armL = -0.15; }
+      else if (pose.action === 'pole') { const k = Math.sin(pose.t * 2.5); armR = -1.3 + k * 0.5; armL = -0.9 + k * 0.5; torsoPitch += 0.15 + k * 0.08; }
       else { armR = Math.sin(pose.t * 1.5) * 0.05; armL = -Math.sin(pose.t * 1.5) * 0.05; }
       if (look.item === 'pole') { armR = -1.5; armL = -1.5; }
       if (look.item === 'ge') armR = -0.3;
       if (look.item === 'slips') { armR = -1.2; armL = -1.2; }
       if (look.item === 'basket') armL = Math.min(armL, -0.15);
+      if (pose.arms != null) { armR = pose.arms; armL = pose.arms; armSwing = 0; }
+      if (pose.kneel) { legSwing = 0; }
       // 胴（腰が原点）と頭
       root.multiply(tmp.makeTranslation(0, bob, 0));
       put(parts.torso[look.torso], joint(0, hip, 0, torsoPitch), look.cloth);
@@ -108,7 +124,7 @@ export function createPeopleView(scene, material) {
       }
       if (look.item === 'pole' || look.item === 'bundle') put(parts.item[look.item], joint(0, hip, 0, torsoPitch), look.cloth);
       // 脚（腰が原点）
-      for (const side of [1, -1]) put(parts.leg, joint(side * 0.06, hip, 0, side === 1 ? legSwing : -legSwing), look.trousers);
+      for (const side of [1, -1]) put(parts.leg, joint(side * 0.06, hip, 0, pose.kneel ? -1.5 : side === 1 ? legSwing : -legSwing), look.trousers);
       void neck; void shoulder;
     },
     end() {
