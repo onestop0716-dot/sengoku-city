@@ -5,7 +5,7 @@ import { canPlaceStructure } from '../sim/structures.js';
 
 const COLORS = { road: 0xd9c27a, demolish: 0xff5544, zone: 0x66ff88, select: 0xffffff, ok: 0x66ff88, ng: 0xff5544, radius: 0x88ccff };
 
-export function createInput({ canvas, picker, overlay, radiusOverlay, world, reg, toolbar, infoPanel, log, orbit }) {
+export function createInput({ canvas, picker, overlay, radiusOverlay, world, reg, toolbar, infoPanel, log, orbit, viewMode = null, viewPanel = null }) {
   let dragStart = null, hover = null;
   const structDef = () => (toolbar.current.startsWith('struct:') ? reg.structureById.get(toolbar.current.slice(7)) : null);
   /** 建築の足跡と効果範囲のプレビュー */
@@ -31,6 +31,7 @@ export function createInput({ canvas, picker, overlay, radiusOverlay, world, reg
   const colorFor = () => { const t = toolbar.current; return t.startsWith('zone:') ? COLORS.zone : t.startsWith('struct:') ? COLORS.ok : COLORS[t] || COLORS.select; };
   const refresh = () => {
     const def = structDef();
+    viewMode?.setPlacement(def && !def.linear ? def : null, hover);
     if (def && !def.linear) { if (hover) previewStructure(def, hover); else { overlay.clear(); radiusOverlay?.clear(); } return; }
     radiusOverlay?.clear();
     if (dragStart && hover) overlay.setTiles(def ? lPath(dragStart.x, dragStart.y, hover.x, hover.y) : previewTiles(dragStart, hover), colorFor());
@@ -45,9 +46,10 @@ export function createInput({ canvas, picker, overlay, radiusOverlay, world, reg
     dragStart = t; hover = t; refresh();
   });
   canvas.addEventListener('pointermove', (e) => {
-    if (orbit.isDragging()) { hover = null; overlay.clear(); return; }
+    if (orbit.isDragging()) { hover = null; overlay.clear(); viewPanel?.hover(null); return; }
     hover = picker.tileAt(e.clientX, e.clientY);
     refresh();
+    viewPanel?.hover(hover, e.clientX, e.clientY);
   });
   canvas.addEventListener('pointerup', (e) => {
     if (e.button !== 0 || !dragStart) return;
@@ -64,10 +66,11 @@ export function createInput({ canvas, picker, overlay, radiusOverlay, world, reg
       else { result = applyCommand(world, reg, { type: 'structure.place', typeId: def.id, x: end.x, y: end.y }); if (result.ok) result.count = 1; }
       if (result.ok && result.message) log.push(`一部置けませんでした: ${result.message}`);
     }
+    if (result && result.ok) viewMode?.invalidate();
     if (result && !result.ok) log.push(result.message);
     if (result && result.ok && result.count === 0 && tool !== 'select') log.push('ここには置けません（山・水・道路・建物の上には置けません）');
     dragStart = null; refresh();
   });
-  canvas.addEventListener('pointerleave', () => { hover = null; if (!dragStart) overlay.clear(); });
+  canvas.addEventListener('pointerleave', () => { hover = null; if (!dragStart) overlay.clear(); viewPanel?.hover(null); });
   window.addEventListener('keydown', (e) => { if (e.code === 'Escape') { dragStart = null; toolbar.set('select'); refresh(); } });
 }

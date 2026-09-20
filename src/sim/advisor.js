@@ -177,7 +177,7 @@ export function evaluate(world, reg, opts = {}) {
 function present(entry, m, st, world, kind) {
   st.shown[entry.id] = world.day;
   st.lastAnyDay = world.day;
-  const out = { id: entry.id, kind, day: world.day, expression: entry.expression || 'normal', title: fillText(entry.title, m), text: fillText(entry.text, m), priority: entry.priority ?? 0 };
+  const out = { id: entry.id, kind, day: world.day, expression: entry.expression || 'normal', title: fillText(entry.title, m), text: fillText(entry.text, m), priority: entry.priority ?? 0, view: entry.view || null };
   st.history.push(out);
   while (st.history.length > 40) st.history.shift();
   return out;

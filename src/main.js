@@ -18,6 +18,8 @@ import { createLog } from './ui/log.js';
 import { showStartScreen } from './ui/start-screen.js';
 import { createSettingsPanel } from './ui/settings-panel.js';
 import { createAdvisorUi } from './ui/advisor.js';
+import { createViewMode } from './render/view-mode.js';
+import { createViewModePanel } from './ui/view-mode-panel.js';
 import { createFinancePanel } from './ui/panels/finance.js';
 import { createPopulationPanel } from './ui/panels/population.js';
 import { createDemandMeter } from './ui/demand-meter.js';
@@ -63,6 +65,7 @@ async function main() {
   const agentsView = createAgentsView(world, reg, scene, assets, env);
   agentsView.setQuality(quality);
   const picker = createPicker(canvas, orbit.camera, env, world.map.w, world.map.h);
+  const viewMode = createViewMode(world, reg, scene, env, assets);
 
   const tooltip = createTooltip(reg);
   const log = createLog(world);
@@ -73,11 +76,12 @@ async function main() {
       orbit.update(dt);
       sc.followCamera(orbit.camera.position);
       env.terrain.update(dt);
+      viewMode.update(dt);
       buildings.update(orbit.camera.position);
       agentsView.update(dt, loop.speed, orbit.camera.position);
       toolbar.update();
       sc.followShadow(orbit.state.target, quality.shadowRadius);
-      hud.update(); log.update(); infoPanel.update(); demand.update(); finance.update(); population.update(); settingsPanel.update(loop.stats); advisor.update();
+      hud.update(); log.update(); infoPanel.update(); demand.update(); finance.update(); population.update(); settingsPanel.update(loop.stats); advisor.update(); viewPanel.update();
       renderer.render(scene, orbit.camera);
     },
   });
@@ -86,24 +90,26 @@ async function main() {
     const rebuild = q.segments !== quality.segments;
     quality = q;
     sc.applyQuality(q);
-    if (rebuild) { buildTerrain(q); buildings.refreshModels(); } else env.terrain.setRipple(q.ripple);
+    if (rebuild) { buildTerrain(q); buildings.refreshModels(); viewMode.reapply(); } else env.terrain.setRipple(q.ripple);
     buildings.setQuality(q); agentsView.setQuality(q);
   }, { advisorFrequencies: reg.advice.frequency });
   const finance = createFinancePanel(world, reg, tooltip);
   const population = createPopulationPanel(world, reg, tooltip);
   const demand = createDemandMeter(world, tooltip);
-  const advisor = createAdvisorUi(world, reg, settings, { onOpenSettings: () => settingsPanel.toggle(), onOpen: () => { finance.el.style.display = 'none'; population.el.style.display = 'none'; } });
+  const advisor = createAdvisorUi(world, reg, settings, { onOpenSettings: () => settingsPanel.toggle(), onOpen: () => { finance.el.style.display = 'none'; population.el.style.display = 'none'; }, onView: (id) => { const t = viewMode.focusProblem(id); if (t) { orbit.state.target.set(t[0] + 0.5, env.terrain.heightAt(t[0] + 0.5, t[1] + 0.5), t[1] + 0.5); orbit.state.distance = Math.min(orbit.state.distance, 40); } } });
   const panels = { finance, population, advisor };
   const hud = createHud(world, reg, loop, tooltip, { onSettings: () => settingsPanel.toggle(), onPanel: (name) => { for (const [k, p] of Object.entries(panels)) if (k !== name) p.el.style.display = 'none'; panels[name].toggle(); } });
+  const viewPanel = createViewModePanel(world, reg, viewMode, { button: hud.viewButton });
+  viewMode.onChange((m) => hud.setViewMode(viewPanel.nameOf(m)));
   const toolbar = createToolbar(reg, world, () => { radiusOverlay.clear(); });
-  createInput({ canvas, picker, overlay, radiusOverlay, world, reg, toolbar, infoPanel, log, orbit });
+  createInput({ canvas, picker, overlay, radiusOverlay, world, reg, toolbar, infoPanel, log, orbit, viewMode, viewPanel });
 
   window.addEventListener('resize', () => { const s = sc.resize(); orbit.setAspect(s.w / s.h); });
   window.addEventListener('keydown', (e) => { if (e.code === 'Space' && e.target.tagName !== 'INPUT') { e.preventDefault(); loop.togglePause(); } });
 
   loop.start();
   assets.loadExternal(() => buildings.refreshModels());
-  window.__game = { world, reg, loop, THREE, settings, orbit, env, agentsView, advisor, rendererInfo: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles }) }; // デバッグ用
+  window.__game = { world, reg, loop, THREE, settings, orbit, env, agentsView, advisor, viewMode, rendererInfo: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles }) }; // デバッグ用
 }
 
 main().catch((err) => { console.error(err); showError(`起動に失敗しました: ${err.message}`); });

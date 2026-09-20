@@ -18,6 +18,7 @@ export function createHud(world, reg, loop, tooltip, { onSettings, onPanel } = {
     <div class="spacer"></div>
     <button data-panel="finance">財政</button>
     <button data-panel="population">人口</button>
+    <button id="hud-view" title="表示モード（Tab で順送り、Esc で通常）">表示</button>
     <button id="hud-settings" title="設定">設定</button>
     <div id="hud-speed">${speeds.map((s, i) => `<button data-speed="${i}" title="${s === 0 ? '一時停止 (Space)' : s + '倍速'}">${s === 0 ? '❚❚' : '▶'.repeat(Math.log2(s) + 1)}</button>`).join('')}</div>
   `;
@@ -25,9 +26,12 @@ export function createHud(world, reg, loop, tooltip, { onSettings, onPanel } = {
   el.querySelector('#hud-settings').addEventListener('click', () => onSettings?.());
   el.querySelectorAll('[data-panel]').forEach((b) => b.addEventListener('click', () => onPanel?.(b.dataset.panel)));
   const q = (id) => el.querySelector(id);
+  const viewBtn = q('#hud-view');
   const dateEl = q('#hud-date'), moneyEl = q('#hud-money'), grainEl = q('#hud-grain'), grain2El = q('#hud-grain2'), popEl = q('#hud-pop'), capEl = q('#hud-cap'), loyEl = q('#hud-loy'), secEl = q('#hud-sec'), foodEl = q('#hud-food'), fpsEl = q('#hud-fps');
   const fmt = (n) => Math.round(n).toLocaleString('ja-JP');
   return {
+    viewButton: viewBtn,
+    setViewMode(name) { viewBtn.textContent = name === '通常' ? '表示' : `表示: ${name}`; viewBtn.classList.toggle('active', name !== '通常'); },
     update() {
       dateEl.textContent = formatDate(world.calendar);
       moneyEl.textContent = fmt(world.money);

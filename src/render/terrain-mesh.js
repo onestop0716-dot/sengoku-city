@@ -58,7 +58,7 @@ export function createTerrainMesh(world, reg, { segments = 4, sunDir, fog } = {}
   const field = createTerrainField(world, reg, { segments });
   const S = field.S;
   const group = new THREE.Group();
-  const terrainMat = createTexturedMaterial({ defaultTex: 6, roughness: 0.95 });
+  const terrainMat = createTexturedMaterial({ defaultTex: 6, roughness: 0.95, role: 'terrain' });
   const zoneMat = new THREE.ShaderMaterial({ vertexShader: ZONE_VERT, fragmentShader: ZONE_FRAG, transparent: true, depthWrite: false, side: THREE.DoubleSide });
   const zoneColors = reg.zones.map((z) => hexToLinear(z.color));
 
@@ -219,7 +219,7 @@ export function createTerrainMesh(world, reg, { segments = 4, sunDir, fog } = {}
     g.computeVertexNormals();
     return g;
   })();
-  const outer = new THREE.Mesh(outerGeom, createTexturedMaterial({ defaultTex: 6, roughness: 1 }));
+  const outer = new THREE.Mesh(outerGeom, createTexturedMaterial({ defaultTex: 6, roughness: 1, role: 'terrain' }));
   outer.receiveShadow = true; outer.renderOrder = -1; outer.frustumCulled = false;
   group.add(outer);
   const outerWaterGeom = waterGrid(-E, -E, w + E, h + E, CELL, outerHeight, (x, z, st) => x >= 0 && z >= 0 && x + st <= w && z + st <= h);
@@ -230,6 +230,8 @@ export function createTerrainMesh(world, reg, { segments = 4, sunDir, fog } = {}
     heightAt: (x, z) => field.heightAt(x, z),
     heightAtTile: (x, y) => field.heightAt(x + 0.5, y + 0.5),
     setRipple(v) { waterMat.uniforms.ripple.value = v; },
+    /** 区画オーバーレイ（通常表示の色枠）の表示切り替え */
+    setZoneOverlayVisible(v) { for (const c of chunks) if (c.zoneMesh) c.zoneMesh.visible = v; },
     setFog(f) { waterMat.uniforms.fogColor.value.copy(f.color); waterMat.uniforms.fogNear.value = f.near; waterMat.uniforms.fogFar.value = f.far; },
     update(dt) {
       waterMat.uniforms.time.value += dt;

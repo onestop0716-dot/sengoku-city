@@ -139,3 +139,29 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #dfe7ee; col
 .adv-hist li .day { opacity: .55; margin-right: 6px; }
 .adv-actions { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
 #advisor-panel .note { opacity: .75; font-size: 12px; }
+
+/* 表示モード（データマップ） */
+#view-menu { top: 56px; right: 8px; width: 200px; padding: 6px; display: none; z-index: 6; }
+#view-menu .vm-head { font-size: 12px; opacity: .8; margin: 2px 4px 6px; }
+.vm-key { font-size: 10px; opacity: .55; margin-left: 4px; }
+#view-menu button { display: block; width: 100%; text-align: left; margin: 2px 0; background: rgba(255,255,255,0.06); color: var(--fg); border: 1px solid var(--line); border-radius: 4px; padding: 4px 8px; cursor: pointer; font-size: 13px; }
+#view-menu button:hover { background: rgba(255,255,255,0.14); }
+#view-menu button.sub { padding-left: 18px; }
+#view-menu .vm-sub { font-size: 11px; opacity: .7; margin: 6px 4px 2px; }
+#view-legend { left: 186px; bottom: 156px; max-width: 420px; padding: 8px 10px; display: none; font-size: 12px; z-index: 2; }
+#view-legend .vl-title { margin-bottom: 4px; }
+#view-legend .vl-title b { color: var(--accent); }
+#view-legend .sw { display: inline-block; width: 11px; height: 11px; border-radius: 2px; margin-right: 5px; vertical-align: middle; border: 1px solid rgba(0,0,0,0.3); }
+#view-legend .sw-hatch { background: repeating-linear-gradient(45deg, #8a8 0 2px, #353 2px 4px); }
+#view-legend .vl-table { border-collapse: collapse; margin: 2px 0 6px; }
+#view-legend .vl-table td { padding: 1px 8px 1px 0; white-space: nowrap; }
+#view-legend .vl-row { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 4px; font-size: 11px; opacity: .9; }
+#view-legend .vl-grad { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+#view-legend .vl-bar { display: inline-block; width: 140px; height: 10px; border-radius: 3px; }
+#view-legend .note { font-size: 11px; opacity: .7; margin-top: 3px; }
+#view-tip { position: absolute; display: none; pointer-events: none; z-index: 20; background: #1f1812; color: #f3e9d2; border: 1px solid var(--accent); border-radius: 4px; padding: 6px 9px; font-size: 12px; max-width: 300px; }
+#view-tip table { border-collapse: collapse; margin-top: 3px; }
+#view-tip td { padding: 0 8px 0 0; opacity: .9; }
+#view-tip td:last-child { text-align: right; padding: 0; }
+.adv-bubble .adv-view { margin-top: 6px; font-size: 12px; padding: 3px 8px; background: #fff4dc; color: #6a3a10; border-color: #c9a96a; }
+#view-tip .vt-preview { color: #9fe0a0; margin-top: 3px; }
