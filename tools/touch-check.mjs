@@ -12,7 +12,7 @@ const results = [];
 const check = (name, ok, detail = '') => { results.push({ name, ok, detail }); console.log(`${ok ? '✓' : '✗'} ${name}${detail ? ' — ' + detail : ''}`); };
 const startGame = async (page) => {
   await page.goto('http://localhost:8093/');
-  await page.waitForSelector('#start-btn');
+  await page.waitForSelector('#start-tab-new'); await page.click('#start-tab-new');   // 保存があると「続きから」が先に開く
   await page.selectOption('#start-size', '128');
   await page.click('#start-btn');
   await page.waitForFunction(() => window.__game && window.__game.world.day > 1, null, { timeout: 20000 });
@@ -118,7 +118,7 @@ await page.tap('.collapse-tab[data-for="toolbar"]');
   check('－ で操作パネルが隠れて「操作」タブが出る', await page.evaluate(() => getComputedStyle(document.getElementById('touchbar')).display === 'none' && getComputedStyle(document.getElementById('touchbar-tab')).display !== 'none'));
   await page.tap('#touchbar-tab');
   check('「操作」タブで戻る', await page.evaluate(() => getComputedStyle(document.getElementById('touchbar')).display === 'flex'));
-  await page.reload(); await page.waitForSelector('#start-btn'); await page.selectOption('#start-size', '128'); await page.click('#start-btn');
+  await page.reload(); await page.waitForSelector('#start-tab-new'); await page.click('#start-tab-new'); await page.selectOption('#start-size', '128'); await page.click('#start-btn');
   await page.waitForFunction(() => window.__game && window.__game.world.day > 1, null, { timeout: 20000 });
   await page.evaluate(() => window.__game.loop.setSpeedIndex(0));
   const r2 = await page.evaluate(() => { const r = document.getElementById('touchbar').getBoundingClientRect(); return [r.left, r.top]; });

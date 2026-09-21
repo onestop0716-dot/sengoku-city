@@ -16,7 +16,7 @@ const errors = [];
 page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); else if (m.text().startsWith('DBG')) console.log(m.text()); });
 page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
 await page.goto('http://localhost:8092/');
-await page.waitForSelector('#start-btn');
+await page.waitForSelector('#start-tab-new'); await page.click('#start-tab-new');
 await page.selectOption('#start-nation', city === 'chen' ? 'chu' : city === 'xianyang' ? 'qin' : 'qi');
 await page.selectOption('#start-city', city);
 await page.fill('#start-seed', seed);

@@ -50,16 +50,19 @@
 <div id="start">
   <div class="card">
     <h1>戦国七雄・都市開発シミュレーション</h1>
-    <p>前247年、秦王政が即位した年。あなたは一都市の県令として着任します。（フェーズ2: 経済・人口・税・暦と季節まで）</p>
-    <label>仕える国</label><select id="start-nation"></select>
-    <label>着任する都市</label><select id="start-city"></select>
-    <div class="note" id="start-note"></div>
-    <label>地形のシード（同じ値なら同じ地形）</label><input id="start-seed" type="text">
-    <label>難易度</label><select id="start-difficulty"></select>
-    <div class="note" id="start-diff-note"></div>
-    <div id="start-continue"></div>
-    <label>マップの大きさ</label><select id="start-size"><option value="128">128×128（小）</option><option value="192" selected>192×192（標準）</option><option value="256">256×256（大）</option></select>
-    <button class="primary" id="start-btn">着任する</button>
+    <p>前247年、秦王政が即位した年。あなたは一都市の県令として着任します。</p>
+    <div class="start-tabs" role="tablist"><button class="start-tab" id="start-tab-new" role="tab">はじめから</button><button class="start-tab" id="start-tab-continue" role="tab">続きから</button></div>
+    <div id="start-new">
+      <label>仕える国</label><select id="start-nation"></select>
+      <label>着任する都市</label><select id="start-city"></select>
+      <div class="note" id="start-note"></div>
+      <label>地形のシード（同じ値なら同じ地形）</label><input id="start-seed" type="text">
+      <label>難易度</label><select id="start-difficulty"></select>
+      <div class="note" id="start-diff-note"></div>
+      <label>マップの大きさ</label><select id="start-size"><option value="128">128×128（小）</option><option value="192" selected>192×192（標準）</option><option value="256">256×256（大）</option></select>
+      <button class="primary" id="start-btn">着任する</button>
+    </div>
+    <div id="start-continue" style="display:none"></div>
   </div>
 </div>
 <script type="module" src="./src/main.js"></script>
