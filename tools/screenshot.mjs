@@ -48,7 +48,7 @@ const perf = await page.evaluate(async (extra) => {
   if (extra) await new Function('world', 'reg', 'tick', 'applyCommand', 'return (async () => {' + extra + '})()')(world, reg, tick, applyCommand);
   return { tickMs: +tickMs.toFixed(2), buildings: world.buildings.size, map: world.map.w };
 }, extra);
-if (quality) { await page.click('#hud-settings'); await page.click(`input[name=quality][value=${quality}]`); await page.click('#settings-close'); }
+if (quality) { await page.evaluate(() => { document.getElementById('settings').style.display = 'block'; }); await page.click(`input[name=quality][value=${quality}]`); await page.click('#settings-close'); }   // 設定は ≡ メニューの中なので直接開く
 await page.waitForTimeout(1500);
 await page.screenshot({ path: outPath });
 // 描画時間の目安: 30フレーム描いて平均（この環境はソフトウェア描画なので実機より大幅に遅い）

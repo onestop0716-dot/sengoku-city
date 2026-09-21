@@ -209,6 +209,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #dfe7ee; col
 .ptable th { text-align: left; font-weight: normal; opacity: .7; font-size: 11px; padding-right: 8px; }
 #hud .rank { font-size: 11px; color: var(--accent); border: 1px solid var(--accent); border-radius: 3px; padding: 0 4px; margin-left: 4px; }
 #view-legend .sw-dots { background: repeating-conic-gradient(#3a0c0c 0 25%, #c8b070 0 50%) 0 0 / 6px 6px; }
+.sw-road { background-image: linear-gradient(#eed99e, #eed99e) !important; background-size: 100% 3px !important; background-repeat: no-repeat !important; background-position: center !important; }
 #view-legend .vl-bad { color: #ff8a7a; }
 
 /* 出来事・エンディング・メニュー */

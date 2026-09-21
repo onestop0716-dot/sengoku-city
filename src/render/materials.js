@@ -50,7 +50,7 @@ const VIEW_TERRAIN_GLSL = /* glsl */`
     if (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0) {
       vec4 s = texture2D(uViewTex, uv);
       float f = floor(s.a * 255.0 + 0.5);
-      bool unbuilt = mod(f, 2.0) >= 1.0, below = mod(floor(f / 2.0), 2.0) >= 1.0, preview = mod(floor(f / 4.0), 2.0) >= 1.0, none = mod(floor(f / 16.0), 2.0) >= 1.0;
+      bool unbuilt = mod(f, 2.0) >= 1.0, below = mod(floor(f / 2.0), 2.0) >= 1.0, preview = mod(floor(f / 4.0), 2.0) >= 1.0, none = mod(floor(f / 16.0), 2.0) >= 1.0, road = mod(floor(f / 32.0), 2.0) >= 1.0;
       vec3 col = s.rgb;
       float lum = dot(diffuseColor.rgb, vec3(0.3, 0.5, 0.2));
       vec3 base = mix(diffuseColor.rgb, vec3(lum), 0.6);
@@ -68,6 +68,19 @@ const VIEW_TERRAIN_GLSL = /* glsl */`
       if (below) {                                               // 基準未満: 点線の格子
         float d = step(fract(vWPos.x * 4.0), 0.5) * step(fract(vWPos.z * 4.0), 0.5);
         outc = mix(outc, vec3(0.25, 0.05, 0.05), d * 0.55);
+      }
+      if (road) {                                                // 道路: 濃い地に明るい中心線（隣も道路の方向だけ線を延ばす）
+        vec2 ts = 1.0 / uViewSize;
+        float rl = step(32.0, mod(floor(texture2D(uViewTex, uv - vec2(ts.x, 0.0)).a * 255.0 + 0.5), 64.0));
+        float rr = step(32.0, mod(floor(texture2D(uViewTex, uv + vec2(ts.x, 0.0)).a * 255.0 + 0.5), 64.0));
+        float ru = step(32.0, mod(floor(texture2D(uViewTex, uv - vec2(0.0, ts.y)).a * 255.0 + 0.5), 64.0));
+        float rd = step(32.0, mod(floor(texture2D(uViewTex, uv + vec2(0.0, ts.y)).a * 255.0 + 0.5), 64.0));
+        vec2 c = fx - 0.5;
+        float lw = 0.11, seg = 0.0;
+        if (abs(c.y) < lw && ((c.x < 0.0 && rl > 0.5) || (c.x >= 0.0 && rr > 0.5))) seg = 1.0;
+        if (abs(c.x) < lw && ((c.y < 0.0 && ru > 0.5) || (c.y >= 0.0 && rd > 0.5))) seg = 1.0;
+        if (length(c) < lw) seg = 1.0;
+        outc = mix(vec3(0.17, 0.14, 0.11), vec3(0.93, 0.85, 0.62), seg);
       }
       if (preview) {                                             // 改善見込み: 明滅
         outc = mix(outc, vec3(0.5, 1.0, 0.7), 0.35 + 0.25 * sin(uViewTime * 4.0));

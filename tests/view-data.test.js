@@ -24,7 +24,7 @@ test('区画モード: 種別・未建築フラグ・区画ごとの集計が合
   assert.ok(st && st.tiles > 0 && st.built > 0 && st.built <= st.tiles, JSON.stringify(st));
   let unbuilt = 0, built = 0, roads = 0, water = 0;
   for (let i = 0; i < zm.kind.length; i++) {
-    if (zm.kind[i] === ZONE_KIND.ROAD) roads++;
+    if (zm.kind[i] === ZONE_KIND.ROAD) { roads++; assert.ok(zm.flags[i] & FLAG.ROAD); } else assert.ok(!(zm.flags[i] & FLAG.ROAD));
     if (zm.kind[i] === ZONE_KIND.WATER) { water++; assert.ok(zm.flags[i] & FLAG.WATER_TILE); }
     if (zm.kind[i] >= ZONE_KIND.ZONE_BASE) { if (zm.flags[i] & FLAG.UNBUILT) { unbuilt++; assert.equal(world.buildingAt[i], -1); } else { built++; assert.notEqual(world.buildingAt[i], -1); } }
   }

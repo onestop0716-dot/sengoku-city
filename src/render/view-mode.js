@@ -78,7 +78,7 @@ export function createViewMode(world, reg, scene, env, assets) {
         if (flags[i] & FLAG.WATER_TILE) { data[o] = 60; data[o + 1] = 120; data[o + 2] = 190; data[o + 3] = 0; continue; }
         if (flags[i] & FLAG.NONE) { data[o] = 110; data[o + 1] = 110; data[o + 2] = 110; data[o + 3] = FLAG.NONE; continue; }
         const rgb = gradientColor(values[i]);
-        data[o] = rgb[0]; data[o + 1] = rgb[1]; data[o + 2] = rgb[2]; data[o + 3] = flags[i] & ~FLAG.PREVIEW;
+        data[o] = rgb[0]; data[o + 1] = rgb[1]; data[o + 2] = rgb[2]; data[o + 3] = (flags[i] & ~FLAG.PREVIEW) | (world.roads[i] ? FLAG.ROAD : 0);   // 道路はどのモードでも描く
       }
       buildRings(relatedStructures(world, reg, mode), RING_COLORS[mode] || RING_COLORS.default);
     }

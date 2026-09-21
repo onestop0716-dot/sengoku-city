@@ -28,7 +28,7 @@ export function createViewModePanel(world, reg, viewMode, { button } = {}) {
       const stamp = 'z' + stats.map((s) => `${s.id}:${s.tiles}:${s.built}:${s.noRoad}`).join(',');
       if (stamp === legendStamp) return; legendStamp = stamp;
       html += stats.length ? `<table class="vl-table">${stats.map((s) => `<tr><td><span class="sw" style="background:${s.color}"></span>${s.name}</td><td>${s.tiles} マス</td><td>${s.tiles ? Math.round((s.built / s.tiles) * 100) : 0}% 建築</td><td>${s.noRoad ? `<span class="vl-bad">道路なし ${s.noRoad}</span>` : ''}</td></tr>`).join('')}</table>` : '<div class="note">区画はまだありません</div>';
-      html += `<div class="vl-row">${Object.entries(ZONE_KIND_COLORS).map(([k, c]) => `<span><span class="sw" style="background:${c}"></span>${ZONE_KIND_NAMES[k]}</span>`).join('')}<span><span class="sw sw-hatch"></span>未建築の区画（斜線）</span><span><span class="sw sw-dots"></span>道路が届かない区画（点線・家が建たない）</span></div>`;
+      html += `<div class="vl-row">${Object.entries(ZONE_KIND_COLORS).map(([k, c]) => `<span><span class="sw${Number(k) === 1 ? ' sw-road' : ''}" style="background:${c}"></span>${ZONE_KIND_NAMES[k]}</span>`).join('')}<span><span class="sw sw-hatch"></span>未建築の区画（斜線）</span><span><span class="sw sw-dots"></span>道路が届かない区画（点線・家が建たない）</span></div>`;
     } else {
       const stamp = 's' + m;
       if (stamp === legendStamp) return; legendStamp = stamp;

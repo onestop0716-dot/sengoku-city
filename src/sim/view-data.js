@@ -6,12 +6,12 @@ import { fieldYield } from './farming.js';
 import { structureName } from './structures.js';
 import { ensureRoadDist } from './roads.js';
 
-export const FLAG = { UNBUILT: 1, BELOW_THRESHOLD: 2, PREVIEW: 4, WATER_TILE: 8, NONE: 16 };   // NONE: 値がない（灰色で描く）。BELOW_THRESHOLD は点線（基準未満・道路なし）
+export const FLAG = { UNBUILT: 1, BELOW_THRESHOLD: 2, PREVIEW: 4, WATER_TILE: 8, NONE: 16, ROAD: 32 };   // NONE: 値がない（灰色で描く）。BELOW_THRESHOLD は点線（基準未満・道路なし）。ROAD は道路（濃い地に明るい中心線で描く。どのモードでも）
 
 /** 区画モードのマス種別。ZONE_BASE 以上は区画（index + ZONE_BASE） */
 export const ZONE_KIND = { NONE: 0, ROAD: 1, STRUCTURE: 2, WATER: 3, UNBUILDABLE: 4, SHORE: 5, ZONE_BASE: 10 };
-export const ZONE_KIND_COLORS = { [ZONE_KIND.ROAD]: '#4a4034', [ZONE_KIND.STRUCTURE]: '#e8e0d0', [ZONE_KIND.WATER]: '#3a78b8', [ZONE_KIND.UNBUILDABLE]: '#5a5550', [ZONE_KIND.SHORE]: '#8fa8b8' };
-export const ZONE_KIND_NAMES = { [ZONE_KIND.ROAD]: '道路', [ZONE_KIND.STRUCTURE]: '特殊建築', [ZONE_KIND.WATER]: '水面', [ZONE_KIND.UNBUILDABLE]: '建てられない地形（山）', [ZONE_KIND.SHORE]: '岸辺（区画不可）' };
+export const ZONE_KIND_COLORS = { [ZONE_KIND.ROAD]: '#2b241d', [ZONE_KIND.STRUCTURE]: '#e8e0d0', [ZONE_KIND.WATER]: '#3a78b8', [ZONE_KIND.UNBUILDABLE]: '#5a5550', [ZONE_KIND.SHORE]: '#8fa8b8' };
+export const ZONE_KIND_NAMES = { [ZONE_KIND.ROAD]: '道路（明るい線）', [ZONE_KIND.STRUCTURE]: '特殊建築', [ZONE_KIND.WATER]: '水面', [ZONE_KIND.UNBUILDABLE]: '建てられない地形（山）', [ZONE_KIND.SHORE]: '岸辺（区画不可）' };
 
 /** 悪い=赤 → 普通=黄 → 良い=緑 */
 export function gradientColor(v) {
@@ -37,7 +37,7 @@ export function computeZoneMap(world, reg) {
       if (world.buildingAt[i] !== -1) stats[zi].built++; else flags[i] |= FLAG.UNBUILT;
       // 道路が届かない区画（家が建たない）: 点線で示す
       if (world.roadDist[i] > reg.zones[zi].roadDistance) { flags[i] |= FLAG.BELOW_THRESHOLD; stats[zi].noRoad++; }
-    } else if (world.roads[i]) kind[i] = ZONE_KIND.ROAD;
+    } else if (world.roads[i]) { kind[i] = ZONE_KIND.ROAD; flags[i] |= FLAG.ROAD; }
     else if (world.structAt && world.structAt[i] !== -1) kind[i] = ZONE_KIND.STRUCTURE;
     else if (t.water) { kind[i] = ZONE_KIND.WATER; flags[i] |= FLAG.WATER_TILE; }
     else if (!t.buildable && !t.farmable) kind[i] = ZONE_KIND.UNBUILDABLE;
