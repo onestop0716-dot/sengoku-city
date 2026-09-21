@@ -7,10 +7,11 @@ export const QUALITIES = {
 const KEY = 'sengoku-city.settings';
 
 export function loadSettings() {
-  let s = { quality: 'auto', advisor: 'normal', confirmActions: null };   // confirmActions: null = 端末で決める
+  let s = { quality: 'auto', advisor: 'normal', advisorCharacter: 'owl', confirmActions: null };   // confirmActions: null = 端末で決める
   try { const raw = localStorage.getItem(KEY); if (raw) s = { ...s, ...JSON.parse(raw) }; } catch { /* 保存なし */ }
   if (s.quality !== 'auto' && !QUALITIES[s.quality]) s.quality = 'auto';
   if (!['many', 'normal', 'few', 'off'].includes(s.advisor)) s.advisor = 'normal';
+  if (typeof s.advisorCharacter !== 'string') s.advisorCharacter = 'owl';   // 実在は advice.json の characters で確かめる
   return s;
 }
 export function saveSettings(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch { /* 保存できない環境 */ } }

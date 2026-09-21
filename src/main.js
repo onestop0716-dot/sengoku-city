@@ -117,7 +117,7 @@ async function main() {
     if (rebuild) { buildTerrain(q); buildings.refreshModels(); viewMode.reapply(); } else env.terrain.setRipple(q.ripple);
     buildings.setQuality(q); agentsView.setQuality(q);
   };
-  const settingsPanel = createSettingsPanel(settings, applyQualityChange, { advisorFrequencies: reg.advice.frequency });
+  const settingsPanel = createSettingsPanel(settings, applyQualityChange, { advisorFrequencies: reg.advice.frequency, advisorCharacters: reg.advice.characters, onAdvisor: () => advisor.refreshCharacter() });
   qctx.loop = loop; qctx.log = log;
   const finance = createFinancePanel(world, reg, tooltip);
   const population = createPopulationPanel(world, reg, tooltip);

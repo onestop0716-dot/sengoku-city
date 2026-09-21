@@ -1,12 +1,86 @@
 {
-  "_comment": "案内役（県令を見守る物知りなフクロウ）の助言。条件は metric（src/sim/advisor.js の computeMetrics が返す値）で書く。all/any/not で組み合わせる。文中の {name} は指標の値に置き換わる。名前・設定・画像は character で変えられる。 view は「表示モードで確認」ボタンで開く表示モード（zones / water / security / prosperity / market / food / fertility / loyalty / environment）。 view には {blockerView} のように指標を埋め込める。",
-  "character": {
-    "name": "ホウ",
-    "reading": "ほう",
-    "role": "県令を見守る物知りなフクロウ",
-    "image": "assets/ui/advisor.png",
-    "note": "完全な創作のキャラクター。史書・漫画の人物や設定とは無関係。名前は仮のもので、ここで変更できる。親しみやすく短い言葉で話す。"
-  },
+  "_comment": "案内役（県令を見守る物知りなフクロウ）の助言。条件は metric（src/sim/advisor.js の computeMetrics が返す値）で書く。all/any/not で組み合わせる。文中の {name} は指標の値に置き換わる。案内役は characters に並べ、設定で選ぶ（name/reading/role/image/tone/overrides）。tone.endings は文末の言い換え、overrides は id ごとの文の差し替え。 view は「表示モードで確認」ボタンで開く表示モード（zones / water / security / prosperity / market / food / fertility / loyalty / environment）。 view には {blockerView} のように指標を埋め込める。",
+  "characters": [
+    {
+      "id": "owl",
+      "name": "ホウ",
+      "reading": "ほう",
+      "role": "県令を見守る物知りなフクロウ",
+      "image": "assets/ui/advisor.png",
+      "note": "完全な創作のキャラクター。史書・漫画の人物や設定とは無関係。名前は仮のもので、ここで変更できる。親しみやすく短い言葉で話す。"
+    },
+    {
+      "id": "ogyako",
+      "name": "オギャコ",
+      "reading": "おぎゃこ",
+      "role": "県令を追いかけまわす陽気な里の若者",
+      "image": "assets/ui/advisor-ogyako.png",
+      "tone": {
+        "_comment": "文末の言い換え。文の終わり（。！？や文末）の直前に from があれば to に置き換える。上から順に最初に合ったものだけ。",
+        "endings": [
+          {
+            "from": "だよ",
+            "to": "だよー"
+          },
+          {
+            "from": "よ",
+            "to": "よー"
+          },
+          {
+            "from": "だね",
+            "to": "だよねー"
+          },
+          {
+            "from": "ね",
+            "to": "ねー"
+          },
+          {
+            "from": "んだ",
+            "to": "んだよー"
+          },
+          {
+            "from": "だ",
+            "to": "だよー"
+          },
+          {
+            "from": "しよう",
+            "to": "しようよー"
+          },
+          {
+            "from": "よう",
+            "to": "ようよー"
+          },
+          {
+            "from": "そう",
+            "to": "そうよー"
+          },
+          {
+            "from": "てる",
+            "to": "てるよー"
+          },
+          {
+            "from": "おこう",
+            "to": "おこうよー"
+          },
+          {
+            "from": "てみて",
+            "to": "てみてよー"
+          }
+        ]
+      },
+      "overrides": {
+        "t_hello": {
+          "title": "よろしくだよー",
+          "text": "おれはオギャコ！ この里で生まれ育った、県令の子分だよー。おれが見てきたことを全部教えるから、まずは基本から。右下のおれを押すと「いまやるべきこと」が見られるよー。"
+        },
+        "t_done": {
+          "title": "ひと通りおしまいだよー",
+          "text": "これで県令の仕事はひと通りだよー。困ったらおれが飛んでくるし、うるさければ設定で減らせるよー。……減らさないでほしいなあ。"
+        }
+      },
+      "note": "完全な創作のキャラクター。史書・漫画・映画の人物や設定・デザインとは無関係。画像は assets/ui/advisor-ogyako.svg から作ったオリジナル。口癖は「〜だよー」。"
+    }
+  ],
   "frequency": {
     "many": {
       "name": "多い",

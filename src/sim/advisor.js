@@ -1,4 +1,5 @@
-// 案内役（フクロウ）の助言ロジック。表示は ui/advisor.js。条件と文は data/advice.json にある。
+// 案内役の助言ロジック。表示は ui/advisor.js。条件と文は data/advice.json にある。
+// 案内役は advice.json の characters から選ぶ（設定 advisorCharacter）。口癖は tone.endings で文末を言い換える。
 // computeMetrics が世界の状態を指標にまとめ、evaluate が「いま出す助言」「やるべきことの一覧」を決める。
 import { idx } from '../core/grid.js';
 import { explainBuildBlockers, zoneDefAt } from './zones.js';
@@ -110,7 +111,7 @@ export function computeMetrics(world, reg, opts = {}) {
     researching: !!world.research?.current, techAvailable: reg.techs.filter((t) => canResearch(world, reg, t.id).ok).length,
     hiredCount: world.persons?.hired.length || 0, idleHired: (world.persons?.hired || []).filter((h) => !Object.values(world.offices || {}).includes(h.id)).length,
     vacantSlots: Math.max(0, officeSlots(world, reg) - usedSlots(world)), candidates: listCandidates(world, reg).length, visitors: world.persons?.visitors.length || 0,
-    name: reg.advice?.character?.name || '',
+    name: (opts.character || characterOf(reg)).name || '',
   };
 }
 
@@ -132,6 +133,22 @@ export function evalCondition(c, m) {
   return true;
 }
 
+/** 案内役を選ぶ。id が無ければ最初の案内役（フクロウ） */
+export function characterOf(reg, id = null) {
+  const list = reg.advice?.characters || [];
+  return list.find((c) => c.id === id) || list[0] || { id: 'owl', name: '', reading: '', role: '', image: 'assets/ui/advisor.png' };
+}
+
+/** 口癖: 文末（。！？の直前か文字列の末尾）を tone.endings に従って言い換える。「」内は文末とみなさない */
+export function applyTone(text, tone) {
+  const rules = tone?.endings;
+  if (!rules?.length || !text) return text;
+  return String(text).replace(/([^。！？!?\n「」『』]+)(?=[。！？!?\n」』]|$)/g, (seg) => {
+    for (const r of rules) if (seg.endsWith(r.from)) return seg.slice(0, seg.length - r.from.length) + r.to;
+    return seg;
+  });
+}
+
 export function fillText(text, m) {
   return String(text || '').replace(/\{(\w+)\}/g, (_, k) => {
     const v = m[k];
@@ -148,6 +165,8 @@ export function evaluate(world, reg, opts = {}) {
   const A = reg.advice;
   const st = ensureAdvisorState(world);
   const freq = A.frequency[opts.frequency || 'normal'] || A.frequency.normal;
+  const ch = opts.character || characterOf(reg, opts.characterId);
+  opts = { ...opts, character: ch };
   const m = computeMetrics(world, reg, opts);
   // 記録（3か月前との比較用）
   if (!st.samples.length || world.day - st.samples[st.samples.length - 1].day >= 10) {
@@ -155,7 +174,7 @@ export function evaluate(world, reg, opts = {}) {
     while (st.samples.length > 12) st.samples.shift();
   }
   const active = A.advices.filter((a) => evalCondition(a.when, m));
-  const todo = active.filter((a) => a.todo).sort((a, b) => b.priority - a.priority).map((a) => ({ id: a.id, priority: a.priority, text: fillText(a.todo, m), title: fillText(a.title, m) }));
+  const todo = active.filter((a) => a.todo).sort((a, b) => b.priority - a.priority).map((a) => ({ id: a.id, priority: a.priority, text: fillText(a.todo, m), title: applyTone(fillText(a.title, m), ch.tone) }));
   const result = { show: null, todo, tutorial: null, metrics: m };
   // チュートリアル（初回）: 順番に進める
   if (opts.tutorial && !st.tutorialDone && A.tutorial?.length) {
@@ -164,8 +183,8 @@ export function evaluate(world, reg, opts = {}) {
     else {
       const shownAt = st.shown[step.id];
       const done = step.done ? evalCondition(step.done, m) : shownAt !== undefined && world.day - shownAt >= 3;
-      if (done) { st.tutorialStep++; st.stepStartDay = world.day; const next = A.tutorial[st.tutorialStep]; if (!next) st.tutorialDone = true; else result.tutorial = present(next, m, st, world, 'tutorial'); }
-      else if (shownAt === undefined || world.day - shownAt >= 60) result.tutorial = present(step, m, st, world, 'tutorial');
+      if (done) { st.tutorialStep++; st.stepStartDay = world.day; const next = A.tutorial[st.tutorialStep]; if (!next) st.tutorialDone = true; else result.tutorial = present(next, m, st, world, 'tutorial', ch); }
+      else if (shownAt === undefined || world.day - shownAt >= 60) result.tutorial = present(step, m, st, world, 'tutorial', ch);
       if (result.tutorial) return result;   // 案内中は助言を出さない（一覧は出す）
       if (!st.tutorialDone) return result;
     }
@@ -179,14 +198,16 @@ export function evaluate(world, reg, opts = {}) {
     const minGap = a.priority >= 5 ? Math.min(freq.minGapDays, 3) : freq.minGapDays;
     return gap >= minGap;
   }).sort((a, b) => b.priority - a.priority || (st.shown[a.id] ?? -1) - (st.shown[b.id] ?? -1));
-  if (candidates.length) result.show = present(candidates[0], m, st, world, 'advice');
+  if (candidates.length) result.show = present(candidates[0], m, st, world, 'advice', ch);
   return result;
 }
 
-function present(entry, m, st, world, kind) {
+function present(entry, m, st, world, kind, ch = null) {
   st.shown[entry.id] = world.day;
   st.lastAnyDay = world.day;
-  const out = { id: entry.id, kind, day: world.day, expression: entry.expression || 'normal', title: fillText(entry.title, m), text: fillText(entry.text, m), priority: entry.priority ?? 0, view: entry.view ? (fillText(entry.view, m) || null) : null };
+  const ov = ch?.overrides?.[entry.id] || {};   // 案内役ごとの文の差し替え（自己紹介など）
+  const say = (t) => applyTone(fillText(t, m), ch?.tone);
+  const out = { id: entry.id, kind, day: world.day, expression: entry.expression || 'normal', title: say(ov.title ?? entry.title), text: say(ov.text ?? entry.text), priority: entry.priority ?? 0, view: entry.view ? (fillText(entry.view, m) || null) : null };
   st.history.push(out);
   while (st.history.length > 40) st.history.shift();
   return out;
