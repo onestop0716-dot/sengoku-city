@@ -19,5 +19,5 @@
 ## assets/ui/advisor.png — 案内役のフクロウ「ホウ」
 - オーナー（onestop0716-dot）提供のオリジナル画像。白背景を透過にし 512px に縮小して収録。
 
-## assets/ui/advisor-ogyako.png — 案内役の若者「オギャコ」
-- 本プロジェクトで描いたオリジナル（元データ `assets/ui/advisor-ogyako.svg`、Playwright で 460×512 の透過 PNG に変換）。漫画・映画・実在の人物とは無関係。差し替えるときは同じファイル名で上書きするか `data/advice.json` の `image` を変える。
+## assets/ui/advisor-kanko-*.png — 案内役の役人「カンコ」（通常・喜び・困り・警告の4枚）
+- 本プロジェクトで描いたオリジナル（元データ `assets/ui/advisor-kanko-*.svg`、Playwright で 460×512 の透過 PNG に変換）。漫画・映画・実在の人物とは無関係。差し替えるときは同じファイル名で上書きするか `data/advice.json` の `image` を変える。

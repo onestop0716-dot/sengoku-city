@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 512" width="460" height="512">
+<defs>
+ <linearGradient id="robe" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a6a48"/><stop offset="1" stop-color="#6a4e34"/></linearGradient>
+ <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0c9a0"/><stop offset="1" stop-color="#d9a97c"/></linearGradient>
+</defs>
+<g stroke="#2e1c12" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+ 
+ <!-- 体（麻の衣） -->
+ <path d="M52 512 C48 420 100 366 172 350 L230 386 L288 350 C360 366 412 420 408 512 Z" fill="url(#robe)"/>
+ <path d="M172 350 L230 440 L288 350" fill="none"/>
+ <path d="M230 440 L246 512" fill="none" stroke-width="4"/>
+ <path d="M190 344 L230 400 L270 344 Z" fill="url(#skin)"/>
+ <path d="M104 470 C190 452 270 452 356 470 L360 494 C270 476 190 476 100 494 Z" fill="#3e2a1c"/>
+ <!-- 首 -->
+ <path d="M196 296 L200 350 L260 350 L264 296 Z" fill="#d9a97c"/>
+ <!-- 顔（丸くてがっしり） -->
+ <path d="M124 214 C120 130 176 92 230 92 C284 92 340 130 336 214 C334 290 292 336 230 336 C168 336 126 290 124 214 Z" fill="url(#skin)"/>
+ <!-- 耳 -->
+ <path d="M128 220 C108 208 106 244 124 250 Z" fill="#d9a97c"/><path d="M332 220 C352 208 354 244 336 250 Z" fill="#d9a97c"/>
+ <!-- ひげ（あご・もみあげ） -->
+ <path d="M150 250 C150 300 180 340 230 344 C280 340 310 300 310 250 C300 292 270 318 230 320 C190 318 160 292 150 250 Z" fill="#3a2418"/>
+ <path d="M150 250 C140 236 138 218 142 200 L160 236 Z M310 250 C320 236 322 218 318 200 L300 236 Z" fill="#3a2418"/>
+ <!-- 頭巾（幘） -->
+ <path d="M118 176 C130 110 176 78 230 78 C284 78 330 110 342 176 C300 150 160 150 118 176 Z" fill="#8c3a2a"/>
+ <path d="M112 182 C160 156 300 156 348 182 L342 202 C300 180 160 180 118 202 Z" fill="#a8483a"/>
+ <path d="M330 176 C346 160 366 168 360 190 C356 176 342 174 330 182 Z" fill="#8c3a2a"/>
+ <path d="M160 190 C176 196 202 200 218 208" fill="none" stroke-width="9"/><path d="M300 190 C284 196 258 200 242 208" fill="none" stroke-width="9"/><ellipse cx="190" cy="226" rx="12" ry="12" fill="#fff"/><ellipse cx="270" cy="226" rx="12" ry="12" fill="#fff"/><circle cx="192" cy="228" r="5" fill="#2e1c12"/><circle cx="268" cy="228" r="5" fill="#2e1c12"/><path d="M230 226 C220 246 218 258 230 262 C242 258 240 246 230 226 Z" fill="#e0ad80"/><path d="M198 292 C214 282 246 282 262 292" fill="none" stroke-width="5"/><path d="M186 268 C204 256 222 262 230 266 C238 262 256 256 274 268 C256 276 238 274 230 272 C222 274 204 276 186 268 Z" fill="#3a2418"/>
+ <path d="M84 300 C70 260 104 226 130 246 L150 268 C168 288 156 320 128 316 C104 312 90 322 84 300 Z" fill="url(#skin)"/><path d="M376 300 C390 260 356 226 330 246 L310 268 C292 288 304 320 332 316 C356 312 370 322 376 300 Z" fill="url(#skin)"/><path d="M60 400 C56 350 70 314 92 306 L120 318 C100 350 96 380 100 420 Z" fill="url(#robe)"/><path d="M400 400 C404 350 390 314 368 306 L340 318 C360 350 364 380 360 420 Z" fill="url(#robe)"/>
+</g>
+<g fill="#8fd0f0" stroke="#3a86b8" stroke-width="3"><path d="M330 150 C330 150 322 164 322 170 a8 8 0 0 0 16 0 C338 164 330 150 330 150 Z"/><path d="M344 190 C344 190 336 204 336 210 a8 8 0 0 0 16 0 C352 204 344 190 344 190 Z"/></g>
+</svg>

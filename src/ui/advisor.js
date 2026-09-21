@@ -26,11 +26,12 @@ export function createAdvisorUi(world, reg, settings, { onOpenSettings, onOpen, 
   let currentView = null;
   viewBtn.addEventListener('click', (e) => { e.stopPropagation(); if (currentView) onView?.(currentView); bubble.style.display = 'none'; hideAt = 0; });
   const charEl = root.querySelector('.adv-char'), badge = root.querySelector('.adv-badge'), miniBtn = root.querySelector('.adv-mini'), imgEl = root.querySelector('.adv-img');
-  const applyCharacter = () => { imgEl.src = ch.image || 'assets/ui/advisor.png'; imgEl.alt = ch.name; charEl.title = `${ch.name}（${ch.reading}）: ${ch.role}。押すと「いまやるべきこと」`; };
+  const imageFor = (ex) => ch.images?.[ex] || ch.image || 'assets/ui/advisor.png';
+  const applyCharacter = () => { imgEl.src = imageFor('normal'); imgEl.alt = ch.name; charEl.title = `${ch.name}（${ch.reading}）: ${ch.role}。押すと「いまやるべきこと」`; };
   applyCharacter();
   let hideAt = 0, lastDay = -1, lastTodo = [];
   /** 状態 → 動きと記号（normal: ふわふわ / happy: 跳ねる+♪ / troubled: 傾く+汗 / warning: 震える+！+赤い吹き出し） */
-  const setExpression = (ex) => { for (const e of A.expressions) charEl.classList.toggle(`state-${e}`, e === ex); bubble.classList.toggle('warn', ex === 'warning'); };
+  const setExpression = (ex) => { for (const e of A.expressions) charEl.classList.toggle(`state-${e}`, e === ex); bubble.classList.toggle('warn', ex === 'warning'); const src = imageFor(ex); if (imgEl.getAttribute('src') !== src) imgEl.src = src; };
   const applyMini = () => { root.classList.toggle('mini', mini); miniBtn.textContent = mini ? '＋' : '－'; miniBtn.title = mini ? '元の大きさに戻す' : '小さくする'; if (mini) bubble.style.display = 'none'; };
   miniBtn.addEventListener('click', (e) => { e.stopPropagation(); mini = !mini; try { localStorage.setItem(MINI_KEY, mini ? '1' : '0'); } catch { /* 無視 */ } applyMini(); });
   root.querySelector('.adv-close').addEventListener('click', (e) => { e.stopPropagation(); bubble.style.display = 'none'; });
@@ -67,6 +68,7 @@ export function createAdvisorUi(world, reg, settings, { onOpenSettings, onOpen, 
   return {
     el: panel,
     restart() { tutorial = true; lastDay = -1; },
+    setExpression,   // 確認ツール用
     /** 設定で案内役を変えたとき: 画像と名前を替え、ひとこと挨拶する */
     refreshCharacter() {
       const next = characterOf(reg, settings.advisorCharacter);
