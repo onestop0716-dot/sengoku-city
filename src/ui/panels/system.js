@@ -18,7 +18,7 @@ export function createSystemPanel(world, reg, log, { onSettings, onRestartTutori
       const got = world.achievements || {};
       html += `<h4>実績（${Object.keys(got).length} / ${reg.achievements.length}）</h4><table class="ptable">${reg.achievements.map((a) => `<tr class="${a.id in got ? 'done' : 'locked'}"><td>${a.id in got ? '★' : '☆'}</td><td>${a.name}</td><td class="note">${a.desc}${a.id in got ? `　（${got[a.id]}日目）` : ''}</td></tr>`).join('')}</table>`;
     } else {
-      html += `<div class="frow"><button class="btn" data-settings>設定（描画品質・案内役・助言の頻度）</button></div><div class="frow"><button class="btn" data-tutorial>案内をやり直す</button></div><div class="frow"><button class="btn" data-title>タイトルへ戻る（保存してから）</button></div>
+      html += `<div class="frow"><button class="btn" data-settings>設定（描画品質・助言の頻度）</button></div><div class="frow"><button class="btn" data-tutorial>案内をやり直す</button></div><div class="frow"><button class="btn" data-title>タイトルへ戻る（保存してから）</button></div>
         <h4>出来事の記録</h4>${world.events?.history?.length ? `<table class="ptable">${world.events.history.slice().reverse().slice(0, 10).map((h) => `<tr><td>${h.day}日目</td><td>${h.name}</td><td class="note">${h.choice ? `「${h.choice}」` : ''}</td></tr>`).join('')}</table>` : '<div class="note">まだ出来事はありません。</div>'}`;
     }
     el.innerHTML = html;

@@ -1,5 +1,5 @@
 {
-  "_comment": "案内役（県令を見守る物知りなフクロウ）の助言。条件は metric（src/sim/advisor.js の computeMetrics が返す値）で書く。all/any/not で組み合わせる。文中の {name} は指標の値に置き換わる。案内役は characters に並べ、設定で選ぶ（name/reading/role/image/images/tone/overrides）。images は状態ごとの画像（normal/happy/troubled/warning、無ければ image）。tone.endings は文末の言い換え、overrides は id ごとの文の差し替え。 view は「表示モードで確認」ボタンで開く表示モード（zones / water / security / prosperity / market / food / fertility / loyalty / environment）。 view には {blockerView} のように指標を埋め込める。",
+  "_comment": "案内役（県令を見守る物知りなフクロウ）の助言。条件は metric（src/sim/advisor.js の computeMetrics が返す値）で書く。all/any/not で組み合わせる。文中の {name} は指標の値に置き換わる。案内役は characters の先頭（name/reading/role/image。images で状態ごとの画像、tone/overrides で口癖と文の差し替えもできる）。2人以上並べると設定に選択が出る。tone.endings は文末の言い換え、overrides は id ごとの文の差し替え。 view は「表示モードで確認」ボタンで開く表示モード（zones / water / security / prosperity / market / food / fertility / loyalty / environment）。 view には {blockerView} のように指標を埋め込める。",
   "characters": [
     {
       "id": "owl",
@@ -8,83 +8,6 @@
       "role": "県令を見守る物知りなフクロウ",
       "image": "assets/ui/advisor.png",
       "note": "完全な創作のキャラクター。史書・漫画の人物や設定とは無関係。名前は仮のもので、ここで変更できる。親しみやすく短い言葉で話す。"
-    },
-    {
-      "id": "kanko",
-      "name": "カンコ",
-      "reading": "かんこ",
-      "role": "県を長く支えてきた古参の里の役人",
-      "image": "assets/ui/advisor-kanko-normal.png",
-      "images": {
-        "normal": "assets/ui/advisor-kanko-normal.png",
-        "happy": "assets/ui/advisor-kanko-happy.png",
-        "troubled": "assets/ui/advisor-kanko-troubled.png",
-        "warning": "assets/ui/advisor-kanko-warning.png"
-      },
-      "tone": {
-        "_comment": "文末の言い換え。文の終わり（。！？や文末）の直前に from があれば to に置き換える。上から順に最初に合ったものだけ。",
-        "endings": [
-          {
-            "from": "だよ",
-            "to": "だぞ"
-          },
-          {
-            "from": "よ",
-            "to": "ぞ"
-          },
-          {
-            "from": "だね",
-            "to": "だな"
-          },
-          {
-            "from": "ね",
-            "to": "な"
-          },
-          {
-            "from": "んだ",
-            "to": "んだぞ"
-          },
-          {
-            "from": "だ",
-            "to": "だぞ"
-          },
-          {
-            "from": "てみて",
-            "to": "てみろ"
-          },
-          {
-            "from": "しよう",
-            "to": "しようぞ"
-          },
-          {
-            "from": "よう",
-            "to": "ようぞ"
-          },
-          {
-            "from": "そう",
-            "to": "そうぞ"
-          },
-          {
-            "from": "おこう",
-            "to": "おこうぞ"
-          },
-          {
-            "from": "てる",
-            "to": "てるぞ"
-          }
-        ]
-      },
-      "overrides": {
-        "t_hello": {
-          "title": "わしがカンコだ",
-          "text": "わしはカンコ。この県で長いこと役人をしてきた。県令どのが困らぬよう、見てきたことは全部話す。まずは基本からだ。右下のわしを押せば「いまやるべきこと」が見られる。"
-        },
-        "t_done": {
-          "title": "ひと通り教えたぞ",
-          "text": "これで県令の仕事はひと通りだ。困ったらわしが口を出す。うるさければ設定で減らせるが……減らさんでくれ。"
-        }
-      },
-      "note": "完全な創作のキャラクター。史書・漫画・映画の人物や設定・デザインとは無関係。画像は assets/ui/advisor-kanko-*.svg から作ったオリジナル。images は状態（normal/happy/troubled/warning）ごとの画像で、無い状態は image を使う。"
     }
   ],
   "frequency": {

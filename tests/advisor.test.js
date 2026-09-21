@@ -88,24 +88,19 @@ test('指標: 建たない区画の理由と対策が出る', async () => {
   assert.ok(m.blockerTip);
 });
 
-test('案内役の選択と口癖: characters から選び、文末を tone.endings で言い換える', async () => {
+test('案内役: characters の先頭がホウ。tone.endings は文末だけ言い換える', async () => {
   const reg = await getRegistry();
   const { characterOf, applyTone } = await import('../src/sim/advisor.js');
-  assert.equal(characterOf(reg).id, 'owl');                      // 既定はフクロウ
-  assert.equal(characterOf(reg, 'nope').id, 'owl');              // 無い id は既定
-  const og = characterOf(reg, 'kanko');
-  assert.equal(og.name, 'カンコ');
-  assert.equal(og.images.warning, 'assets/ui/advisor-kanko-warning.png');
-  assert.equal(applyTone('順調だね。井戸を建てよう。', og.tone), '順調だな。井戸を建てようぞ。');
-  assert.equal(applyTone('「道路」を選んでね', og.tone), '「道路」を選んでな');   // 「」の中は文末扱いしない
-  assert.equal(applyTone('落ち着いて。', og.tone), '落ち着いて。');            // 合う語尾が無ければそのまま
+  assert.equal(characterOf(reg).id, 'owl');
+  assert.equal(characterOf(reg, 'nope').id, 'owl');
+  assert.equal(reg.advice.characters.length, 1);
+  const tone = { endings: [{ from: 'だね', to: 'だな' }, { from: 'ね', to: 'な' }, { from: 'よう', to: 'ようぞ' }] };
+  assert.equal(applyTone('順調だね。井戸を建てよう。', tone), '順調だな。井戸を建てようぞ。');
+  assert.equal(applyTone('「道路」を選んでね', tone), '「道路」を選んでな');   // 「」の中は文末扱いしない
+  assert.equal(applyTone('落ち着いて。', tone), '落ち着いて。');
   assert.equal(applyTone('xだよ', null), 'xだよ');
-  // 初回の案内は差し替え文（自己紹介）になり、口癖が付く
   const world = createWorld({ seed: 3, cityId: 'chen', reg, size: 128 });
-  const r = evaluate(world, reg, { frequency: 'normal', tutorial: true, characterId: 'kanko' });
+  const r = evaluate(world, reg, { frequency: 'normal', tutorial: true });
   assert.equal(r.tutorial?.id, 't_hello');
-  assert.ok(r.tutorial.text.includes('カンコ') && r.tutorial.text.includes('わし'), r.tutorial.text);
-  assert.ok(!r.tutorial.text.includes('フクロウ'));
-  const r2 = evaluate(createWorld({ seed: 3, cityId: 'chen', reg, size: 128 }), reg, { frequency: 'normal', tutorial: true });
-  assert.ok(r2.tutorial.text.includes('ホウ') && r2.tutorial.text.includes('フクロウ'), r2.tutorial.text);
+  assert.ok(r.tutorial.text.includes('ホウ') && r.tutorial.text.includes('フクロウ'), r.tutorial.text);
 });
