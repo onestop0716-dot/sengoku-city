@@ -37,5 +37,6 @@ node tools/screenshot.mjs out.png   # 実描画のスクリーンショット（
 | `docs/03_データ定義設計.md` | `data/*.json` の構造 |
 | `docs/04_フォルダ構成.md` | フォルダとモジュールの責務 |
 | `docs/05_フェーズ計画.md` | 開発フェーズと完了条件 |
+| `docs/handover/` | 次のセッションへの引継ぎプロンプト（画像生成用・内容制作用） |
 | `CLAUDE.md` | 開発ルール |
 | `CREDITS.md` | 外部素材・ライブラリの出典とライセンス |
