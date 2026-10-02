@@ -1,9 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { getRegistry } from './_helpers.js';
+import { getRegistry, fill, finishAll } from './_helpers.js';
 import { createWorld, tick } from '../src/sim/world.js';
 import { applyCommand } from '../src/sim/commands.js';
-import { computeProsperity } from '../src/sim/zones.js';
+import { computeSatisfaction } from '../src/sim/satisfaction.js';
 import { canPlaceStructure, computeEnclosure } from '../src/sim/structures.js';
 import { idx } from '../src/core/grid.js';
 
@@ -23,18 +23,18 @@ test('官府は開始時に中央へ1つだけ置かれ、撤去できず、2つ
   assert.equal(canPlaceStructure(world, reg, reg.structureById.get('yamen'), 10, 10), '1つしか建てられません');
 });
 
-test('井戸は水を供給し、近くの家の繁栄度が上がる。山や水の上には置けない', async () => {
+test('井戸は水を供給し、近くの家の満足度が上がる。山や水の上には置けない', async () => {
   const { reg, world } = await fresh();
-  const zone = reg.zoneById.get('res_commoner');
+  const house = reg.buildingById.get('house_commoner');
   let tx = -1, ty = -1;
   for (let y = 2; y < 62 && tx < 0; y++) for (let x = 2; x < 62; x++) if (world.map.waterDist[y * 64 + x] > 10 && reg.tiles[world.map.tile[y * 64 + x]].id === 'plain' && world.structAt[y * 64 + x] === -1) { tx = x; ty = y; break; }
   assert.ok(tx > 0);
-  const before = computeProsperity(world, reg, tx, ty, zone).parts['水'];
+  const before = computeSatisfaction(world, reg, house, tx, ty).parts['水'];
   const r = applyCommand(world, reg, { type: 'structure.place', typeId: 'well', x: tx + 2, y: ty });
   assert.ok(r.ok, r.message);
   run(world, reg, 6);
   assert.ok(world.services.water[idx(64, tx, ty)] === 1);
-  assert.ok(computeProsperity(world, reg, tx, ty, zone).parts['水'] > before);
+  assert.ok(computeSatisfaction(world, reg, house, tx, ty).parts['水'] > before);
   // 水の上
   let wx = -1, wy = -1;
   for (let i = 0; i < 64 * 64 && wx < 0; i++) if (reg.tiles[world.map.tile[i]].id === 'river') { wx = i % 64; wy = (i / 64) | 0; }
@@ -82,41 +82,42 @@ test('橋は川をまたぐ線でだけ架けられ、道路として道路距�
   assert.equal(world.roads[idx(w, bx, by0 + 1)], 1);
 });
 
-test('市は市亭の範囲内でだけ建ち、市租が入る', async () => {
+test('市の店は市亭の範囲内にだけ置け、市租が入る', async () => {
   const { reg, world } = await fresh();
   world.services.water = new Uint8Array(64 * 64).fill(1);
-  applyCommand(world, reg, { type: 'zone.set', rect: { x0: 33, y0: 33, x1: 38, y1: 34 }, zoneId: 'market' });
-  applyCommand(world, reg, { type: 'zone.set', rect: { x0: 33, y0: 35, x1: 38, y1: 37 }, zoneId: 'res_commoner' });
-  applyCommand(world, reg, { type: 'zone.set', rect: { x0: 26, y0: 33, x1: 31, y1: 38 }, zoneId: 'farm_millet' });
-  run(world, reg, 60);
-  assert.equal(Array.from(world.buildings.values()).filter((b) => b.category === 'market').length, 0, '市亭なしで店が建った');
+  const no = applyCommand(world, reg, { type: 'build.place', typeId: 'market_stall', x: 34, y: 33 });
+  assert.ok(!no.ok && no.reasons.some((x) => x.includes('市亭')), '市亭なしで店を置けた');
   const r = applyCommand(world, reg, { type: 'structure.place', typeId: 'market_hall', x: 34, y: 29 });
   assert.ok(r.ok, r.message);
+  run(world, reg, 25);
+  const s = fill(applyCommand, world, reg, 'market_stall', 33, 33, 38, 33);
+  assert.ok(s.count > 0, JSON.stringify(s));
+  fill(applyCommand, world, reg, 'house_commoner', 33, 34, 38, 35);
+  fill(applyCommand, world, reg, 'field_millet', 24, 33, 31, 40);
+  finishAll(world);
   world.population.commoner = 600; world.population.total = 600;   // 市が求められる規模にする
   world.services.water = new Uint8Array(64 * 64).fill(1);
-  run(world, reg, 25);
-  world.services.water = new Uint8Array(64 * 64).fill(1);
-  run(world, reg, 200);
-  assert.ok(Array.from(world.buildings.values()).some((b) => b.category === 'market' && b.state === 'built'), '店が建たない');
+  run(world, reg, 100);
   assert.ok(world.finance.history.some((h) => h.detail.income['市租'] > 0), '市租が入らない');
   assert.ok(world.finance.history.some((h) => h.detail.expense['維持費'] > 0), '維持費が引かれない');
 });
 
-test('工房は近くの資源に応じた種類になる', async () => {
+test('工房は種類ごとに立地条件があり、鉄の資源の近くなら製鉄工房を置ける', async () => {
   const { reg, world } = await fresh(5, 'xinzheng');   // 鉄
-  world.services.water = new Uint8Array(64 * 64).fill(1);
   const ironIdx = reg.resources.findIndex((r) => r.id === 'iron') + 1;
   let rx = -1, ry = -1;
   for (let i = 0; i < 64 * 64 && rx < 0; i++) if (world.map.resource[i] === ironIdx && reg.tiles[world.map.tile[i]].buildable) { rx = i % 64; ry = (i / 64) | 0; }
   assert.ok(rx > 0);
   applyCommand(world, reg, { type: 'road.build', x0: rx - 3, y0: ry - 3, x1: rx + 3, y1: ry - 3 });
-  applyCommand(world, reg, { type: 'zone.set', rect: { x0: rx - 3, y0: ry - 2, x1: rx + 3, y1: ry + 2 }, zoneId: 'workshop' });
-  world.population.commoner = 500; world.population.total = 500;
-  run(world, reg, 150);
-  const ws = Array.from(world.buildings.values()).filter((b) => b.category === 'workshop');
-  assert.ok(ws.length > 0, '工房が建たない');
-  assert.ok(ws.every((b) => ['ws_iron', 'ws_pottery', 'ws_bronze', 'ws_salt', 'ws_lacquer', 'ws_weapon', 'ws_vehicle'].includes(b.buildingType)), ws.map((b) => b.buildingType).join(','));
-  assert.ok(ws.some((b) => b.buildingType === 'ws_iron'));
+  let placed = null;
+  for (let dy = -2; dy <= 2 && !placed; dy++) for (let dx = -3; dx <= 3 && !placed; dx++) { const r = applyCommand(world, reg, { type: 'build.place', typeId: 'ws_iron', x: rx + dx, y: ry + dy }); if (r.ok) placed = r; }
+  assert.ok(placed, '製鉄工房を置けない');
+  // 銅の資源がなければ青銅器工房は置けない（理由が出る）
+  const copperIdx = reg.resources.findIndex((r) => r.id === 'copper') + 1;
+  if (!Array.from(world.map.resource).some((v) => v === copperIdx)) {
+    const b = applyCommand(world, reg, { type: 'build.place', typeId: 'ws_bronze', x: rx + 3, y: ry - 2 });
+    assert.ok(!b.ok && b.reasons.some((x) => x.includes('銅')), JSON.stringify(b.reasons));
+  }
 });
 
 test('城壁が道路を横切る所は自動で城門になり、道路は通れたまま', async () => {

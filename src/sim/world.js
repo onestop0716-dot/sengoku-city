@@ -4,10 +4,11 @@ import { lPath } from '../core/grid.js';
 import { createCalendar, advanceDay } from './calendar.js';
 import { generateTerrain } from './terrain/generate.js';
 import { buildRoadPath, ensureRoadDist } from './roads.js';
-import { tickZones, housingCapacity } from './zones.js';
+import { tickBuildings, housingCapacity } from './satisfaction.js';
+import { ensureMaterials } from './materials.js';
 import { harvest } from './farming.js';
 import { tickFoodDaily, tickPopulationMonthly } from './population.js';
-import { tickEconomyMonthly, tickEconomyYearly, updateDemand, emptyMonth } from './economy.js';
+import { tickEconomyMonthly, tickEconomyYearly, updateIndicators, emptyMonth } from './economy.js';
 import { tickStructures, placeInitialStructures, recomputeServices } from './structures.js';
 import { placeStartingVillage } from './start-village.js';
 import { ensurePersonsState, tickPersonsMonthly, tickPersonsYearly } from './persons.js';
@@ -29,14 +30,13 @@ export function createWorld({ seed, cityId, reg, size, money, village = true }) 
   const w = size || reg.balance.map.defaultSize, h = w;
   const map = generateTerrain({ w, h, seed, profile: city.terrainProfile, reg });
   const world = {
-    version: 1,
+    version: 2,
     seed, cityId, nationId: city.nation, difficulty: reg.difficulty || 'normal',
     rng: createRng(seed),
     day: 0,
     calendar: createCalendar(reg.balance.time.startYear),
     map,
     roads: new Uint8Array(w * h), roadDist: null, roadDirty: true,
-    zones: new Uint8Array(w * h),
     buildingAt: new Int32Array(w * h).fill(-1),
     buildings: new Map(), nextBuildingId: 1,
     structures: new Map(), nextStructureId: 1, structAt: new Int32Array(w * h).fill(-1), servicesDirty: true,
@@ -50,14 +50,15 @@ export function createWorld({ seed, cityId, reg, size, money, village = true }) 
     loyalty: 60, security: reg.balance.placeholders.security, hygiene: 70,
     foodSufficiency: 1, foodSufficient: true,
     finance: { month: emptyMonth(), history: [], yearIncome: 0, recordYear: reg.balance.time.startYear, recordMonth: 1, lastHarvest: null, lastTribute: 0 },
-    demand: { residential: 40, farm: 50, market: 0, workshop: 0, military: 50 },
-    services: { water: null, marketDist: null, marketAdmin: null, irrigation: null, securityBonus: 0, loyaltyBonus: 0, hygieneBonus: 0, granaryCap: 0, defense: 0, wells: 0, docks: 0, farmDemand: 0, insideWall: null, insideCount: 0 },
+    indicators: { vacant: 0, waiting: 0, jobsOpen: 0, unemployed: 0 },
+    services: { water: null, marketDist: null, marketAdmin: null, irrigation: null, securityBonus: 0, loyaltyBonus: 0, hygieneBonus: 0, granaryCap: 0, defense: 0, wells: 0, docks: 0, satisfaction: null, insideWall: null, insideCount: 0 },
     stats: { housingCapacity: 0, jobs: 0, farmJobs: 0, farmTiles: 0, farmWorkerRatio: 1, capacity: { commoner: 0, shi: 0, noble: 0 } },
     log: [],
     dirty: { tiles: new Set(), buildings: false, trees: true },
   };
   // 初期道路: 中央に十字路
   const cx = Math.floor(w / 2), cy = Math.floor(h / 2);
+  ensureMaterials(world, reg);
   const saved = world.money;
   buildRoadPath(world, reg, lPath(cx - 6, cy, cx + 6, cy));
   buildRoadPath(world, reg, lPath(cx, cy - 6, cx, cy + 6));
@@ -76,9 +77,7 @@ export function createWorld({ seed, cityId, reg, size, money, village = true }) 
 export function tick(world, reg) {
   world.day++;
   const flags = advanceDay(world.calendar);
-  const moneyBefore = world.money;
-  tickZones(world, reg, world.rng);
-  world.finance.month.expense['建設費'] += Math.max(0, moneyBefore - world.money);   // 区画の自動建設にかかった銭
+  tickBuildings(world, reg);
   tickStructures(world, reg);
   world.stats.housingCapacity = housingCapacity(world, reg);
   tickFoodDaily(world, reg);
@@ -91,7 +90,7 @@ export function tick(world, reg) {
     tickEconomyMonthly(world, reg);
     harvest(world, reg, world.calendar.month);
     tickPopulationMonthly(world, reg);
-    updateDemand(world, reg);
+    updateIndicators(world, reg);
     tickNationMonthly(world, reg);
     tickInvasionMonthly(world, reg);
     flags.event = tickEventsMonthly(world, reg);

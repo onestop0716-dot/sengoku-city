@@ -2,7 +2,7 @@
 // 値の計算は sim/view-data.js。テクスチャは値が変わりうるとき（コマンド実行後・数日ごと・モード切替）だけ更新する。
 import * as THREE from 'three';
 import { viewUniforms } from './materials.js';
-import { computeZoneMap, STATE_MODES, STATE_MODE_IDS, FLAG, ZONE_KIND, ZONE_KIND_COLORS, gradientColor, relatedStructures, previewImprovement, modeForEffects, worstTile } from '../sim/view-data.js';
+import { computeUseMap, STATE_MODES, STATE_MODE_IDS, FLAG, ZONE_KIND, ZONE_KIND_COLORS, gradientColor, relatedStructures, previewImprovement, modeForEffects, worstTile } from '../sim/view-data.js';
 
 const hexRgb = (hex) => { const n = parseInt(hex.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
 const RING_COLORS = { water: 0x3fb8ff, security: 0xff8a3f, market: 0xffd23f, food: 0x9fe05a, loyalty: 0xd9a0ff, default: 0xffffff };
@@ -14,7 +14,7 @@ export function createViewMode(world, reg, scene, env, assets) {
   tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.NearestFilter; tex.needsUpdate = true;
   viewUniforms.uViewTex.value = tex;
   viewUniforms.uViewSize.value.set(w, h);
-  const zoneRgb = reg.zones.map((z) => hexRgb(z.color));
+  const zoneRgb = reg.tabs.map((t) => hexRgb(t.color));
   const kindRgb = Object.fromEntries(Object.entries(ZONE_KIND_COLORS).map(([k, v]) => [k, hexRgb(v)]));
 
   // 効果範囲の輪と施設の足元（LineSegments を地形に沿わせる）
@@ -43,10 +43,10 @@ export function createViewMode(world, reg, scene, env, assets) {
     ringGroup.add(ringMesh);
   };
 
-  let mode = 'normal';            // 'normal' | 'zones' | <状態モードid>
+  let mode = 'normal';            // 'normal' | 'use'（用途） | <状態モードid>
   let stateId = 'water';          // 最後に選んだ状態モード
   let autoPrev = null;            // 建築の配置中に自動で切り替えた場合の元のモード
-  let cache = null;               // { values, flags, raw } または区画の { kind, flags, stats }
+  let cache = null;               // { values, flags, raw } または用途の { kind, flags, stats }
   let dirty = true, lastComputeDay = -1;
   let preview = null;             // { def, x, y, tiles, text }
   const listeners = new Set();
@@ -55,8 +55,8 @@ export function createViewMode(world, reg, scene, env, assets) {
   const recompute = () => {
     dirty = false; lastComputeDay = world.day;
     if (mode === 'normal') return;
-    if (mode === 'zones') {
-      cache = computeZoneMap(world, reg);
+    if (mode === 'use') {
+      cache = computeUseMap(world, reg);
       const { kind, flags } = cache;
       for (let i = 0; i < w * h; i++) {
         const k = kind[i];
@@ -92,14 +92,13 @@ export function createViewMode(world, reg, scene, env, assets) {
   const clearPreviewFlags = () => { if (!preview) return; for (const i of preview.tiles) data[i * 4 + 3] &= ~FLAG.PREVIEW; tex.needsUpdate = true; };
 
   const setMode = (id) => {
-    if (id !== 'normal' && id !== 'zones' && !STATE_MODES[id]) return;
+    if (id !== 'normal' && id !== 'use' && !STATE_MODES[id]) return;
     if (id === mode) return;
     mode = id;
     if (STATE_MODES[id]) stateId = id;
-    viewUniforms.uViewOn.value = mode === 'normal' ? 0 : mode === 'zones' ? 1 : 2;
+    viewUniforms.uViewOn.value = mode === 'normal' ? 0 : mode === 'use' ? 1 : 2;
     assets.material.transparent = mode !== 'normal';
     assets.material.depthWrite = true;
-    env.terrain.setZoneOverlayVisible(mode === 'normal');
     ringGroup.visible = mode !== 'normal';
     cache = null; dirty = true;                      // 前のモードのデータを使わない
     notify();
@@ -111,24 +110,31 @@ export function createViewMode(world, reg, scene, env, assets) {
     get data() { return cache; },
     onChange(f) { listeners.add(f); },
     set: setMode,
-    /** Tab で順送り: 通常 → 区画 → 状態（最後に選んだ項目） → 通常 */
-    cycle() { setMode(mode === 'normal' ? 'zones' : mode === 'zones' ? stateId : 'normal'); },
+    /** Tab で順送り: 通常 → 用途 → 状態（最後に選んだ項目） → 通常 */
+    cycle() { setMode(mode === 'normal' ? 'use' : mode === 'use' ? stateId : 'normal'); },
     invalidate() { dirty = true; },
     /** 地形を作り直した後に表示状態を再適用する */
-    reapply() { env.terrain.setZoneOverlayVisible(mode === 'normal'); dirty = true; },
-    /** 区画モードの集計（凡例用） */
-    zoneStats() { if (mode !== 'zones') return []; if (dirty || !cache) recompute(); return cache?.stats || []; },
+    reapply() { dirty = true; },
+    /** 用途モードの集計（凡例用） */
+    zoneStats() { if (mode !== 'use') return []; if (dirty || !cache) recompute(); return cache?.stats || []; },
     /** ホバー中のマスの説明 */
     describe(x, y) {
       if (mode === 'normal') return null;
       if (dirty || !cache) recompute();
       const i = y * w + x;
-      if (mode === 'zones') {
+      if (mode === 'use') {
         const zm = cache;
         const k = zm.kind[i];
-        if (k >= ZONE_KIND.ZONE_BASE) { const z = reg.zones[k - ZONE_KIND.ZONE_BASE]; const b = world.buildingAt[i] !== -1 ? world.buildings.get(world.buildingAt[i]) : null; const noRoad = !!(zm.flags[i] & FLAG.BELOW_THRESHOLD); const rd = world.roadDist ? world.roadDist[i] : 0; return { title: z.name, value: b ? `${reg.buildingById.get(b.buildingType)?.name || ''}${b.state === 'built' ? ` L${b.level}` : '（建設中）'}` : noRoad ? '未建築 — 道路が届いていない' : '未建築', parts: [['道路まで', rd >= 0xffff ? '届いていない' : `${rd} マス（${z.roadDistance} マス以内が必要）`]] }; }
-        const names = { [ZONE_KIND.ROAD]: '道路', [ZONE_KIND.STRUCTURE]: '特殊建築', [ZONE_KIND.WATER]: '水面', [ZONE_KIND.UNBUILDABLE]: '建てられない地形', [ZONE_KIND.SHORE]: '岸辺（区画不可）' };
-        return { title: names[k] || '区画なし', value: k === 0 ? reg.tiles[world.map.tile[i]].name : '', parts: [] };
+        if (k >= ZONE_KIND.ZONE_BASE) {
+          const t = reg.tabs[k - ZONE_KIND.ZONE_BASE];
+          const b = world.buildingAt[i] !== -1 ? world.buildings.get(world.buildingAt[i]) : null;
+          const def = b && reg.buildingById.get(b.buildingType);
+          const rd = world.roadDist ? world.roadDist[i] : 0, noRoad = !!(zm.flags[i] & FLAG.BELOW_THRESHOLD);
+          const state = !b ? '' : b.state === 'abandoned' ? '（廃屋）' : b.state === 'building' ? '（建設中）' : ` Lv${b.level}`;
+          return { title: t.name, value: `${def?.name || ''}${state}${noRoad ? ' — 道路が届いていない' : ''}`, parts: def ? [['道路まで', rd >= 0xffff ? '届いていない' : `${rd} マス（${def.requires?.roadWithin ?? 3} マス以内が必要）`], ['満足度', b.satisfaction ?? '—']] : [] };
+        }
+        const names = { [ZONE_KIND.ROAD]: '道路', [ZONE_KIND.STRUCTURE]: '特殊建築', [ZONE_KIND.WATER]: '水面', [ZONE_KIND.UNBUILDABLE]: '建てられない地形', [ZONE_KIND.SHORE]: '岸辺（建てられない）' };
+        return { title: names[k] || '空き地', value: k === 0 ? reg.tiles[world.map.tile[i]].name : '', parts: [] };
       }
       const m = STATE_MODES[mode];
       const d = m.describe(world, reg, i, cache);
@@ -142,7 +148,7 @@ export function createViewMode(world, reg, scene, env, assets) {
         if (autoPrev !== null) { const back = autoPrev; autoPrev = null; setMode(back); }
         return;
       }
-      const auto = modeForEffects(def.effects);
+      const auto = modeForEffects(def.effects || []);
       if (auto && mode !== auto) { if (autoPrev === null) autoPrev = mode; setMode(auto); }
       if (dirty || !cache) recompute();
       if (!tile) { if (preview) { clearPreviewFlags(); preview = null; } return; }

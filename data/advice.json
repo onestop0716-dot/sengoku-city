@@ -1,5 +1,5 @@
 {
-  "_comment": "案内役（県令を見守る物知りなフクロウ）の助言。条件は metric（src/sim/advisor.js の computeMetrics が返す値）で書く。all/any/not で組み合わせる。文中の {name} は指標の値に置き換わる。案内役は characters の先頭（name/reading/role/image。images で状態ごとの画像、tone/overrides で口癖と文の差し替えもできる）。2人以上並べると設定に選択が出る。tone.endings は文末の言い換え、overrides は id ごとの文の差し替え。 view は「表示モードで確認」ボタンで開く表示モード（zones / water / security / prosperity / market / food / fertility / loyalty / environment）。 view には {blockerView} のように指標を埋め込める。",
+  "_comment": "案内役（県令を見守る物知りなフクロウ）の助言。条件は metric（src/sim/advisor.js の computeMetrics が返す値）で書く。all/any/not で組み合わせる。文中の {name} は指標の値に置き換わる。案内役は characters の先頭（name/reading/role/image。images で状態ごとの画像、tone/overrides で口癖と文の差し替えもできる）。2人以上並べると設定に選択が出る。tone.endings は文末の言い換え、overrides は id ごとの文の差し替え。 view は「表示モードで確認」ボタンで開く表示モード（use / road / water / security / prosperity / market / food / fertility / loyalty / environment）。 view には {problemView} のように指標を埋め込める。",
   "characters": [
     {
       "id": "owl",
@@ -7,7 +7,13 @@
       "reading": "ほう",
       "role": "県令を見守る物知りなフクロウ",
       "image": "assets/ui/advisor.png",
-      "note": "完全な創作のキャラクター。史書・漫画の人物や設定とは無関係。名前は仮のもので、ここで変更できる。親しみやすく短い言葉で話す。"
+      "note": "完全な創作のキャラクター。史書・漫画の人物や設定とは無関係。名前は仮のもので、ここで変更できる。親しみやすく短い言葉で話す。",
+      "images": {
+        "normal": "assets/ui/advisor_normal.png",
+        "happy": "assets/ui/advisor_happy.png",
+        "troubled": "assets/ui/advisor_troubled.png",
+        "warning": "assets/ui/advisor_warning.png"
+      }
     }
   ],
   "frequency": {
@@ -195,23 +201,35 @@
         ]
       },
       "title": "仕事が足りないよ",
-      "text": "働き手の {unemployedPct}% が仕事にあぶれてる。農地・工房・市の区画を増やそう。失業は民忠も治安も下げちゃうからね。",
-      "todo": "仕事を増やす（農地・工房・市の区画）",
-      "view": "zones"
+      "text": "働き手の {unemployedPct}% が仕事にあぶれてる。畑・工房・市の店を置いて働き口を作ろう。失業は民忠も治安も下げちゃうからね。",
+      "todo": "働き口を増やす（畑・工房・市の店を置く）",
+      "view": "use"
     },
     {
-      "id": "zone_blocked",
+      "id": "buildings_trouble",
       "priority": 3,
       "expression": "troubled",
       "cooldownDays": 45,
       "when": {
         "all": [
           {
-            "metric": "zonedUnbuilt",
-            "gte": 8
+            "any": [
+              {
+                "metric": "abandoned",
+                "gte": 1
+              },
+              {
+                "metric": "unconnected",
+                "gte": 1
+              },
+              {
+                "metric": "lowSatisfaction",
+                "gte": 3
+              }
+            ]
           },
           {
-            "metric": "blockerReason",
+            "metric": "problemReason",
             "truthy": true
           },
           {
@@ -220,10 +238,10 @@
           }
         ]
       },
-      "title": "区画に家が建たないね",
-      "text": "空いた区画が {zonedUnbuilt} マスあるよ。いちばん多い理由は「{blockerReason}」。こうしよう: {blockerTip}",
-      "todo": "建たない区画を直す（{blockerReason}）",
-      "view": "{blockerView}"
+      "title": "暮らしにくい建物があるよ",
+      "text": "満足度の低い建物が {lowSatisfaction} 軒、道路につながっていない建物が {unconnected} 軒、廃屋が {abandoned} 軒。いちばん多い原因は「{problemReason}」。こうしよう: {problemTip}",
+      "todo": "暮らしにくい建物を直す（{problemReason}）",
+      "view": "{problemView}"
     },
     {
       "id": "housing_full",
@@ -233,12 +251,8 @@
       "when": {
         "all": [
           {
-            "metric": "vacancyRatio",
-            "lt": 0.05
-          },
-          {
-            "metric": "demandResidential",
-            "gt": 20
+            "metric": "waiting",
+            "gte": 5
           },
           {
             "metric": "population",
@@ -247,9 +261,9 @@
         ]
       },
       "title": "住まいが足りないよ",
-      "text": "住居が満杯で、来たい人が入れないんだ。住居区画を広げよう。井戸の近く（半径10マス）だと早く建つよ。",
-      "todo": "住居区画を広げる",
-      "view": "zones"
+      "text": "家が満杯で、{waiting} 人ほどが住みたくても入れないんだ。道路沿いに庶民の家を置こう。井戸の近く（半径10マス）だと早く格上げされるよ。",
+      "todo": "家を置く（入居待ち {waiting} 人）",
+      "view": "use"
     },
     {
       "id": "demand_market",
@@ -259,8 +273,8 @@
       "when": {
         "all": [
           {
-            "metric": "demandMarket",
-            "gte": 40
+            "metric": "marketWanted",
+            "truthy": true
           },
           {
             "metric": "marketHalls",
@@ -268,9 +282,9 @@
           }
         ]
       },
-      "title": "市を開きたがってるよ",
-      "text": "商の需要が高まってる。市亭の範囲（半径10マス）の中に市の区画を置けば、市租が入るようになるよ。",
-      "todo": "市亭の範囲に市の区画を置く",
+      "title": "市の店が足りないよ",
+      "text": "人が増えて、買い物する場所が足りないんだ。市亭の範囲（半径10マス）の中に市の店を置けば、市租も入るよ。",
+      "todo": "市亭の範囲に市の店を置く",
       "view": "market"
     },
     {
@@ -281,8 +295,8 @@
       "when": {
         "all": [
           {
-            "metric": "demandMarket",
-            "gte": 40
+            "metric": "marketWanted",
+            "truthy": true
           },
           {
             "metric": "marketHalls",
@@ -291,7 +305,7 @@
         ]
       },
       "title": "そろそろ市亭かな",
-      "text": "商の需要が出てきたね。市は市亭（市を管理する役所）の範囲にしか開けないんだ。まず市亭を建てよう。",
+      "text": "人が増えて市が欲しくなってきたね。市の店は市亭（市を管理する役所）の範囲にしか開けないんだ。まず市亭を建てよう。",
       "todo": "市亭を建てる",
       "view": "market"
     },
@@ -303,41 +317,45 @@
       "when": {
         "all": [
           {
-            "metric": "demandWorkshop",
-            "gte": 40
+            "metric": "unemployed",
+            "gte": 15
           },
           {
             "metric": "workshops",
             "lt": 3
+          },
+          {
+            "metric": "population",
+            "gte": 120
           }
         ]
       },
       "title": "工房の出番だよ",
-      "text": "工の需要が高まってる。銅・鉄・粘土・塩の資源や、桑・麻の畑の近くに工房区画を置くと、その材料の工房が建つよ。",
-      "todo": "資源の近くに工房区画を置く",
-      "view": "zones"
+      "text": "仕事のない人が {unemployed} 人いるよ。「工業」から工房を選ぼう。銅・鉄・粘土・塩の資源や、桑・麻の畑の近くでないと建てられない工房もあるから、置く前の赤い枠の理由を見てね。",
+      "todo": "資源の近くに工房を置く",
+      "view": "use"
     },
     {
-      "id": "demand_farm_low",
+      "id": "grain_surplus",
       "priority": 2,
       "expression": "normal",
       "cooldownDays": 120,
       "when": {
         "all": [
           {
-            "metric": "demandFarm",
-            "lt": -20
+            "metric": "grainSurplus",
+            "truthy": true
           },
           {
-            "metric": "demandResidential",
-            "gt": 20
+            "metric": "waiting",
+            "gte": 1
           }
         ]
       },
       "title": "農地は足りてるね",
-      "text": "穀物は余り気味で、農の需要は下がってる。いまは住居や市に力を入れる時期だね。",
+      "text": "穀物は1年半分以上の蓄えがある。いまは家や市に力を入れる時期だね。",
       "todo": "住居・市に投資する",
-      "view": "zones"
+      "view": "use"
     },
     {
       "id": "no_well",
@@ -401,8 +419,8 @@
         ]
       },
       "title": "春だね、作付けの季節",
-      "text": "3月、粟の作付けが始まるよ。いま農地区画を広げれば、今年の秋の収穫に間に合う。",
-      "todo": "秋に間に合うよう農地を広げる"
+      "text": "3月、粟の作付けが始まるよ。いま畑を置けば、今年の秋の収穫に間に合う。",
+      "todo": "秋に間に合うよう畑を置く"
     },
     {
       "id": "autumn_harvest",
@@ -775,8 +793,30 @@
         ]
       },
       "title": "兵がいないよ",
-      "text": "仲の悪い国があるのに兵が一人もいない。軍事区画に兵舎を置いて、「軍」から少しずつ徴兵しておこう。城壁も効くよ。",
+      "text": "仲の悪い国があるのに兵が一人もいない。「軍事」から兵舎を置いて、「軍」から少しずつ徴兵しておこう。城壁も効くよ。",
       "todo": "兵舎を置いて徴兵する"
+    },
+    {
+      "id": "materials_low",
+      "priority": 3,
+      "expression": "troubled",
+      "cooldownDays": 60,
+      "when": {
+        "all": [
+          {
+            "metric": "materialsWood",
+            "lt": 20
+          },
+          {
+            "metric": "monthsElapsed",
+            "gte": 1
+          }
+        ]
+      },
+      "title": "木材が少ないよ",
+      "text": "木材が残り {materialsWood} しかない。森の近く（半径4に森6マス以上）に伐木場を置こう。急ぐなら「財政」から市で買えるけど、割高だよ。",
+      "todo": "伐木場を置く（木材 {materialsWood}）",
+      "view": "use"
     }
   ],
   "tutorial": [
@@ -790,38 +830,38 @@
       "id": "t_road",
       "expression": "normal",
       "title": "まずは道路から",
-      "text": "家は道路の近くにしか建たないんだ。左の「道路」を選んで、地面をドラッグしてみて。中央の十字路から延ばすと楽だよ。",
+      "text": "家は道路の近くにしか置けないんだ。下の「道路」を選んで、地面をドラッグしてみて。中央の十字路から延ばすと楽だよ。",
       "done": {
         "metric": "roadsAdded",
         "gte": 4
       }
     },
     {
-      "id": "t_zone",
+      "id": "t_house",
       "expression": "normal",
-      "title": "住居の区画を置こう",
-      "text": "「住居（庶民）」を選んで道路沿いをドラッグ。区画を置くだけで、民が勝手に家を建てるよ。県令が自分で建てるわけじゃないんだ。",
+      "title": "家を置こう",
+      "text": "「住居」から「庶民の家」を選んで、道路沿いに置いてみて。緑の枠なら置ける、赤なら理由が出るよ。R キー（タッチは「向き」）で向きを変えられる。ドラッグすると並べて置けるよ。",
       "done": {
-        "metric": "zonesAdded",
-        "gte": 6
+        "metric": "housesAdded",
+        "gte": 3
       },
-      "view": "zones"
+      "view": "use"
     },
     {
       "id": "t_farm",
       "expression": "normal",
       "title": "食べ物がないと人は来ない",
-      "text": "次は「農地（粟）」。川や湿地の近くほど肥沃で、たくさん採れるよ。住居と同じくらいの広さが目安。",
+      "text": "次は「農業」から「粟の畑」。4×4 マスの畑を1枚ずつ置くか、「範囲」に切り替えてドラッグすると広く敷きつめられるよ。川や湿地の近くほど肥沃でたくさん採れる。",
       "done": {
-        "metric": "farmZonesAdded",
-        "gte": 6
+        "metric": "fieldsAdded",
+        "gte": 1
       }
     },
     {
       "id": "t_well",
       "expression": "normal",
       "title": "井戸を1つ",
-      "text": "水のない家は育たないんだ。「建築」から井戸を選んで住居のまん中に。半径10マスに水が行き渡るよ。",
+      "text": "水のない家は格上げされないんだ。「公共」から井戸を選んで家のまん中に。半径10マスに水が行き渡るよ。",
       "done": {
         "metric": "wellsAdded",
         "gte": 1
@@ -832,7 +872,7 @@
       "id": "t_wait",
       "expression": "happy",
       "title": "あとは時を進めるだけ",
-      "text": "右上の ▶ で時間が進むよ。家が建って、人が増えて、8月には収穫。上の数字（銭・穀・人口・民忠・治安）を眺めながら待とう。",
+      "text": "右上の ▶ で時間が進むよ。家が建って、人が住んで、8月には収穫。条件がそろった家は自動で立派になる。上の数字（銭・穀・木材・石材・人口）を眺めながら待とう。",
       "done": {
         "metric": "daysSinceStep",
         "gte": 45

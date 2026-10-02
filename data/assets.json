@@ -1804,6 +1804,186 @@
   }
  },
  {
+  "id": "lumber_1_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "lumber",
+   "level": 1,
+   "variant": 0
+  }
+ },
+ {
+  "id": "lumber_1_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "lumber",
+   "level": 1,
+   "variant": 1
+  }
+ },
+ {
+  "id": "lumber_1_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "lumber",
+   "level": 1,
+   "variant": 2
+  }
+ },
+ {
+  "id": "lumber_2_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "lumber",
+   "level": 2,
+   "variant": 0
+  }
+ },
+ {
+  "id": "lumber_2_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "lumber",
+   "level": 2,
+   "variant": 1
+  }
+ },
+ {
+  "id": "lumber_2_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "lumber",
+   "level": 2,
+   "variant": 2
+  }
+ },
+ {
+  "id": "lumber_3_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "lumber",
+   "level": 3,
+   "variant": 0
+  }
+ },
+ {
+  "id": "lumber_3_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "lumber",
+   "level": 3,
+   "variant": 1
+  }
+ },
+ {
+  "id": "lumber_3_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "lumber",
+   "level": 3,
+   "variant": 2
+  }
+ },
+ {
+  "id": "quarry_1_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "quarry",
+   "level": 1,
+   "variant": 0
+  }
+ },
+ {
+  "id": "quarry_1_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "quarry",
+   "level": 1,
+   "variant": 1
+  }
+ },
+ {
+  "id": "quarry_1_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "quarry",
+   "level": 1,
+   "variant": 2
+  }
+ },
+ {
+  "id": "quarry_2_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "quarry",
+   "level": 2,
+   "variant": 0
+  }
+ },
+ {
+  "id": "quarry_2_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "quarry",
+   "level": 2,
+   "variant": 1
+  }
+ },
+ {
+  "id": "quarry_2_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "quarry",
+   "level": 2,
+   "variant": 2
+  }
+ },
+ {
+  "id": "quarry_3_a",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "quarry",
+   "level": 3,
+   "variant": 0
+  }
+ },
+ {
+  "id": "quarry_3_b",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "quarry",
+   "level": 3,
+   "variant": 1
+  }
+ },
+ {
+  "id": "quarry_3_c",
+  "kind": "procedural",
+  "generator": "workshop",
+  "params": {
+   "kind": "quarry",
+   "level": 3,
+   "variant": 2
+  }
+ },
+ {
   "id": "barracks_1_a",
   "kind": "procedural",
   "generator": "militaryBuilding",

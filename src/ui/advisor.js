@@ -1,5 +1,5 @@
 // 案内役の表示: 右下に案内役の画像（advice.json の characters、設定で選ぶ）と吹き出し。押すと「いまやるべきこと」と助言の履歴。
-// 表情の差分は持たず、状態は動き（ふわふわ・跳ねる・傾く・震える）と記号（♪・汗・！）で表す。
+// 状態は表情の画像（advice.json の images）と、動き（ふわふわ・跳ねる・傾く・震える）・記号（♪・汗・！）で表す。
 // 助言の条件・文は data/advice.json、判断は sim/advisor.js。
 import { evaluate, restartTutorial, ensureAdvisorState, characterOf, applyTone } from '../sim/advisor.js';
 
@@ -52,7 +52,7 @@ export function createAdvisorUi(world, reg, settings, { onOpenSettings, onOpen, 
     const hist = st.history.slice().reverse();
     panel.innerHTML = `<h3>${ch.name}のひとこと <span style="font-size:11px;opacity:.6;font-weight:normal">${ch.role}</span></h3>
       <h4>いまやるべきこと</h4>
-      ${lastTodo.length ? `<ol class="adv-todo">${lastTodo.map((t) => `<li class="p${t.priority}"><span class="adv-pri">${t.priority >= 5 ? '至急' : t.priority >= 4 ? '重要' : t.priority >= 3 ? '要対応' : t.priority >= 2 ? '提案' : '目標'}</span>${t.text}</li>`).join('')}</ol>` : `<div class="note">いまは差し迫ったことはありません。${st.tutorialDone || !tutorial ? applyTone('人口と収支を眺めつつ、区画を少しずつ広げよう', ch.tone) + '。' : applyTone('案内に沿って進めてね', ch.tone) + '。'}</div>`}
+      ${lastTodo.length ? `<ol class="adv-todo">${lastTodo.map((t) => `<li class="p${t.priority}"><span class="adv-pri">${t.priority >= 5 ? '至急' : t.priority >= 4 ? '重要' : t.priority >= 3 ? '要対応' : t.priority >= 2 ? '提案' : '目標'}</span>${t.text}</li>`).join('')}</ol>` : `<div class="note">いまは差し迫ったことはありません。${st.tutorialDone || !tutorial ? applyTone('人口と収支を眺めつつ、家や畑を少しずつ増やそう', ch.tone) + '。' : applyTone('案内に沿って進めてね', ch.tone) + '。'}</div>`}
       <h4>助言の履歴</h4>
       ${hist.length ? `<ul class="adv-hist">${hist.map((h) => `<li><span class="day">${h.day}日目</span><b>${h.title}</b><div>${h.text}</div></li>`).join('')}</ul>` : '<div class="note">まだ助言はありません。</div>'}
       <div class="adv-actions"><button class="btn" id="adv-restart">案内をやり直す</button><button class="btn" id="adv-settings">助言の頻度を変える</button><button class="btn" id="adv-close">閉じる</button></div>`;

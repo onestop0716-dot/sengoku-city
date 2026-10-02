@@ -51,6 +51,13 @@ export function workshop({ kind = 'ws_iron', level = 1, variant = 0 }) {
       B.chamferBox(0.3, 0, 0.32, 0.36, 0.3, 0.16, C.woodDark, { chamfer: 0.01 });
       for (let i = 0; i < 3; i++) B.lathe(0.18 + i * 0.12, 0.3, 0.32, [[0.03, 0], [0.045, 0.04], [0.02, 0.07]], 0x8b1a1a, 6);
       break;
+    case 'lumber':                                                              // 積んだ丸太と作業台
+      for (let r = 0; r < 2 + Math.min(level, 2); r++) B.chamferBox(-0.12 + (r % 2) * 0.05, r * 0.07, 0.34, 0.62, 0.07, 0.07, r % 2 ? C.wood : C.woodDark, { chamfer: 0.02 });
+      B.chamferBox(0.34, 0, -0.32, 0.18, 0.16, 0.12, C.woodDark, { chamfer: 0.02 });
+      break;
+    case 'quarry':                                                              // 切り出した石の塊
+      for (let r = 0; r < 2 + level; r++) B.chamferBox(-0.3 + (r % 3) * 0.26, Math.floor(r / 3) * 0.12, 0.34, 0.2, 0.12, 0.16, [0x9a958c, 0x8a857c, 0xa8a196][r % 3], { chamfer: 0.025 });
+      break;
     case 'ws_vehicle':                                                          // 車輪
       for (let i = 0; i < 2; i++) B.lathe(-0.3 + i * 0.6, 0, 0.36, [[0.0, 0], [0.16, 0.01], [0.16, 0.04], [0.0, 0.05]], C.woodDark, 10);
       B.lathe(0.3, 0.05, 0.36, [[0.16, 0], [0.16, 0.04]], C.wood, 10);

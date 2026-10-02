@@ -95,7 +95,8 @@ test('セーブスロット: 保存・一覧・読込ができ、ファイル形
   const slots = listSlots();
   assert.ok(slots.find((s) => s.slot === '1' && !s.empty && s.meta.cityName === '咸陽'));
   const d = loadFromSlot('1');
-  assert.equal(d.version, 1); assert.equal(d.meta.day, 40); assert.equal(d.difficulty, 'normal');
+  assert.equal(d.version, 2); assert.equal(d.meta.day, 40);
+  assert.equal(slots.find((s) => s.slot === '1').incompatible, null); assert.equal(d.difficulty, 'normal');
   const w2 = deserializeWorld(d, reg);
   assert.equal(w2.day, w.day); assert.equal(w2.money, w.money);
   const file = makeSaveData(w, reg);

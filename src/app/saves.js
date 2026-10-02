@@ -1,5 +1,5 @@
 // セーブ: localStorage のスロット（1〜5 + オートセーブ）、ファイルの書き出し・読み込み（PC と iPad で同じ JSON）。
-import { serializeWorld } from '../sim/save/serialize.js';
+import { serializeWorld, saveCompatibility } from '../sim/save/serialize.js';
 
 const PREFIX = 'sengoku-city.save.';
 export const SLOTS = ['auto', '1', '2', '3', '4', '5'];
@@ -11,7 +11,7 @@ export function slotKey(slot) { return PREFIX + slot; }
 export function listSlots() {
   const s = store(); if (!s) return [];
   return SLOTS.map((slot) => {
-    try { const raw = s.getItem(slotKey(slot)); if (!raw) return { slot, empty: true }; const d = JSON.parse(raw); return { slot, empty: false, meta: d.meta || {} }; } catch { return { slot, empty: true }; }
+    try { const raw = s.getItem(slotKey(slot)); if (!raw) return { slot, empty: true }; const d = JSON.parse(raw); const c = saveCompatibility(d); return { slot, empty: false, meta: d.meta || {}, incompatible: c.ok ? null : c.message }; } catch { return { slot, empty: true }; }
   });
 }
 
@@ -60,7 +60,7 @@ export async function exportToFile(world, reg) {
 export function importFromFile(file) {
   return new Promise((resolve, reject) => {
     const r = new FileReader();
-    r.onload = () => { try { const d = JSON.parse(String(r.result)); if (!d.version || !d.map) throw new Error('セーブデータの形式ではありません'); resolve(d); } catch (e) { reject(e); } };
+    r.onload = () => { try { const d = JSON.parse(String(r.result)); if (!d.version || !d.map) throw new Error('セーブデータの形式ではありません'); const c = saveCompatibility(d); if (!c.ok) throw new Error(c.message); resolve(d); } catch (e) { reject(e); } };
     r.onerror = () => reject(new Error('ファイルを読めませんでした'));
     r.readAsText(file);
   });

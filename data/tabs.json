@@ -1,0 +1,97 @@
+{
+  "_note": "建築バーのタブと並び順。items は buildings.json / structures.json の id。color は表示モード「用途」とミニマップの色",
+  "tabs": [
+    {
+      "id": "residential",
+      "name": "住居",
+      "icon": "house",
+      "color": "#3fa34d",
+      "items": [
+        "house_commoner",
+        "house_shi",
+        "house_noble"
+      ]
+    },
+    {
+      "id": "farm",
+      "name": "農業",
+      "icon": "grain",
+      "color": "#d4b13f",
+      "items": [
+        "field_millet",
+        "field_broomcorn",
+        "field_wheat",
+        "field_bean",
+        "field_rice",
+        "field_mulberry",
+        "field_hemp",
+        "farmhouse",
+        "canal",
+        "levee",
+        "granary",
+        "altar"
+      ]
+    },
+    {
+      "id": "commerce",
+      "name": "商業",
+      "icon": "market",
+      "color": "#d9743c",
+      "items": [
+        "market_stall",
+        "market_hall",
+        "customs",
+        "post_station",
+        "dock"
+      ]
+    },
+    {
+      "id": "industry",
+      "name": "工業",
+      "icon": "workshop",
+      "color": "#8a5a2b",
+      "items": [
+        "lumber_camp",
+        "quarry",
+        "ws_iron",
+        "ws_bronze",
+        "ws_pottery",
+        "ws_salt",
+        "ws_textile",
+        "ws_lacquer",
+        "ws_vehicle",
+        "ws_weapon"
+      ]
+    },
+    {
+      "id": "military",
+      "name": "軍事",
+      "icon": "military",
+      "color": "#a33a3a",
+      "items": [
+        "barracks",
+        "stable",
+        "armory",
+        "drill_ground",
+        "wall",
+        "gate",
+        "watchtower",
+        "beacon"
+      ]
+    },
+    {
+      "id": "public",
+      "name": "公共",
+      "icon": "build",
+      "color": "#6f7fa8",
+      "items": [
+        "well",
+        "bridge",
+        "ancestral_temple",
+        "academy",
+        "palace",
+        "prison"
+      ]
+    }
+  ]
+}

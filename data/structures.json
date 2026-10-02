@@ -40,6 +40,9 @@
       1
     ],
     "cost": 60,
+    "materials": {
+      "wood": 2
+    },
     "upkeep": 1,
     "buildDays": 5,
     "category": "water",
@@ -123,6 +126,10 @@
     "name": "橋",
     "linear": true,
     "cost": 40,
+    "materials": {
+      "wood": 6,
+      "stone": 2
+    },
     "upkeep": 1,
     "buildDays": 6,
     "category": "road",
@@ -152,6 +159,10 @@
       2
     ],
     "cost": 300,
+    "materials": {
+      "wood": 40,
+      "stone": 10
+    },
     "upkeep": 5,
     "buildDays": 30,
     "category": "storage",
@@ -182,6 +193,9 @@
       2
     ],
     "cost": 250,
+    "materials": {
+      "wood": 30
+    },
     "upkeep": 4,
     "buildDays": 20,
     "category": "market",
@@ -198,7 +212,7 @@
       "market_hall_a"
     ],
     "term": "shiting",
-    "note": "市を管理する役所。半径10マスの市区画が機能する"
+    "note": "市を管理する役所。半径10マスの中に市の店を置ける"
   },
   {
     "id": "wall",
@@ -231,6 +245,10 @@
       1
     ],
     "cost": 120,
+    "materials": {
+      "wood": 20,
+      "stone": 10
+    },
     "upkeep": 2,
     "buildDays": 10,
     "category": "defense",
@@ -263,6 +281,9 @@
       1
     ],
     "cost": 90,
+    "materials": {
+      "wood": 15
+    },
     "upkeep": 1.5,
     "buildDays": 8,
     "category": "defense",
@@ -294,6 +315,9 @@
       2
     ],
     "cost": 280,
+    "materials": {
+      "wood": 40
+    },
     "upkeep": 4,
     "buildDays": 25,
     "category": "military",
@@ -320,6 +344,9 @@
       4
     ],
     "cost": 350,
+    "materials": {
+      "wood": 10
+    },
     "upkeep": 6,
     "buildDays": 20,
     "category": "military",
@@ -346,6 +373,10 @@
       3
     ],
     "cost": 900,
+    "materials": {
+      "wood": 120,
+      "stone": 40
+    },
     "upkeep": 10,
     "buildDays": 60,
     "category": "temple",
@@ -372,6 +403,10 @@
       2
     ],
     "cost": 200,
+    "materials": {
+      "wood": 5,
+      "stone": 5
+    },
     "upkeep": 2,
     "buildDays": 15,
     "category": "temple",
@@ -381,8 +416,9 @@
         "value": 2
       },
       {
-        "type": "farm_demand",
-        "value": 10
+        "type": "satisfaction",
+        "radius": 10,
+        "value": 5
       },
       {
         "type": "disaster_mitigation",
@@ -406,6 +442,10 @@
       3
     ],
     "cost": 700,
+    "materials": {
+      "wood": 100,
+      "stone": 20
+    },
     "upkeep": 12,
     "buildDays": 45,
     "category": "temple",
@@ -439,6 +479,10 @@
       5
     ],
     "cost": 3000,
+    "materials": {
+      "wood": 300,
+      "stone": 120
+    },
     "upkeep": 30,
     "buildDays": 120,
     "category": "admin",
@@ -465,6 +509,9 @@
       3
     ],
     "cost": 200,
+    "materials": {
+      "wood": 20
+    },
     "upkeep": 3,
     "buildDays": 15,
     "category": "trade",
@@ -494,6 +541,9 @@
       1
     ],
     "cost": 80,
+    "materials": {
+      "wood": 8
+    },
     "upkeep": 1,
     "buildDays": 8,
     "category": "defense",
@@ -520,6 +570,9 @@
       2
     ],
     "cost": 180,
+    "materials": {
+      "wood": 25
+    },
     "upkeep": 3,
     "buildDays": 15,
     "category": "admin",
@@ -546,6 +599,9 @@
       2
     ],
     "cost": 220,
+    "materials": {
+      "wood": 25
+    },
     "upkeep": 4,
     "buildDays": 20,
     "category": "admin",
@@ -577,6 +633,9 @@
       2
     ],
     "cost": 240,
+    "materials": {
+      "wood": 30
+    },
     "upkeep": 3,
     "buildDays": 20,
     "category": "trade",

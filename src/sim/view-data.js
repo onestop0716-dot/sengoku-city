@@ -1,17 +1,17 @@
 // 表示モード（データマップ）の値を計算する純ロジック。描画は render/view-mode.js、UI は ui/view-mode-panel.js。
 // ゲームの状態は読むだけで書き換えない。値は 0（悪い）〜1（良い）に正規化し、flags にマスの補助情報を持つ。
 import { idx, inBounds } from '../core/grid.js';
-import { computeProsperity, zoneDefAt, hasWater } from './zones.js';
+import { computeSatisfaction, hasWater, isConnected } from './satisfaction.js';
 import { fieldYield } from './farming.js';
 import { structureName } from './structures.js';
 import { ensureRoadDist } from './roads.js';
 
 export const FLAG = { UNBUILT: 1, BELOW_THRESHOLD: 2, PREVIEW: 4, WATER_TILE: 8, NONE: 16, ROAD: 32 };   // NONE: 値がない（灰色で描く）。BELOW_THRESHOLD は点線（基準未満・道路なし）。ROAD は道路（濃い地に明るい中心線で描く。どのモードでも）
 
-/** 区画モードのマス種別。ZONE_BASE 以上は区画（index + ZONE_BASE） */
+/** 用途モードのマス種別。ZONE_BASE 以上は建物のタブ（reg.tabs の index + ZONE_BASE） */
 export const ZONE_KIND = { NONE: 0, ROAD: 1, STRUCTURE: 2, WATER: 3, UNBUILDABLE: 4, SHORE: 5, ZONE_BASE: 10 };
 export const ZONE_KIND_COLORS = { [ZONE_KIND.ROAD]: '#2b241d', [ZONE_KIND.STRUCTURE]: '#e8e0d0', [ZONE_KIND.WATER]: '#3a78b8', [ZONE_KIND.UNBUILDABLE]: '#5a5550', [ZONE_KIND.SHORE]: '#8fa8b8' };
-export const ZONE_KIND_NAMES = { [ZONE_KIND.ROAD]: '道路（明るい線）', [ZONE_KIND.STRUCTURE]: '特殊建築', [ZONE_KIND.WATER]: '水面', [ZONE_KIND.UNBUILDABLE]: '建てられない地形（山）', [ZONE_KIND.SHORE]: '岸辺（区画不可）' };
+export const ZONE_KIND_NAMES = { [ZONE_KIND.ROAD]: '道路（明るい線）', [ZONE_KIND.STRUCTURE]: '特殊建築', [ZONE_KIND.WATER]: '水面', [ZONE_KIND.UNBUILDABLE]: '建てられない地形（山）', [ZONE_KIND.SHORE]: '岸辺（建てられない）' };
 
 /** 悪い=赤 → 普通=黄 → 良い=緑 */
 export function gradientColor(v) {
@@ -20,30 +20,41 @@ export function gradientColor(v) {
   return [r, g, b];
 }
 
-/** 区画モード: kind（マス種別）と未建築フラグ、区画ごとの集計 */
-export function computeZoneMap(world, reg) {
+/** 用途モード: kind（マス種別）と、廃屋・道路につながっていない印、タブごとの集計 */
+export function computeUseMap(world, reg) {
   const { w, h } = world.map;
   const n = w * h;
   const kind = new Uint8Array(n), flags = new Uint8Array(n);
-  const stats = reg.zones.map((z) => ({ id: z.id, name: z.name, color: z.color, tiles: 0, built: 0, noRoad: 0 }));
-  const shore = reg.balance.zoning?.shoreDistance ?? 1;
+  const tabIndex = new Map(reg.tabs.map((t, k) => [t.id, k]));
+  const stats = reg.tabs.map((t) => ({ id: t.id, name: t.name, color: t.color, count: 0, built: 0, noRoad: 0, abandoned: 0 }));
+  const shore = reg.balance.placement?.shoreDistance ?? 1;
   ensureRoadDist(world, reg);
+  for (const b of world.buildings.values()) {
+    const def = reg.buildingById.get(b.buildingType);
+    const k = tabIndex.get(def.tab) ?? 0;
+    const st = stats[k];
+    st.count++;
+    const connected = isConnected(world, reg, b);
+    if (b.state === 'built') st.built++;
+    if (b.state === 'abandoned') st.abandoned++;
+    if (!connected) st.noRoad++;
+    for (let yy = b.y; yy < b.y + b.h; yy++) for (let xx = b.x; xx < b.x + b.w; xx++) {
+      const i = idx(w, xx, yy);
+      kind[i] = ZONE_KIND.ZONE_BASE + k;
+      if (b.state === 'abandoned') flags[i] |= FLAG.UNBUILT;          // 廃屋: 斜線
+      if (!connected) flags[i] |= FLAG.BELOW_THRESHOLD;              // 道路につながっていない: 点線
+    }
+  }
   for (let i = 0; i < n; i++) {
+    if (kind[i]) continue;
     const t = reg.tiles[world.map.tile[i]];
-    if (world.zones[i]) {
-      const zi = world.zones[i] - 1;
-      kind[i] = ZONE_KIND.ZONE_BASE + zi;
-      stats[zi].tiles++;
-      if (world.buildingAt[i] !== -1) stats[zi].built++; else flags[i] |= FLAG.UNBUILT;
-      // 道路が届かない区画（家が建たない）: 点線で示す
-      if (world.roadDist[i] > reg.zones[zi].roadDistance) { flags[i] |= FLAG.BELOW_THRESHOLD; stats[zi].noRoad++; }
-    } else if (world.roads[i]) { kind[i] = ZONE_KIND.ROAD; flags[i] |= FLAG.ROAD; }
+    if (world.roads[i]) { kind[i] = ZONE_KIND.ROAD; flags[i] |= FLAG.ROAD; }
     else if (world.structAt && world.structAt[i] !== -1) kind[i] = ZONE_KIND.STRUCTURE;
     else if (t.water) { kind[i] = ZONE_KIND.WATER; flags[i] |= FLAG.WATER_TILE; }
     else if (!t.buildable && !t.farmable) kind[i] = ZONE_KIND.UNBUILDABLE;
     else if (world.map.waterDist[i] <= shore) kind[i] = ZONE_KIND.SHORE;
   }
-  return { kind, flags, stats: stats.filter((s) => s.tiles > 0) };
+  return { kind, flags, stats: stats.filter((st) => st.count > 0) };
 }
 
 /** 治安の施設効果（半径つき）をマスごとに足す */
@@ -61,7 +72,10 @@ function securityField(world, reg) {
   return f;
 }
 
-const zoneOrDefault = (world, reg, i) => zoneDefAt(world, reg, i) || reg.zoneById.get('res_commoner');
+/** そのマスの建物（なければ null） */
+const buildingAt = (world, i) => { const id = world.buildingAt[i]; return id !== -1 ? world.buildings.get(id) : null; };
+/** そのマスの建物の定義。なければ「庶民の家を置いた場合」で見積もる */
+const defAt = (world, reg, i) => { const b = buildingAt(world, i); return b ? reg.buildingById.get(b.buildingType) : reg.buildingById.get('house_commoner'); };
 const fmt = (n) => (n > 0 ? '+' : '') + Math.round(n);
 
 /**
@@ -79,24 +93,25 @@ export const STATE_MODES = {
         if (reg.tiles[world.map.tile[i]].water) { flags[i] |= FLAG.WATER_TILE; continue; }
         const rd = world.roadDist[i];
         values[i] = rd >= 0xffff ? 0 : Math.max(0, 1 - rd / (maxD + 1));
-        const zd = zoneDefAt(world, reg, i);
-        if (zd && rd > zd.roadDistance) flags[i] |= FLAG.BELOW_THRESHOLD;   // 区画はあるが道路が届かない
+        const b = buildingAt(world, i);
+        if (b && !isConnected(world, reg, b)) flags[i] |= FLAG.BELOW_THRESHOLD;   // 建物はあるが道路が届かない
       }
       return { values, flags };
     },
     describe(world, reg, i) {
       ensureRoadDist(world, reg);
-      const rd = world.roadDist[i], zd = zoneDefAt(world, reg, i);
+      const rd = world.roadDist[i], b = buildingAt(world, i);
       if (world.roads[i]) return { value: '道路', parts: [] };
       const far = rd >= 0xffff;
-      return { value: far ? '道路が届いていない' : `道路まで ${rd} マス`, parts: zd ? [['区画', zd.name], ['必要な近さ', `${zd.roadDistance} マス以内`], ['判定', rd > zd.roadDistance ? '道路が遠くて建たない' : '建てられる']] : [['区画', 'なし']] };
+      const def = b && reg.buildingById.get(b.buildingType), need = def?.requires?.roadWithin ?? 3;
+      return { value: far ? '道路が届いていない' : `道路まで ${rd} マス`, parts: b ? [['建物', def.name], ['必要な近さ', `${need} マス以内`], ['判定', isConnected(world, reg, b) ? '道路につながっている' : '道路が遠い（住まず・働かない）']] : [['建物', 'なし']] };
     },
   },
   water: {
     name: '水', legend: ['水なし', '川の近く', '井戸・水路の範囲'], effects: ['water'],
     compute(world, reg) {
       const n = world.map.w * world.map.h, values = new Float32Array(n), flags = new Uint8Array(n);
-      const range = reg.balance.prosperity.water.range;
+      const range = reg.balance.satisfaction.water.range;
       for (let i = 0; i < n; i++) {
         const t = reg.tiles[world.map.tile[i]];
         if (t.water) { flags[i] |= FLAG.WATER_TILE; values[i] = 1; continue; }
@@ -105,10 +120,10 @@ export const STATE_MODES = {
       return { values, flags };
     },
     describe(world, reg, i) {
-      const P = reg.balance.prosperity.water;
+      const P = reg.balance.satisfaction.water;
       if (reg.tiles[world.map.tile[i]].water) return { value: '水面', parts: [] };
       const served = !!world.services.water?.[i], near = world.map.waterDist[i] <= P.range;
-      return { value: served ? `井戸・水路の範囲内（繁栄度 ${fmt(P.bonus)}）` : near ? `川の近く（繁栄度 ${fmt(P.bonus)}）` : `水なし（繁栄度 ${fmt(P.penalty)}）`, parts: [['川や湖まで', world.map.waterDist[i] >= 0xffff ? '遠い' : `${world.map.waterDist[i]} マス`], ['井戸・水路', served ? '範囲内' : '範囲外']] };
+      return { value: served ? `井戸・水路の範囲内（満足度 ${fmt(P.bonus)}）` : near ? `川の近く（満足度 ${fmt(P.bonus)}）` : `水なし（満足度 ${fmt(P.penalty)}）`, parts: [['川や湖まで', world.map.waterDist[i] >= 0xffff ? '遠い' : `${world.map.waterDist[i]} マス`], ['井戸・水路', served ? '範囲内' : '範囲外']] };
     },
   },
   security: {
@@ -125,45 +140,42 @@ export const STATE_MODES = {
     },
   },
   prosperity: {
-    name: '繁栄度', legend: ['低い', '基準（建つ）', '高い'], effects: [],
+    name: '満足度', legend: ['低い（衰退）', '普通', '高い（格上げ）'], effects: ['satisfaction'],
     compute(world, reg) {
       const { w, h } = world.map, n = w * h, values = new Float32Array(n), flags = new Uint8Array(n), raw = new Float32Array(n);
-      const thr = reg.balance.growth.buildThreshold;
+      const low = reg.balance.upgrade.levelDown.threshold;
       for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
         const i = idx(w, x, y);
         const t = reg.tiles[world.map.tile[i]];
         if (t.water || (!t.buildable && !t.farmable)) { flags[i] |= t.water ? FLAG.WATER_TILE : FLAG.NONE; continue; }
-        const zd = zoneDefAt(world, reg, i);
-        const bid = world.buildingAt[i];
-        const b = bid !== -1 ? world.buildings.get(bid) : null;
-        const p = computeProsperity(world, reg, b ? b.x : x, b ? b.y : y, zd || reg.zoneById.get('res_commoner'), b);
-        raw[i] = p.total;
-        values[i] = p.total / 100;
-        if (zd && !b && p.total < thr) flags[i] |= FLAG.BELOW_THRESHOLD;
+        const b = buildingAt(world, i);
+        const v = b ? (b.state === 'abandoned' ? 0 : b.satisfaction ?? 50) : computeSatisfaction(world, reg, reg.buildingById.get('house_commoner'), x, y).total;
+        raw[i] = v;
+        values[i] = v / 100;
+        if (b && v < low) flags[i] |= FLAG.BELOW_THRESHOLD;
       }
       return { values, flags, raw };
     },
-    describe(world, reg, i, data) {
+    describe(world, reg, i) {
       const w = world.map.w, x = i % w, y = (i / w) | 0;
       const t = reg.tiles[world.map.tile[i]];
       if (t.water || (!t.buildable && !t.farmable)) return { value: '対象外', parts: [] };
-      const zd = zoneDefAt(world, reg, i);
-      const bid = world.buildingAt[i]; const b = bid !== -1 ? world.buildings.get(bid) : null;
-      const p = computeProsperity(world, reg, b ? b.x : x, b ? b.y : y, zd || reg.zoneById.get('res_commoner'), b);
-      const thr = reg.balance.growth.buildThreshold;
-      return { value: `繁栄度 ${p.total}${zd ? '' : '（住居を置いた場合の見込み）'}${p.total < thr ? ` — 基準 ${thr} 未満` : ''}`, parts: Object.entries(p.parts).filter(([, v]) => v !== 0).map(([k, v]) => [k, fmt(v)]) };
+      const b = buildingAt(world, i), def = defAt(world, reg, i);
+      const p = b ? computeSatisfaction(world, reg, def, b.x, b.y, b.w, b.h) : computeSatisfaction(world, reg, def, x, y);
+      const low = reg.balance.upgrade.levelDown.threshold;
+      return { value: `満足度 ${p.total}${b ? '' : '（庶民の家を置いた場合の見込み）'}${b && p.total < low ? ` — ${low} 未満で衰退` : ''}`, parts: Object.entries(p.parts).filter(([, v]) => v !== 0).map(([k, v]) => [k, fmt(v)]) };
     },
   },
   market: {
     name: '市への近さ', legend: ['遠い', '', '近い'], effects: ['market_admin'],
     compute(world, reg) {
       const n = world.map.w * world.map.h, values = new Float32Array(n), flags = new Uint8Array(n);
-      const md = world.services.marketDist, R = reg.balance.prosperity.market.rangeFarm;
+      const md = world.services.marketDist, R = reg.balance.satisfaction.market.rangeFarm;
       for (let i = 0; i < n; i++) { if (reg.tiles[world.map.tile[i]].water) { flags[i] |= FLAG.WATER_TILE; continue; } const d = md ? md[i] : 0xffff; values[i] = d >= 0xffff ? 0 : Math.max(0, 1 - d / (R + 5)); }
       return { values, flags };
     },
     describe(world, reg, i) {
-      const P = reg.balance.prosperity.market;
+      const P = reg.balance.satisfaction.market;
       const d = world.services.marketDist ? world.services.marketDist[i] : 0xffff;
       return { value: d >= 0xffff ? '市が届いていない' : `市まで ${d} マス`, parts: [['住居の加点', d <= P.rangeResidential ? `${fmt(P.bonusResidential)}（${P.rangeResidential} マス以内）` : `なし（${P.rangeResidential} マス以内で ${fmt(P.bonusResidential)}）`], ['農地の加点', d <= P.rangeFarm ? `${fmt(P.bonusFarm)}（${P.rangeFarm} マス以内）` : `なし（${P.rangeFarm} マス以内で ${fmt(P.bonusFarm)}）`], ['市亭の範囲', world.services.marketAdmin?.[i] ? '内' : '外']] };
     },
@@ -223,15 +235,15 @@ export const STATE_MODES = {
         const i = idx(w, x, y);
         const t = reg.tiles[world.map.tile[i]];
         if (t.water || (!t.buildable && !t.farmable)) { flags[i] |= t.water ? FLAG.WATER_TILE : FLAG.NONE; continue; }
-        const bid = world.buildingAt[i]; const b = bid !== -1 ? world.buildings.get(bid) : null;
-        const env = computeProsperity(world, reg, b ? b.x : x, b ? b.y : y, zoneOrDefault(world, reg, i), b).parts['周辺'] || 0;
+        const b = buildingAt(world, i), def = defAt(world, reg, i);
+        const env = (b ? computeSatisfaction(world, reg, def, b.x, b.y, b.w, b.h) : computeSatisfaction(world, reg, def, x, y)).parts['周辺'] || 0;
         raw[i] = env; values[i] = Math.max(0, Math.min(1, 0.5 + env / 20));
       }
       return { values, flags, raw };
     },
     describe(world, reg, i, data) {
       const env = data?.raw ? data.raw[i] : 0;
-      const zd = zoneOrDefault(world, reg, i), adj = zd.prosperity || {};
+      const zd = defAt(world, reg, i), adj = zd.neighbors || {};
       const parts = [];
       const w = world.map.w, x = i % w, y = (i / w) | 0;
       const seen = new Set();
@@ -242,7 +254,7 @@ export const STATE_MODES = {
         const v = b.category === 'workshop' ? adj.adjWorkshop : b.category === 'field' || b.category === 'farm_house' ? adj.adjFarm : b.buildingType === 'house_noble' ? adj.adjNoble : 0;
         if (v) parts.push([reg.buildingById.get(b.buildingType)?.name || b.category, fmt(v)]);
       }
-      return { value: `周辺環境 ${fmt(env)}（${zd.name} として）`, parts };
+      return { value: `周辺環境 ${fmt(env)}（${zd.name}として）`, parts };
     },
   },
 };
@@ -275,10 +287,10 @@ export function previewImprovement(world, reg, def, tx, ty, modeId) {
   const { w, h } = world.map;
   const tiles = [];
   let text = '';
-  for (const e of def.effects) {
+  for (const e of def.effects || []) {
     if (!e.radius) continue;
     if (!STATE_MODES[modeId]?.effects.includes(e.type)) continue;
-    const cx = tx + def.size[0] / 2, cy = ty + def.size[1] / 2;
+    const cx = tx + (def.size?.[0] || 1) / 2, cy = ty + (def.size?.[1] || 1) / 2;
     let improved = 0, total = 0;
     for (let y = Math.max(0, Math.floor(cy - e.radius)); y <= Math.min(h - 1, Math.ceil(cy + e.radius)); y++) for (let x = Math.max(0, Math.floor(cx - e.radius)); x <= Math.min(w - 1, Math.ceil(cx + e.radius)); x++) {
       if (Math.hypot(x + 0.5 - cx, y + 0.5 - cy) > e.radius) continue;
@@ -288,7 +300,7 @@ export function previewImprovement(world, reg, def, tx, ty, modeId) {
       if (e.type === 'water') { if (!hasWater(world, reg, i)) { improved++; tiles.push(i); } }
       else { improved++; tiles.push(i); }
     }
-    if (e.type === 'water') text = `範囲 ${total} マスのうち ${improved} マスが新たに水を得る（繁栄度 ${fmt(reg.balance.prosperity.water.bonus - reg.balance.prosperity.water.penalty)}）`;
+    if (e.type === 'water') text = `範囲 ${total} マスのうち ${improved} マスが新たに水を得る（満足度 ${fmt(reg.balance.satisfaction.water.bonus - reg.balance.satisfaction.water.penalty)}）`;
     else if (e.type === 'security') text = `範囲 ${total} マスの治安 ${fmt(e.value)}`;
     else if (e.type === 'market_admin') text = `範囲 ${total} マスで市を開けるようになる`;
     else text = `範囲 ${total} マス`;
@@ -296,13 +308,13 @@ export function previewImprovement(world, reg, def, tx, ty, modeId) {
   return { tiles, text };
 }
 
-/** 問題のある場所（その指標がいちばん低い、区画または建物のあるマス）。案内役の「表示モードで確認」用 */
+/** 問題のある場所（その指標がいちばん低い、建物のあるマス）。案内役の「表示モードで確認」用 */
 export function worstTile(world, reg, modeId, data) {
   const { w, h } = world.map;
-  if (modeId === 'zones') {   // 区画モード: 未建築の区画がいちばん多い所
-    const zm = computeZoneMap(world, reg);
+  if (modeId === 'use') {   // 用途モード: 廃屋・道路につながっていない建物がいちばん多い所
+    const zm = computeUseMap(world, reg);
     let best = null, bestN = -1;
-    for (let y = 0; y < h; y += 4) for (let x = 0; x < w; x += 4) { let c = 0; for (let j = 0; j < 8; j++) for (let k = 0; k < 8; k++) { const xx = x + k, yy = y + j; if (inBounds(w, h, xx, yy) && zm.flags[idx(w, xx, yy)] & FLAG.UNBUILT) c++; } if (c > bestN) { bestN = c; best = [x + 4, y + 4]; } }
+    for (let y = 0; y < h; y += 4) for (let x = 0; x < w; x += 4) { let c = 0; for (let j = 0; j < 8; j++) for (let k = 0; k < 8; k++) { const xx = x + k, yy = y + j; if (inBounds(w, h, xx, yy) && zm.flags[idx(w, xx, yy)] & (FLAG.UNBUILT | FLAG.BELOW_THRESHOLD)) c++; } if (c > bestN) { bestN = c; best = [x + 4, y + 4]; } }
     return best;
   }
   const m = STATE_MODES[modeId];
@@ -311,7 +323,7 @@ export function worstTile(world, reg, modeId, data) {
   let best = null, bestV = Infinity, sum = 0, cnt = 0;
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
     const i = idx(w, x, y);
-    if (!world.zones[i] && world.buildingAt[i] === -1) continue;
+    if (world.buildingAt[i] === -1) continue;
     if (d.flags[i] & (FLAG.WATER_TILE | FLAG.NONE)) continue;
     cnt++; sum += x; 
     if (d.values[i] < bestV) { bestV = d.values[i]; best = [x, y]; }

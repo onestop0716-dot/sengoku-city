@@ -2,7 +2,7 @@
 // VERSION は公開時に置き換えられ（GitHub Actions が commit の SHA を入れる）、版が変わると古いキャッシュを消す。
 const VERSION = '__BUILD__';
 const CACHE = `sengoku-city-${VERSION}`;
-const CORE = ['./', './index.html', './manifest.webmanifest', './src/main.js', './src/ui/styles.css', './assets/ui/advisor.png', './vendor/three/three.module.js'];
+const CORE = ['./', './index.html', './manifest.webmanifest', './src/main.js', './src/ui/styles.css', './assets/ui/advisor.png', './assets/ui/advisor_normal.png', './assets/ui/advisor_happy.png', './assets/ui/advisor_troubled.png', './assets/ui/advisor_warning.png', './vendor/three/three.module.js'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(CORE).catch(() => {})));

@@ -1,5 +1,5 @@
 // 人口・身分・民忠・治安・衛生・食糧充足。月次で更新し、食糧の消費は毎日。
-import { housingCapacity } from './zones.js';
+import { housingCapacity, isActive, capacityOf } from './satisfaction.js';
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
@@ -8,13 +8,12 @@ export function capacityByClass(world, reg) {
   const cap = { commoner: 0, shi: 0, noble: 0 };
   let farmTiles = 0, farmhouses = 0;
   for (const b of world.buildings.values()) {
-    if (b.state !== 'built') continue;
-    const def = reg.buildingById.get(b.buildingType);
-    const c = def.levels[b.level - 1].capacity || 0;
+    if (!isActive(world, reg, b)) continue;   // 建設中・廃屋・道路につながっていない建物には住まず、働かない
+    const c = capacityOf(reg, b);
     if (b.buildingType === 'house_shi') cap.shi += c;
     else if (b.buildingType === 'house_noble') cap.noble += c;
     else if (b.category === 'residential' || b.category === 'farm_house') cap.commoner += c;
-    if (b.category === 'field') farmTiles++;
+    if (b.category === 'field') farmTiles += b.w * b.h;
     if (b.category === 'farm_house') farmhouses++;
   }
   return { cap, farmTiles, farmhouses };
@@ -44,7 +43,7 @@ export function tickPopulationMonthly(world, reg) {
   const farmJobs = farmTiles * E.farmJobsPerTile;
   let workshopJobs = 0, marketJobs = 0;
   for (const b of world.buildings.values()) {
-    if (b.state !== 'built') continue;
+    if (!isActive(world, reg, b)) continue;
     const def = reg.buildingById.get(b.buildingType);
     if (def.jobs) { const j = Math.round(def.jobs * (1 + 0.5 * (b.level - 1))); if (b.category === 'workshop') workshopJobs += j; else if (b.category === 'market') marketJobs += j; }
   }

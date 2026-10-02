@@ -1,15 +1,18 @@
 // 特殊建築（手動配置）: 配置の検証、建設、効果（水・市の管理範囲・治安・民忠・衛生・穀倉・防御）、城壁の内外判定、維持費。
 import { idx, inBounds, N4, lPath, distanceMap } from '../core/grid.js';
 import { chooseFacing } from './placement.js';
+import { costOf, shortages, pay } from './materials.js';
+
+const footprintOf = (def, rotation = 0) => (rotation % 2 ? [def.size[1], def.size[0]] : [def.size[0], def.size[1]]);
 
 const RANK_ORDER = ['magistrate', 'governor', 'chancellor', 'general'];
 
 /** 解禁されているか。戻り値: null（可）または理由 */
-export function lockReason(world, reg, def) {
+export function lockReason(world, reg, def, opts = {}) {
   const u = def.unlock || {};
   if (u.rank && RANK_ORDER.indexOf(world.rank || 'magistrate') < RANK_ORDER.indexOf(u.rank)) return `官位「${{ governor: '郡守', chancellor: '相邦', general: '大将軍' }[u.rank]}」で解禁`;
   if (u.tech && !(world.techs || []).includes(u.tech)) return `技術「${reg.techById?.get(u.tech)?.name || u.tech}」で解禁`;
-  if (def.unique && Array.from(world.structures.values()).some((s) => s.type === def.id)) return '1つしか建てられません';
+  if (def.unique && !opts.ignoreUnique && Array.from(world.structures.values()).some((s) => s.type === def.id)) return '1つしか建てられません';
   return null;
 }
 
@@ -37,9 +40,9 @@ function tileOk(world, reg, def, x, y, ctx) {
   } else {
     if (!t.buildable) return `${t.name}には建てられません`;
     if (world.roads[i]) return '道路の上には建てられません';
-    if (p.shore && world.map.waterDist[i] > (reg.balance.zoning?.shoreDistance ?? 1)) return '岸辺にのみ置けます';
+    if (p.shore && world.map.waterDist[i] > (reg.balance.placement?.shoreDistance ?? 1)) return '岸辺にのみ置けます';
     const shoreOk = p.shore || p.nearWater || p.connectWater || def.category === 'defense' || def.id === 'well';
-    if (!shoreOk && world.map.waterDist[i] <= (reg.balance.zoning?.shoreDistance ?? 1)) return '岸辺には建てられません';
+    if (!shoreOk && world.map.waterDist[i] <= (reg.balance.placement?.shoreDistance ?? 1)) return '岸辺には建てられません';
   }
   if (p.connectWater) {
     const near = N4.some(([dx, dy]) => inBounds(w, h, x + dx, y + dy) && (reg.tiles[world.map.tile[idx(w, x + dx, y + dy)]].water || world.structAt[idx(w, x + dx, y + dy)] !== -1 && world.structures.get(world.structAt[idx(w, x + dx, y + dy)])?.type === 'canal'));
@@ -52,12 +55,12 @@ function tileOk(world, reg, def, x, y, ctx) {
   return null;
 }
 
-/** 矩形の建築を置けるか。戻り値: null または理由 */
-export function canPlaceStructure(world, reg, def, x, y) {
-  const lock = lockReason(world, reg, def);
+/** 矩形の建築を置けるか。戻り値: null または理由。opts: { cost: 費用の上書き（移動）, ignoreUnique } */
+export function canPlaceStructure(world, reg, def, x, y, rotation = 0, opts = {}) {
+  const lock = lockReason(world, reg, def, opts);
   if (lock) return lock;
   if (def.linear) return '線状の建築はドラッグで置きます';
-  const [sw, sh] = def.size;
+  const [sw, sh] = footprintOf(def, rotation);
   let nearWater = false;
   for (let yy = y; yy < y + sh; yy++) for (let xx = x; xx < x + sw; xx++) {
     const r = tileOk(world, reg, def, xx, yy);
@@ -65,7 +68,8 @@ export function canPlaceStructure(world, reg, def, x, y) {
     if (def.placement?.nearWater) for (const [dx, dy] of N4) { const nx = xx + dx, ny = yy + dy; if (inBounds(world.map.w, world.map.h, nx, ny) && reg.tiles[world.map.tile[idx(world.map.w, nx, ny)]].water) nearWater = true; }
   }
   if (def.placement?.nearWater && !nearWater) return '水辺に接して置きます';
-  if (world.money < def.cost) return '銭が足りません';
+  const short = shortages(world, opts.cost || costOf(def));
+  if (short.length) return short[0];
   return null;
 }
 
@@ -89,17 +93,17 @@ function onBuilt(world, reg, s) {
   world.servicesDirty = true;
 }
 
-/** 矩形の建築を置く */
-export function placeStructure(world, reg, typeId, x, y) {
+/** 矩形の建築を置く。rotation を省くと入口が道路に面する向き */
+export function placeStructure(world, reg, typeId, x, y, rotation = null) {
   const def = reg.structureById.get(typeId);
   if (!def) return { ok: false, message: `不明な建築: ${typeId}` };
-  const reason = canPlaceStructure(world, reg, def, x, y);
+  const reason = canPlaceStructure(world, reg, def, x, y, rotation ?? 0);
   if (reason) return { ok: false, message: reason };
-  world.money -= def.cost;
-  world.finance.month.expense['建設費'] += def.cost;
+  pay(world, costOf(def));
   const wasRoad = world.roads[idx(world.map.w, x, y)] === 1;
-  const s = addStructure(world, reg, def, x, y, def.size[0], def.size[1]);
-  s.rotation = chooseFacing(world, x, y, def.size[0], def.size[1]);
+  const [sw, sh] = footprintOf(def, rotation ?? 0);
+  const s = addStructure(world, reg, def, x, y, sw, sh);
+  s.rotation = rotation ?? chooseFacing(world, x, y, sw, sh);
   if (wasRoad) s.onRoad = true;
   world.log.push({ day: world.day, text: `${structureName(reg, def, world.nationId)}の建設を始めました` });
   return { ok: true, id: s.id };
@@ -127,8 +131,9 @@ export function placeStructureLine(world, reg, typeId, x0, y0, x1, y1) {
     // 城壁が道路を横切る所は自動で城門にする（道路はそのまま通れる）
     if (typeId === 'wall' && world.roads[i] && world.structAt[i] === -1) {
       const gate = reg.structureById.get('gate');
-      if (world.money < gate.cost) { lastReason = '銭が足りません'; break; }
-      world.money -= gate.cost; world.finance.month.expense['建設費'] += gate.cost;
+      const gc = costOf(gate), gs = shortages(world, gc);
+      if (gs.length) { lastReason = gs[0]; break; }
+      pay(world, gc);
       const g = addStructure(world, reg, gate, x, y, 1, 1);
       g.autoGate = true;
       count++; prevOk = true;
@@ -136,8 +141,9 @@ export function placeStructureLine(world, reg, typeId, x0, y0, x1, y1) {
     }
     const r = tileOk(world, reg, def, x, y, { prevOk });
     if (r) { lastReason = r; prevOk = false; continue; }
-    if (world.money < def.cost) { lastReason = '銭が足りません'; break; }
-    world.money -= def.cost; world.finance.month.expense['建設費'] += def.cost;
+    const c = costOf(def), cs = shortages(world, c);
+    if (cs.length) { lastReason = cs[0]; break; }
+    pay(world, c);
     addStructure(world, reg, def, x, y, 1, 1);
     count++; prevOk = true;
   }
@@ -194,7 +200,8 @@ export function recomputeServices(world, reg) {
   const { w, h } = world.map;
   const water = new Uint8Array(w * h), marketAdmin = new Uint8Array(w * h), irrigation = new Uint8Array(w * h);
   const securityField = new Float32Array(w * h);
-  let granaryCap = 0, loyalty = 0, defense = 0, wells = 0, docks = 0, farmDemand = 0;
+  let granaryCap = 0, loyalty = 0, defense = 0, wells = 0, docks = 0;
+  const satisfaction = new Float32Array(w * h);
   const paint = (arr, s, radius, value = 1) => {
     const cx = s.x + s.w / 2, cy = s.y + s.h / 2;
     for (let y = Math.max(0, Math.floor(cy - radius)); y <= Math.min(h - 1, Math.ceil(cy + radius)); y++) for (let x = Math.max(0, Math.floor(cx - radius)); x <= Math.min(w - 1, Math.ceil(cx + radius)); x++) {
@@ -211,7 +218,7 @@ export function recomputeServices(world, reg) {
       else if (e.type === 'granary_capacity') granaryCap += e.value;
       else if (e.type === 'loyalty') loyalty += e.value;
       else if (e.type === 'defense') defense += e.value;
-      else if (e.type === 'farm_demand') farmDemand += e.value;
+      else if (e.type === 'satisfaction') paint(satisfaction, s, e.radius, e.value);
       else if (e.type === 'irrigation') for (const [dx, dy] of N4) { const x = s.x + dx, y = s.y + dy; if (inBounds(w, h, x, y)) irrigation[idx(w, x, y)] = 1; }
       else if (e.type === 'dock') docks++;
     }
@@ -233,7 +240,7 @@ export function recomputeServices(world, reg) {
   world.services = {
     water, marketAdmin, marketDist: stalls > 0 ? marketDist : null, irrigation,
     securityBonus: houses ? secSum / houses : 0, loyaltyBonus: loyalty, hygieneBonus: houses ? 25 * (watered / houses) : 0,
-    granaryCap, defense, wells, docks, farmDemand, insideWall: enc.inside, insideCount: enc.count,
+    granaryCap, defense, wells, docks, satisfaction, insideWall: enc.inside, insideCount: enc.count,
   };
   world.grain.granaryCap = reg.balance.economy.granaryBaseCapacity + granaryCap;
   world.stats.defense = defense; world.stats.insideCount = enc.count;
@@ -246,7 +253,7 @@ export function placeInitialStructures(world, reg) {
   if (!def) return;
   const cx = Math.floor(world.map.w / 2), cy = Math.floor(world.map.h / 2);
   const x = cx - 1, y = cy - 4;                              // 十字路の北側、南向き
-  for (let yy = y; yy < y + 3; yy++) for (let xx = x; xx < x + 3; xx++) { const i = idx(world.map.w, xx, yy); world.roads[i] = 0; world.zones[i] = 0; if (reg.tiles[world.map.tile[i]].clearable) world.map.tile[i] = reg.tileIndex.get('plain'); world.dirty.tiles.add(i); }
+  for (let yy = y; yy < y + 3; yy++) for (let xx = x; xx < x + 3; xx++) { const i = idx(world.map.w, xx, yy); world.roads[i] = 0; if (reg.tiles[world.map.tile[i]].clearable) world.map.tile[i] = reg.tileIndex.get('plain'); world.dirty.tiles.add(i); }
   const s = addStructure(world, reg, def, x, y, 3, 3);
   s.rotation = 0;
   world.roadDirty = true;

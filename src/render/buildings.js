@@ -2,7 +2,7 @@
 // 近景と遠景の振り分けはカメラが動いたときだけ再計算する。
 import * as THREE from 'three';
 import { hash2 } from '../core/rng.js';
-import { modelIdFor } from '../sim/zones.js';
+import { modelIdFor } from '../sim/build.js';
 import { cropStage } from './crop-stage.js';
 
 const SPECIES = ['pine', 'cypress', 'sophora', 'elm', 'willow'];
@@ -77,8 +77,18 @@ export function createBuildingsView(world, reg, scene, assets, env) {
   const collectBuildings = () => {
     buildingItems = new Map();
     for (const b of world.buildings.values()) {
-      let modelId = b.state === 'built' ? modelIdFor(world, reg, b) : 'scaffold';
-      if (b.category === 'field' && b.state === 'built') modelId += '@' + cropStage(reg.cropById.get(reg.buildingById.get(b.buildingType).crop), world.calendar.month);
+      if (b.category === 'field') {   // 畑は 1マスずつ並べる（建設中は裸地、外観はマスごとに少しずつ変える）
+        const def = reg.buildingById.get(b.buildingType), lv = def.levels[Math.min(b.level, def.levels.length) - 1];
+        const stage = b.state === 'built' ? cropStage(reg.cropById.get(def.crop), world.calendar.month) : 'bare';
+        for (let ty = b.y; ty < b.y + b.h; ty++) for (let tx = b.x; tx < b.x + b.w; tx++) {
+          const modelId = lv.models[(b.variant + Math.floor(hash2(tx, ty, 31) * 3)) % lv.models.length] + '@' + stage;
+          if (!buildingItems.has(modelId)) buildingItems.set(modelId, []);
+          buildingItems.get(modelId).push({ x: tx + 0.5, y: env.terrain.heightAt(tx + 0.5, ty + 0.5), z: ty + 0.5, rot: (b.rotation || 0) * Math.PI / 2, scale: 1 });
+        }
+        continue;
+      }
+      // 廃屋はレベル1の外観のまま（情報パネルと用途表示で分かる）
+      const modelId = b.state === 'building' ? 'scaffold' : modelIdFor(world, reg, b);
       if (!buildingItems.has(modelId)) buildingItems.set(modelId, []);
       const cx = b.x + b.w / 2, cz = b.y + b.h / 2;
       // 足元の高さは足跡の中心と四隅の最小値（斜面で浮かないように）

@@ -1,9 +1,12 @@
-// 税・支出・財政記録・需要メーター。
+// 税・支出・財政記録・暮らしの指標（空き家・入居待ち・働き口・失業）。工房の生産と、伐木場・石切場の材料。
 import { structureUpkeep } from './structures.js';
 import { modsOf } from './modifiers.js';
 import { tickPersonsMonthly } from './persons.js';
 import { researchCostMonthly } from './research.js';
 import { tickArmyMonthly } from './military/army.js';
+import { isActive } from './satisfaction.js';
+import { ensureMaterials } from './materials.js';
+import { idx } from '../core/grid.js';
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
 export function emptyMonth() {
@@ -44,9 +47,19 @@ export function tickEconomyMonthly(world, reg) {
   const G = reg.balance.goods || {};
   let produced = 0;
   const artisanRatio = world.stats.workshopJobs > 0 ? clamp(world.population.artisans / world.stats.workshopJobs, 0, 1) : 0;
+  const MT = reg.balance.materials;
+  ensureMaterials(world, reg);
+  world.finance.lastMaterials = { wood: 0, stone: 0 };
   for (const b of world.buildings.values()) {
-    if (b.category !== 'workshop' || b.state !== 'built') continue;
+    if (b.category !== 'workshop' || !isActive(world, reg, b)) continue;
     const def = reg.buildingById.get(b.buildingType);
+    if (def.material) {   // 伐木場・石切場: 材料を作る
+      const lvF = 1 + 0.5 * (b.level - 1);
+      const amount = def.material === 'wood' ? MT.woodPerMonth * lvF * artisanRatio * Math.min(1, nearTiles(world, reg, b, def) / MT.forestFull) : MT.stonePerMonth * lvF * artisanRatio;
+      world.materials[def.material] += amount;
+      world.finance.lastMaterials[def.material] += amount;
+      continue;
+    }
     const units = (G.unitsPerWorkshop || 4) * (1 + 0.5 * (b.level - 1)) * artisanRatio * M.workshopOutput * (1 + (M.workshopGoods[def.produces] || 0));
     world.goods[def.produces] = (world.goods[def.produces] || 0) + units;
     produced += units * (G.prices?.[def.produces] || 10);
@@ -78,24 +91,28 @@ export function tickEconomyYearly(world, reg) {
   world.log.push({ day: world.day, text: `上納: 前年の税収から ${tribute} 銭を国に納めました` });
 }
 
-/** 需要メーター（−100〜100） */
-export function updateDemand(world, reg) {
-  const D = reg.balance.demand;
+/** 周りの指定地形のマス数（伐木場の森など） */
+function nearTiles(world, reg, b, def) {
+  const req = def.requires || {}, r = req.radius || 4, W = world.map.w, H = world.map.h;
+  const set = new Set((req.tileNear || []).map((t) => reg.tileIndex.get(t)));
+  let n = 0;
+  for (let y = Math.max(0, b.y - r); y <= Math.min(H - 1, b.y + b.h - 1 + r); y++) for (let x = Math.max(0, b.x - r); x <= Math.min(W - 1, b.x + b.w - 1 + r); x++) if (set.has(world.map.tile[idx(W, x, y)])) n++;
+  return n;
+}
+
+/** 暮らしの指標: 空き家（収容 − 人口）、入居待ち（住みたいが家がない人。魅力 ×（base + 人口 × perPop）− 空き家）、空いている働き口、失業者 */
+export function updateIndicators(world, reg) {
   const pop = world.population, st = world.stats;
   const cap = st.housingCapacity || 0;
-  const vacancy = cap > 0 ? clamp((cap - pop.total) / cap, 0, 1) : 0;
-  const jobGap = (st.jobs || 0) - Math.round(pop.commoner * 0.8);
-  const food = world.foodSufficient ? D.residential.foodOk : world.foodSufficiency < reg.balance.economy.famineThreshold ? D.residential.foodShort : 0;
-  world.demand.residential = clamp(D.residential.base + jobGap * D.residential.jobs + (world.loyalty - 50) * D.residential.loyalty + food - vacancy * D.residential.vacancy, -100, 100);
-  // 農: 食糧が足りないほど高い。余っていれば下がる
-  const yearNeed = pop.total * reg.balance.economy.consumptionPerPersonPerYear;
-  const stock = world.grain.civil + world.grain.granary;
-  const months = yearNeed > 0 ? (stock / yearNeed) * 12 : 12;
-  world.demand.farm = clamp(D.farm.base + (1 - clamp(world.foodSufficiency, 0, 1.5)) * D.farm.shortage + (months > 18 ? D.farm.surplus : 0) + (pop.total < 20 ? 30 : 0) + (world.services.farmDemand || 0), -100, 100);
-  // 商: 人口に対して市の店が足りないほど高い
-  const marketNeed = pop.total * D.market.perPerson;
-  world.demand.market = clamp(D.market.base + marketNeed - (st.marketJobs || 0) * 0.5, -100, 100);
-  // 工: 失業者と資源があれば高い。工房の仕事が余っていれば下がる
-  world.demand.military = 50;   // 軍営は県令の判断で置くので需要は常にある
-  world.demand.workshop = clamp(D.workshop.base + pop.unemployed * 0.5 + (pop.total > 200 ? 20 : 0) - Math.max(0, (st.workshopJobs || 0) - pop.artisans) * 0.5, -100, 100);
+  const employed = (pop.farmers || 0) + (pop.artisans || 0) + (pop.merchants || 0);
+  const A = reg.balance.population.attract, Wt = reg.balance.population.waiting;
+  const attract = clamp((world.loyalty - A.loyaltyFloor) / A.loyaltySpan, 0, 1) * (world.foodSufficient ? 1 : A.foodShortFactor);
+  const vacant = Math.max(0, Math.round(cap - pop.total));
+  world.indicators = {
+    vacant,
+    waiting: Math.max(0, Math.round(attract * (Wt.base + pop.total * Wt.perPop)) - vacant),   // 来たい人のうち空き家に入りきれない人
+    jobsOpen: Math.max(0, Math.round((st.jobs || 0) - employed)),
+    unemployed: Math.round(pop.unemployed || 0),
+  };
+  return world.indicators;
 }

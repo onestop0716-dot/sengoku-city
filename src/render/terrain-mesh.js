@@ -1,4 +1,4 @@
-// 地形メッシュ（チャンク分割・滑らかな高さ場 + 頂点色）、区画オーバーレイ（チャンクごと）、水面、マップ外の大地。
+// 地形メッシュ（チャンク分割・滑らかな高さ場 + 頂点色）、水面、マップ外の大地。
 import * as THREE from 'three';
 import { createTerrainField, PAL, CHUNK } from './terrain-field.js';
 import { fbm } from '../sim/terrain/noise.js';
@@ -42,16 +42,6 @@ const WATER_FRAG = /* glsl */`
     #include <tonemapping_fragment>
     #include <colorspace_fragment>
   }`;
-const ZONE_VERT = /* glsl */`
-  attribute float alpha; attribute vec3 color;
-  varying float vAlpha; varying vec3 vColor;
-  void main() { vAlpha = alpha; vColor = color; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
-const ZONE_FRAG = /* glsl */`
-  precision highp float;
-  varying float vAlpha; varying vec3 vColor;
-  void main() { if (vAlpha < 0.02) discard; gl_FragColor = vec4(vColor, vAlpha * 0.5);
-  #include <tonemapping_fragment>
-  #include <colorspace_fragment> }`;
 
 export function createTerrainMesh(world, reg, { segments = 4, sunDir, fog } = {}) {
   const { w, h } = world.map;
@@ -59,8 +49,6 @@ export function createTerrainMesh(world, reg, { segments = 4, sunDir, fog } = {}
   const S = field.S;
   const group = new THREE.Group();
   const terrainMat = createTexturedMaterial({ defaultTex: 6, roughness: 0.95, role: 'terrain' });
-  const zoneMat = new THREE.ShaderMaterial({ vertexShader: ZONE_VERT, fragmentShader: ZONE_FRAG, transparent: true, depthWrite: false, side: THREE.DoubleSide });
-  const zoneColors = reg.zones.map((z) => hexToLinear(z.color));
 
   // --- 地形チャンク
   const chunks = [];
@@ -75,55 +63,8 @@ export function createTerrainMesh(world, reg, { segments = 4, sunDir, fog } = {}
     const mesh = new THREE.Mesh(geom, terrainMat);
     mesh.receiveShadow = true;
     group.add(mesh);
-    chunks.push({ cx, cz, mesh, geom, colors: c.colors, zoneMesh: null });
+    chunks.push({ cx, cz, mesh, geom, colors: c.colors });
   }
-
-  // --- 区画オーバーレイ（チャンクごと。マスごとの面 + 外周の縁取り、ぼかしなし）
-  const LIFT = 0.05, EDGE_W = 0.09;
-  const buildZoneOverlay = (chunk) => {
-    const pos = [], col = [], alp = [];
-    const H = field.H, VW = field.VW;
-    const vtx = (i, j, lift) => [i / S, H[j * VW + i] + lift, j / S];
-    const push = (p, c, a) => { pos.push(p[0], p[1], p[2]); col.push(c.r, c.g, c.b); alp.push(a); };
-    const quad = (a, b, c, d, color, alpha) => { push(a, color, alpha); push(c, color, alpha); push(b, color, alpha); push(a, color, alpha); push(d, color, alpha); push(c, color, alpha); };
-    const same = (x, y, z) => x >= 0 && y >= 0 && x < w && y < h && world.zones[y * w + x] === z;
-    for (let ty = chunk.cz * CHUNK; ty < Math.min(h, (chunk.cz + 1) * CHUNK); ty++) for (let tx = chunk.cx * CHUNK; tx < Math.min(w, (chunk.cx + 1) * CHUNK); tx++) {
-      const z = world.zones[ty * w + tx];
-      if (!z) continue;
-      const color = zoneColors[z - 1];
-      const dark = color.clone().multiplyScalar(0.45);
-      for (let sj = 0; sj < S; sj++) for (let si = 0; si < S; si++) {
-        const i = tx * S + si, j = ty * S + sj;
-        quad(vtx(i, j, LIFT), vtx(i + 1, j, LIFT), vtx(i + 1, j + 1, LIFT), vtx(i, j + 1, LIFT), color, 0.34);
-      }
-      const edges = [
-        [!same(tx, ty - 1, z), (t) => [tx + t, ty], [0, 1]], [!same(tx, ty + 1, z), (t) => [tx + t, ty + 1], [0, -1]],
-        [!same(tx - 1, ty, z), (t) => [tx, ty + t], [1, 0]], [!same(tx + 1, ty, z), (t) => [tx + 1, ty + t], [-1, 0]],
-      ];
-      for (const [on, at, inward] of edges) {
-        if (!on) continue;
-        for (let k = 0; k < S; k++) {
-          const [x0, z0] = at(k / S), [x1, z1] = at((k + 1) / S);
-          const hh = (x, zz) => field.heightAt(x, zz) + LIFT + 0.01;
-          quad([x0, hh(x0, z0), z0], [x1, hh(x1, z1), z1],
-            [x1 + inward[0] * EDGE_W, hh(x1 + inward[0] * EDGE_W, z1 + inward[1] * EDGE_W), z1 + inward[1] * EDGE_W],
-            [x0 + inward[0] * EDGE_W, hh(x0 + inward[0] * EDGE_W, z0 + inward[1] * EDGE_W), z0 + inward[1] * EDGE_W], dark, 0.95);
-        }
-      }
-    }
-    if (chunk.zoneMesh) { group.remove(chunk.zoneMesh); chunk.zoneMesh.geometry.dispose(); chunk.zoneMesh = null; }
-    if (!pos.length) return;
-    const g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(pos), 3));
-    g.setAttribute('color', new THREE.BufferAttribute(new Float32Array(col), 3));
-    g.setAttribute('alpha', new THREE.BufferAttribute(new Float32Array(alp), 1));
-    g.computeBoundingSphere();
-    const m = new THREE.Mesh(g, zoneMat);
-    m.renderOrder = 1;
-    chunk.zoneMesh = m;
-    group.add(m);
-  };
-  for (const c of chunks) buildZoneOverlay(c);
 
   // --- 水面（マップ内はチャンクごと、マップ外は1枚）
   const waterMat = new THREE.ShaderMaterial({
@@ -230,8 +171,6 @@ export function createTerrainMesh(world, reg, { segments = 4, sunDir, fog } = {}
     heightAt: (x, z) => field.heightAt(x, z),
     heightAtTile: (x, y) => field.heightAt(x + 0.5, y + 0.5),
     setRipple(v) { waterMat.uniforms.ripple.value = v; },
-    /** 区画オーバーレイ（通常表示の色枠）の表示切り替え */
-    setZoneOverlayVisible(v) { for (const c of chunks) if (c.zoneMesh) c.zoneMesh.visible = v; },
     setFog(f) { waterMat.uniforms.fogColor.value.copy(f.color); waterMat.uniforms.fogNear.value = f.near; waterMat.uniforms.fogFar.value = f.far; },
     update(dt) {
       waterMat.uniforms.time.value += dt;
@@ -243,13 +182,12 @@ export function createTerrainMesh(world, reg, { segments = 4, sunDir, fog } = {}
         const c = chunks[ci];
         field.copyChunkColors(c.cx, c.cz, c.colors);
         c.geom.attributes.color.needsUpdate = true;
-        buildZoneOverlay(c);
       }
     },
     dispose() {
-      for (const c of chunks) { c.geom.dispose(); c.zoneMesh?.geometry.dispose(); }
+      for (const c of chunks) c.geom.dispose();
       for (const m of waterMeshes) m.geometry.dispose();
-      outerGeom.dispose(); terrainMat.dispose(); zoneMat.dispose(); waterMat.dispose(); outer.material.dispose();
+      outerGeom.dispose(); terrainMat.dispose(); waterMat.dispose(); outer.material.dispose();
     },
   };
 }

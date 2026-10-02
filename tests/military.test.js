@@ -30,16 +30,14 @@ test('徴兵は兵舎の収容数と人口の割合で制限され、弩兵は�
   const world = createWorld({ seed: 9, cityId: 'xianyang', reg, size: 128 });
   world.money = 50000;
   assert.ok(!applyCommand(world, reg, { type: 'army.conscript', unitId: 'infantry', count: 10 }).ok, '兵舎がないと徴兵できない');
-  // 兵舎を建てる（軍事区画）
-  // 道路のそばで 4×3 が丸ごと空いている場所を探して軍営区画にする
+  // 兵舎を建てる: 中央の十字路のそばで置ける場所を探す
   const cx = 64, cy = 64;
-  let placed = false, placedAt = null;
-  for (let dy = -10; dy <= 10 && !placed; dy++) for (let dx = -16; dx <= 16 && !placed; dx += 2) {
-    const r = applyCommand(world, reg, { type: 'zone.set', rect: { x0: cx + dx, y0: cy + dy, x1: cx + dx + 7, y1: cy + dy + 3 }, zoneId: 'military' });
-    if (r.count === 32 && world.roadDist[(cy + dy) * world.map.w + cx + dx] <= 3) { placed = true; placedAt = [cx + dx, cy + dy]; } else applyCommand(world, reg, { type: 'zone.clear', rect: { x0: cx + dx, y0: cy + dy, x1: cx + dx + 7, y1: cy + dy + 3 } });
+  let placed = false;
+  for (let dy = -6; dy <= 6 && !placed; dy++) for (let dx = -8; dx <= 8 && !placed; dx++) {
+    const r = applyCommand(world, reg, { type: 'build.place', typeId: 'barracks', x: cx + dx, y: cy + dy });
+    if (r.ok) placed = true;
   }
-  assert.ok(placed, '軍営区画を置けた');
-  applyCommand(world, reg, { type: 'road.build', x0: placedAt[0], y0: placedAt[1] - 1, x1: placedAt[0] + 7, y1: placedAt[1] - 1 });   // 区画の上に道路を通して全体を範囲内にする
+  assert.ok(placed, '兵舎を置けない');
   for (let d = 0; d < 600 && !Array.from(world.buildings.values()).some((b) => b.buildingType === 'barracks' && b.state === 'built'); d++) tick(world, reg);
   const cap = barracksCapacity(world, reg);
   assert.ok(cap.total >= 40, `兵舎の収容 ${cap.total}`);

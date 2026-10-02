@@ -75,6 +75,39 @@ check('決定で道路が引かれる', roads1 > roads0, `${roads0} → ${roads1
 await page.tap('#touchbar [data-act="undo"]');
 const roads2 = await page.evaluate(() => window.__game.world.roads.reduce((a, b) => a + b, 0));
 check('元に戻すで道路が消える', roads2 === roads0, `${roads1} → ${roads2}`);
+// 建物: 「住居」タブの庶民の家 → 置ける所をタップ → 決定バー → 決定 → 元に戻す
+{
+  const spot = await page.evaluate(async () => {
+    const { world, reg, orbit, THREE } = window.__game;
+    const { buildingReasons } = await import('./src/sim/build.js');
+    const def = reg.buildingById.get('house_commoner');
+    const c = 64;
+    for (let r = 1; r < 10; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
+      const x = c + dx, y = c + dy;
+      if (buildingReasons(world, reg, def, x, y).length) continue;
+      const v = new THREE.Vector3(x + 0.5, window.__game.env.terrain.heightAt(x + 0.5, y + 0.5), y + 0.5).project(orbit.camera);
+      return { x, y, sx: (v.x + 1) / 2 * innerWidth, sy: (1 - v.y) / 2 * innerHeight };
+    }
+    return null;
+  });
+  check('家を置ける場所がある', !!spot);
+  if (spot) {
+    await page.tap('#toolbar [data-tab="residential"]');
+    await page.tap('#toolbar button[data-tool="place:house_commoner"]');
+    const b0 = await page.evaluate(() => window.__game.world.buildings.size);
+    await page.touchscreen.tap(spot.sx, spot.sy);
+    await page.waitForTimeout(300);
+    const t = await page.evaluate(() => getComputedStyle(document.getElementById('confirm-bar')).display === 'flex' ? document.querySelector('#confirm-bar .ct').textContent : '');
+    check('タップで家の決定バーが出る', t.includes('庶民の家'), t);
+    await page.tap('#confirm-bar [data-ok]');
+    const b1 = await page.evaluate(() => window.__game.world.buildings.size);
+    check('決定で家が置かれる', b1 === b0 + 1, `${b0} → ${b1}`);
+    await page.tap('#touchbar [data-act="undo"]');
+    const b2 = await page.evaluate(() => window.__game.world.buildings.size);
+    check('元に戻すで家が消える', b2 === b0, `${b1} → ${b2}`);
+    await page.tap('#toolbar button[data-tool="road"]');
+  }
+}
 // ツール選択中も2本指はカメラ
 const d2 = await page.evaluate(() => window.__game.orbit.state.distance);
 await pinch(page, [600, 400], 300, 150);
@@ -167,7 +200,7 @@ check('ホイールでズーム', await pg.evaluate(() => window.__game.orbit.st
 await pg.keyboard.press('Escape');
 check('Esc で選択に戻る', await pg.evaluate(() => document.querySelector('#toolbar button.active')?.dataset.tool === 'select'));
 await pg.keyboard.press('Tab');
-check('Tab で表示モード', await pg.evaluate(() => window.__game.viewMode.mode === 'zones'));
+check('Tab で表示モード', await pg.evaluate(() => window.__game.viewMode.mode === 'use'));
 await pg.keyboard.press('Escape');
 await pg.keyboard.press('KeyQ');
 check('PC 側にエラーなし', perr.length === 0, perr.slice(0, 3).join(' | '));

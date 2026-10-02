@@ -3,13 +3,13 @@
 const FORBIDDEN_WORDS = ['紙', '椅子', '茶', '綿', '仏', '寺院', '火薬', '鐙', '磁器', 'トウモロコシ', '唐辛子', 'サツマイモ', '一輪車'];
 
 /**
- * @param {object} raw { nations, cities, terrain, zones, buildings, crops, assets, balance, terms }
+ * @param {object} raw { nations, cities, terrain, tabs, buildings, crops, assets, balance, terms, ... }
  * @returns {{errors: string[], warnings: string[]}}
  */
 export function validateData(raw) {
   const errors = [], warnings = [];
   const req = (name) => { if (!raw[name]) errors.push(`${name}.json がありません`); };
-  ['nations', 'cities', 'terrain', 'zones', 'buildings', 'crops', 'assets', 'balance', 'terms', 'structures', 'difficulties', 'advice', 'persons', 'offices', 'ranks', 'techs', 'goods', 'military', 'events', 'achievements'].forEach(req);
+  ['nations', 'cities', 'terrain', 'tabs', 'buildings', 'crops', 'assets', 'balance', 'terms', 'structures', 'difficulties', 'advice', 'persons', 'offices', 'ranks', 'techs', 'goods', 'military', 'events', 'achievements'].forEach(req);
   if (errors.length) return { errors, warnings };
 
   const ids = (arr, name) => {
@@ -24,7 +24,6 @@ export function validateData(raw) {
   };
   const nationIds = ids(raw.nations, 'nations');
   const cityIds = ids(raw.cities, 'cities');
-  const zoneIds = ids(raw.zones, 'zones');
   const buildingIds = ids(raw.buildings, 'buildings');
   const cropIds = ids(raw.crops, 'crops');
   const assetIds = ids(raw.assets, 'assets');
@@ -42,14 +41,12 @@ export function validateData(raw) {
     if (!c.terrainProfile) errors.push(`cities/${c.id}: terrainProfile がありません`);
     for (const k of Object.keys(c.cropAffinity || {})) if (!cropIds.has(k)) errors.push(`cities/${c.id}: cropAffinity "${k}" が crops にありません`);
   }
-  for (const z of raw.zones) {
-    if (!z.buildings?.length) errors.push(`zones/${z.id}: buildings が空です`);
-    for (const b of z.buildings || []) if (!buildingIds.has(b.id)) errors.push(`zones/${z.id}: building "${b.id}" がありません`);
-    if (z.crop && !cropIds.has(z.crop)) errors.push(`zones/${z.id}: crop "${z.crop}" がありません`);
-    if (z.term && !termIds.has(z.term)) warnings.push(`zones/${z.id}: term "${z.term}" が terms にありません`);
-  }
   for (const b of raw.buildings) {
-    if (b.zone && !zoneIds.has(b.zone)) errors.push(`buildings/${b.id}: zone "${b.zone}" がありません`);
+    if (!b.tab) errors.push(`buildings/${b.id}: tab がありません`);
+    if (!b.cost || typeof b.cost.qian !== 'number') errors.push(`buildings/${b.id}: cost.qian がありません`);
+    if (!(b.buildDays > 0)) errors.push(`buildings/${b.id}: buildDays がありません`);
+    if (b.term && !termIds.has(b.term)) warnings.push(`buildings/${b.id}: term "${b.term}" が terms にありません`);
+    for (const lv of b.levels || []) for (const n of lv.upgrade?.needs || []) if (!['water', 'market', 'temple'].includes(n)) errors.push(`buildings/${b.id} L${lv.level}: 格上げ条件 "${n}" は water / market / temple のどれかにしてください`);
     if (b.crop && !cropIds.has(b.crop)) errors.push(`buildings/${b.id}: crop "${b.crop}" がありません`);
     if (!Array.isArray(b.size) || b.size.length !== 2) errors.push(`buildings/${b.id}: size は [w,h] にしてください`);
     if (!b.levels?.length) errors.push(`buildings/${b.id}: levels が空です`);
@@ -58,7 +55,17 @@ export function validateData(raw) {
       for (const m of lv.models || []) if (!assetIds.has(m)) errors.push(`buildings/${b.id} L${lv.level}: model "${m}" が assets にありません`);
     }
   }
-  ids(raw.structures, 'structures');
+  const structIds = ids(raw.structures, 'structures');
+  // 建築バーのタブ: すべての建物・建築がどこか1つのタブに入っていること（官府など初期配置のものは除く）
+  const tabIds = ids(raw.tabs.tabs || [], 'tabs');
+  const placed = new Map();
+  for (const t of raw.tabs.tabs || []) for (const it of t.items || []) {
+    if (!buildingIds.has(it) && !structIds.has(it)) errors.push(`tabs/${t.id}: "${it}" が buildings にも structures にもありません`);
+    if (placed.has(it)) errors.push(`tabs: "${it}" が ${placed.get(it)} と ${t.id} の両方にあります`);
+    placed.set(it, t.id);
+  }
+  for (const b of raw.buildings) { if (!placed.has(b.id)) warnings.push(`buildings/${b.id}: どのタブにも入っていません`); if (b.tab && !tabIds.has(b.tab)) errors.push(`buildings/${b.id}: tab "${b.tab}" がありません`); }
+  for (const s of raw.structures) if (!s.initial && !placed.has(s.id)) warnings.push(`structures/${s.id}: どのタブにも入っていません`);
   ids(raw.difficulties, 'difficulties');
   if (!raw.difficulties.some((d) => d.id === 'normal')) errors.push('difficulties: id "normal" が必要です');
   for (const s of raw.structures) {
@@ -139,7 +146,7 @@ export function validateData(raw) {
       for (const w of FORBIDDEN_WORDS) if (text.includes(w) && !allow.includes(w)) warnings.push(`${file}/${e.id}: ${key} に禁止語「${w}」が含まれています`);
     }
   };
-  for (const [file, arr] of [['nations', raw.nations], ['cities', raw.cities], ['zones', raw.zones], ['buildings', raw.buildings], ['crops', raw.crops], ['terms', raw.terms], ['structures', raw.structures], ['advice', raw.advice?.advices || []], ['advice/tutorial', raw.advice?.tutorial || []], ['persons', raw.persons || []], ['offices', raw.offices || []], ['techs', raw.techs || []], ['goods', raw.goods || []], ['events', raw.events?.events || []], ['achievements', raw.achievements || []], ['military/units', raw.military?.units || []], ['military/formations', raw.military?.formations || []]]) arr.forEach((e) => check(file, e));
+  for (const [file, arr] of [['nations', raw.nations], ['cities', raw.cities], ['buildings', raw.buildings], ['crops', raw.crops], ['terms', raw.terms], ['structures', raw.structures], ['advice', raw.advice?.advices || []], ['advice/tutorial', raw.advice?.tutorial || []], ['persons', raw.persons || []], ['offices', raw.offices || []], ['techs', raw.techs || []], ['goods', raw.goods || []], ['events', raw.events?.events || []], ['achievements', raw.achievements || []], ['military/units', raw.military?.units || []], ['military/formations', raw.military?.formations || []]]) arr.forEach((e) => check(file, e));
 
   return { errors, warnings };
 }

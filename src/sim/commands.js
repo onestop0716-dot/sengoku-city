@@ -1,7 +1,8 @@
 // UI からの操作は必ずこの関数を通す。World を直接書き換えない。
 import { clampRect, lPath, rectTiles, idx } from '../core/grid.js';
 import { buildRoadPath, removeRoadAt } from './roads.js';
-import { setZoneRect, removeBuilding } from './zones.js';
+import { placeOne, placeMany, areaPositions, rowPositions, moveObject, repairBuilding, removeBuilding } from './build.js';
+import { buyMaterial } from './materials.js';
 import { placeStructure, placeStructureLine, removeStructure } from './structures.js';
 import { recruit, dismiss, appoint } from './persons.js';
 import { startResearch, cancelResearch } from './research.js';
@@ -32,28 +33,37 @@ export function applyCommand(world, reg, cmd) {
       for (const [x, y] of rectTiles(clampRect(cmd.rect, w, h))) if (removeRoadAt(world, x, y)) count++;
       return { ok: true, count };
     }
-    case 'zone.set': {
-      if (!reg.zoneById.has(cmd.zoneId)) return { ok: false, message: `区画 ${cmd.zoneId} がありません` };
-      const count = setZoneRect(world, reg, clampRect(cmd.rect, w, h), cmd.zoneId);
-      return { ok: true, count };
+    // 建物・建築を置く（1つ / ドラッグの向きに並べる / 範囲を埋める）。rotation は 0〜3、省くと道路に面する向き
+    case 'build.place': return placeOne(world, reg, cmd.typeId, cmd.x, cmd.y, cmd.rotation ?? null);
+    case 'build.row': {
+      const p = reg.placeableById.get(cmd.typeId);
+      if (!p) return { ok: false, message: `不明な建物: ${cmd.typeId}` };
+      return placeMany(world, reg, cmd.typeId, rowPositions(p.def, cmd.rotation ?? 0, cmd.x0, cmd.y0, cmd.x1, cmd.y1), cmd.rotation ?? null);
     }
-    case 'zone.clear': {
-      const count = setZoneRect(world, reg, clampRect(cmd.rect, w, h), null);
-      return { ok: true, count };
+    case 'build.area': {
+      const p = reg.placeableById.get(cmd.typeId);
+      if (!p) return { ok: false, message: `不明な建物: ${cmd.typeId}` };
+      return placeMany(world, reg, cmd.typeId, areaPositions(p.def, cmd.rotation ?? 0, clampRect(cmd.rect, w, h)), cmd.rotation ?? null);
     }
+    case 'build.move': return moveObject(world, reg, cmd.kind, cmd.id, cmd.x, cmd.y, cmd.rotation ?? null);
+    case 'build.repair': return repairBuilding(world, reg, cmd.id);
+    case 'build.remove': {   // 1つの建物・建築を撤去（建物の木材は一部戻る）
+      if (cmd.kind === 'structure') return removeStructure(world, reg, cmd.id) ? { ok: true } : { ok: false, message: 'この建築は撤去できません' };
+      return removeBuilding(world, reg, cmd.id, { refundWood: true }) ? { ok: true } : { ok: false, message: '建物がありません' };
+    }
+    case 'materials.buy': return buyMaterial(world, reg, cmd.kind, cmd.amount);
     case 'demolish': {
       const rect = clampRect(cmd.rect, w, h);
       let count = 0;
       for (const [x, y] of rectTiles(rect)) {
         const i = idx(w, x, y);
         if (world.structAt[i] !== -1) { if (removeStructure(world, reg, world.structAt[i])) count++; }
-        if (world.buildingAt[i] !== -1) { removeBuilding(world, world.buildingAt[i]); count++; }
+        if (world.buildingAt[i] !== -1) { removeBuilding(world, reg, world.buildingAt[i], { refundWood: true }); count++; }
         if (world.roads[i]) { removeRoadAt(world, x, y); count++; }
-        if (world.zones[i]) { world.zones[i] = 0; world.dirty.tiles.add(i); count++; }
       }
       return { ok: true, count };
     }
-    case 'structure.place': return placeStructure(world, reg, cmd.typeId, cmd.x, cmd.y);
+    case 'structure.place': return placeStructure(world, reg, cmd.typeId, cmd.x, cmd.y, cmd.rotation ?? null);
     case 'structure.line': return placeStructureLine(world, reg, cmd.typeId, cmd.x0, cmd.y0, cmd.x1, cmd.y1);
     case 'policy.set': {
       const allowed = { taxLand: [0, 0.3], taxHead: [0, 0.3], taxMarket: [0, 0.3], taxCustoms: [0, 0.3], granaryShare: [0, 0.3], relief: null };

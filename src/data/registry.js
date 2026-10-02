@@ -1,7 +1,7 @@
 // data/*.json をまとめて引けるようにする。sim/render/ui は生の JSON ではなく registry を使う。
 import { validateData } from './validate.js';
 
-export const DATA_FILES = ['nations', 'cities', 'terrain', 'zones', 'buildings', 'crops', 'assets', 'balance', 'terms', 'structures', 'difficulties', 'advice', 'persons', 'offices', 'ranks', 'techs', 'goods', 'military', 'events', 'achievements'];
+export const DATA_FILES = ['nations', 'cities', 'terrain', 'tabs', 'buildings', 'crops', 'assets', 'balance', 'terms', 'structures', 'difficulties', 'advice', 'persons', 'offices', 'ranks', 'techs', 'goods', 'military', 'events', 'achievements'];
 
 /** 深いマージ（難易度の上書き用） */
 export function deepMerge(base, over) {
@@ -21,16 +21,17 @@ export function createRegistry(raw, { difficulty = 'normal' } = {}) {
   if (errors.length) throw new Error('データ検証エラー:\n' + errors.join('\n'));
   const tiles = raw.terrain.tiles;
   const tileIndex = new Map(tiles.map((t, i) => [t.id, i]));
-  const zoneIndex = new Map(raw.zones.map((z, i) => [z.id, i]));
   return {
     warnings,
     nations: raw.nations, nationById: byId(raw.nations),
     cities: raw.cities, cityById: byId(raw.cities),
     tiles, tileById: byId(tiles), tileIndex,
     resources: raw.terrain.resources, resourceById: byId(raw.terrain.resources),
-    zones: raw.zones, zoneById: byId(raw.zones), zoneIndex,
+    tabs: raw.tabs.tabs, tabById: byId(raw.tabs.tabs),
     buildings: raw.buildings, buildingById: byId(raw.buildings),
     structures: raw.structures, structureById: byId(raw.structures),
+    /** 置ける物（建物と建築）を id で引く。{ kind: 'building'|'structure', def } */
+    placeableById: new Map([...raw.buildings.map((d) => [d.id, { kind: 'building', def: d }]), ...raw.structures.map((d) => [d.id, { kind: 'structure', def: d }])]),
     crops: raw.crops, cropById: byId(raw.crops),
     assets: raw.assets, assetById: byId(raw.assets),
     terms: raw.terms, termById: byId(raw.terms),

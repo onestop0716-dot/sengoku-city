@@ -11,6 +11,7 @@ import { createAssetResolver } from './render/assets/resolve.js';
 import { createBuildingsView } from './render/buildings.js';
 import { createAgentsView } from './render/agents-view.js';
 import { createOverlay } from './render/overlay.js';
+import { createGhost } from './render/ghost.js';
 import { createPicker } from './render/picking.js';
 import { createTooltip } from './ui/tooltip.js';
 import { createHud } from './ui/hud.js';
@@ -91,7 +92,9 @@ async function main() {
   const buildings = createBuildingsView(world, reg, scene, assets, env);
   buildings.setQuality(quality);
   const overlay = createOverlay(scene, env);
+  const overlayNg = createOverlay(scene, env);
   const radiusOverlay = createOverlay(scene, env, 8192);
+  const ghost = createGhost(scene, assets, env);
   const agentsView = createAgentsView(world, reg, scene, assets, env);
   agentsView.setQuality(quality);
   const picker = createPicker(canvas, orbit.camera, env, world.map.w, world.map.h);
@@ -128,7 +131,7 @@ async function main() {
   };
   const settingsPanel = createSettingsPanel(settings, applyQualityChange, { onStyle: () => post.setEnabled(settings.style !== 'plain'), advisorFrequencies: reg.advice.frequency, advisorCharacters: reg.advice.characters, onAdvisor: () => advisor.refreshCharacter() });
   qctx.loop = loop; qctx.log = log;
-  const finance = createFinancePanel(world, reg, tooltip);
+  const finance = createFinancePanel(world, reg, tooltip, log);
   const population = createPopulationPanel(world, reg, tooltip);
   const demand = createDemandMeter(world, tooltip);
   const advisor = createAdvisorUi(world, reg, settings, { onOpenSettings: () => settingsPanel.toggle(), onOpen: () => { for (const p of [finance, population, persons, research, nation, military, system]) p.el.style.display = 'none'; }, onView: (id) => { const t = viewMode.focusProblem(id); if (t) { orbit.state.target.set(t[0] + 0.5, env.terrain.heightAt(t[0] + 0.5, t[1] + 0.5), t[1] + 0.5); orbit.state.distance = Math.min(orbit.state.distance, 40); } } });
@@ -142,7 +145,8 @@ async function main() {
   const viewPanel = createViewModePanel(world, reg, viewMode, { button: hud.viewButton });
   viewMode.onChange((m) => hud.setViewMode(viewPanel.nameOf(m)));
   const toolbar = createToolbar(reg, world, () => { radiusOverlay.clear(); });
-  const input = createInput({ canvas, picker, overlay, radiusOverlay, world, reg, toolbar, infoPanel, log, orbit, viewMode, viewPanel, settings, onPending: (a, n) => touchBar.setPending(a, n) });
+  const input = createInput({ canvas, picker, overlay, overlayNg, radiusOverlay, ghost, world, reg, toolbar, infoPanel, log, orbit, viewMode, viewPanel, settings, onPending: (a, n) => touchBar.setPending(a, n) });
+  infoPanel.actions.onMove = (kind, id) => input.startMove(kind, id); infoPanel.actions.log = log;
   const touchBar = createTouchBar({ loop, orbit, toolbar, viewMode, input, show: device.touch });
   const minimap = createMinimap(world, reg, orbit, env);
   const labels = createLabels(world, reg, orbit, env);

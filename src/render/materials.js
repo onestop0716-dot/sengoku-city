@@ -36,7 +36,7 @@ const NOISE_GLSL = /* glsl */`
 
 /** 表示モード用の共有ユニフォーム（地形: マスごとの色テクスチャ / 建物: 半透明化）。render/view-mode.js が書き換える */
 export const viewUniforms = {
-  uViewOn: { value: 0 },                       // 0: 通常 / 1: 区画 / 2: 状態
+  uViewOn: { value: 0 },                       // 0: 通常 / 1: 用途 / 2: 状態
   uViewTex: { value: null },                   // W×H の RGBA: rgb=色, a=フラグ
   uViewSize: { value: new THREE.Vector2(1, 1) },
   uViewTime: { value: 0 },
@@ -57,11 +57,11 @@ const VIEW_TERRAIN_GLSL = /* glsl */`
       float k = none ? 0.35 : 0.78;
       vec3 outc = mix(base, col, k);
       vec2 fx = fract(vWPos.xz);
-      if (uViewOn < 1.5) {                                      // 区画モード: グリッド線
+      if (uViewOn < 1.5) {                                      // 用途モード: グリッド線
         float g = step(fx.x, 0.035) + step(fx.y, 0.035);
         outc *= 1.0 - 0.35 * clamp(g, 0.0, 1.0);
       }
-      if (unbuilt) {                                             // 未建築の区画: 斜線（ゆっくり流れる）
+      if (unbuilt) {                                             // 廃屋: 斜線（ゆっくり流れる）
         float st = fract((vWPos.x + vWPos.z) * 2.5 - uViewTime * 0.5);
         outc = mix(outc, outc * 0.55, step(st, 0.4));
       }

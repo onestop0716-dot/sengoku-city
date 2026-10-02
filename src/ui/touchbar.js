@@ -1,4 +1,4 @@
-// 画面上の操作ボタン（キーボードの代わり）: 一時停止・速度、視点の回転とズーム、元に戻す、表示モード、選択解除。
+// 画面上の操作ボタン（キーボードの代わり）: 一時停止・速度、視点の回転とズーム、建物の向き、元に戻す、表示モード、選択解除。
 // 持ち手（⋮⋮）をドラッグで移動でき、「－」で隠せる（小さな「操作」タブで戻す）。位置と表示は記憶する。決定/取消のバーもここで扱う。
 const KEY = 'sengoku-city.touchbar';
 
@@ -18,6 +18,7 @@ export function createTouchBar({ loop, orbit, toolbar, viewMode, input, show }) 
     <button data-act="zoomin" title="近づく">＋</button>
     <button data-act="zoomout" title="遠ざかる">－</button>
     <span class="sep"></span>
+    <button data-act="rot" title="建物の向きを変える（R）">向き</button>
     <button data-act="undo" title="元に戻す">↶</button>
     <button data-act="view" title="表示モード（Tab）">表示</button>
     <button data-act="esc" title="ツールをやめて選択に戻る（Esc）">解除</button>
@@ -33,6 +34,7 @@ export function createTouchBar({ loop, orbit, toolbar, viewMode, input, show }) 
   hold(q('rotl'), () => orbit.rotate(0.04)); hold(q('rotr'), () => orbit.rotate(-0.04));
   hold(q('zoomin'), () => orbit.zoom(0.97)); hold(q('zoomout'), () => orbit.zoom(1.03));
   q('undo').addEventListener('click', () => input.undo());
+  q('rot').addEventListener('click', () => toolbar.rotate());
   q('view').addEventListener('click', () => viewMode.cycle());
   q('esc').addEventListener('click', () => { input.cancel(); toolbar.set('select'); });
   confirmEl.innerHTML = `<span class="ct"></span><button class="btn ok" data-ok>決定</button><button class="btn" data-cancel>取消</button>`;
@@ -70,6 +72,7 @@ export function createTouchBar({ loop, orbit, toolbar, viewMode, input, show }) 
       q('pause').textContent = loop.speedIndex === 0 ? '▶' : '⏸';
       q('speed').textContent = ['⏸', '▶', '▶▶', '▶▶▶'][loop.speedIndex] || '▶';
       q('undo').disabled = !input.undoCount;
+      q('rot').disabled = !(toolbar.current.startsWith('place:') || toolbar.current === 'move');
     },
     setVisible(v) { visible = v; applyVisible(); },
     get visible() { return visible; },

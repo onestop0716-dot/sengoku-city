@@ -123,7 +123,7 @@ export function createTerrainField(world, reg, { segments = 4 } = {}) {
   // --- マス単位のマスク
   const waterMask = new Float32Array(w * h), forestMask = new Float32Array(w * h), marshMask = new Float32Array(w * h), fert = new Float32Array(w * h);
   const roadMask = new Float32Array(w * h), shoreMask = new Float32Array(w * h);
-  const shoreDist = reg.balance.zoning?.shoreDistance ?? 1;
+  const shoreDist = reg.balance.placement?.shoreDistance ?? 1;
   const rebuildMasks = () => {
     for (let i = 0; i < w * h; i++) {
       waterMask[i] = isWater(i) ? 1 : 0;

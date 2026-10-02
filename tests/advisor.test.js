@@ -1,7 +1,7 @@
 // 案内役の助言ロジック: 条件の評価、優先度、間隔、チュートリアルの進行、文の穴埋め。
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { getRegistry } from './_helpers.js';
+import { getRegistry, fill, finishAll } from './_helpers.js';
 import { createWorld, tick } from '../src/sim/world.js';
 import { applyCommand } from '../src/sim/commands.js';
 import { evaluate, evalCondition, fillText, computeMetrics, restartTutorial } from '../src/sim/advisor.js';
@@ -52,7 +52,7 @@ test('頻度オフでは吹き出しは出ないが一覧は出る。「多い�
   assert.equal(next.show?.id, 'loyalty_low', '「多い」なら数日後に次の助言が出る');
 });
 
-test('チュートリアルは順に進み、道路や区画を置くと次へ進む。やり直せる', async () => {
+test('チュートリアルは順に進み、道路や家を置くと次へ進む。やり直せる', async () => {
   const reg = await getRegistry();
   const world = createWorld({ seed: 7, cityId: 'chen', reg, size: 128 });
   tick(world, reg);
@@ -66,8 +66,8 @@ test('チュートリアルは順に進み、道路や区画を置くと次へ�
   applyCommand(world, reg, { type: 'road.build', x0: cx - 12, y0: cy + 6, x1: cx + 12, y1: cy + 6 });
   tick(world, reg);
   const r3 = evaluate(world, reg, { frequency: 'normal', tutorial: true });
-  assert.equal(r3.tutorial?.id, 't_zone');
-  applyCommand(world, reg, { type: 'zone.set', rect: { x0: cx - 10, y0: cy + 7, x1: cx + 10, y1: cy + 8 }, zoneId: 'res_commoner' });
+  assert.equal(r3.tutorial?.id, 't_house');
+  fill(applyCommand, world, reg, 'house_commoner', cx - 10, cy + 7, cx + 10, cy + 7);
   tick(world, reg);
   assert.equal(evaluate(world, reg, { frequency: 'normal', tutorial: true }).tutorial?.id, 't_farm');
   restartTutorial(world);
@@ -75,17 +75,20 @@ test('チュートリアルは順に進み、道路や区画を置くと次へ�
   assert.equal(evaluate(world, reg, { frequency: 'normal', tutorial: true }).tutorial?.id, 't_hello');
 });
 
-test('指標: 建たない区画の理由と対策が出る', async () => {
+test('指標: 道路につながっていない建物と、その対策が出る', async () => {
   const reg = await getRegistry();
   const world = createWorld({ seed: 7, cityId: 'chen', reg, size: 128, village: false });
-  // 道路から遠い区画を置く
   const cx = world.map.w >> 1, cy = world.map.h >> 1;
-  applyCommand(world, reg, { type: 'zone.set', rect: { x0: cx + 20, y0: cy + 20, x1: cx + 26, y1: cy + 24 }, zoneId: 'res_commoner' });
+  applyCommand(world, reg, { type: 'road.build', x0: cx + 20, y0: cy + 20, x1: cx + 30, y1: cy + 20 });
+  const r = fill(applyCommand, world, reg, 'house_commoner', cx + 20, cy + 21, cx + 30, cy + 21);
+  assert.ok(r.count >= 8, JSON.stringify(r));
+  finishAll(world);
+  applyCommand(world, reg, { type: 'road.remove', rect: { x0: cx + 20, y0: cy + 20, x1: cx + 30, y1: cy + 20 } });
   tick(world, reg);
   const m = computeMetrics(world, reg, { forceBlockers: true });
-  assert.ok(m.zonedUnbuilt >= 20, String(m.zonedUnbuilt));
-  assert.ok(m.blockerReason && m.blockerReason.startsWith('道路'), m.blockerReason);
-  assert.ok(m.blockerTip);
+  assert.ok(m.unconnected >= 8, String(m.unconnected));
+  assert.equal(m.problemReason, '道路');
+  assert.ok(m.problemTip && m.problemView === 'road');
 });
 
 test('案内役: characters の先頭がホウ。tone.endings は文末だけ言い換える', async () => {

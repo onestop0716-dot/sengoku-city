@@ -44,13 +44,11 @@ test('2マス先の道路でも向く。3マス先は無視して南', async () 
   assert.equal(chooseFacing(world, 10, 10, 1, 1), FACING.south);
 });
 
-test('建った家は道路側を向いている', async () => {
+test('向きを省いて置いた家は道路側を向いている', async () => {
   const reg = await getRegistry();
   const world = createWorld({ seed: 5, cityId: 'xianyang', reg, size: 64, money: 1e6 , village: false });
   world.services.water = new Uint8Array(64 * 64).fill(1);
-  applyCommand(world, reg, { type: 'zone.set', rect: { x0: 33, y0: 33, x1: 38, y1: 33 }, zoneId: 'res_commoner' });  // 中央の横道(y=32, x=26..38)の南隣
-  const { tick } = await import('../src/sim/world.js');
-  for (let d = 0; d < 120; d++) tick(world, reg);
+  applyCommand(world, reg, { type: 'build.area', typeId: 'house_commoner', rect: { x0: 33, y0: 33, x1: 38, y1: 33 } });  // 中央の横道(y=32, x=26..38)の南隣
   const houses = Array.from(world.buildings.values());
   assert.ok(houses.length > 0);
   for (const b of houses) {
@@ -59,13 +57,14 @@ test('建った家は道路側を向いている', async () => {
   }
 });
 
-test('岸辺には区画を置けない', async () => {
+test('岸辺には建物を置けない', async () => {
   const reg = await getRegistry();
   const world = createWorld({ seed: 7, cityId: 'chen', reg, size: 64 , village: false });
   const { w, h, waterDist } = world.map;
   let shore = -1;
   for (let i = 0; i < w * h; i++) if (waterDist[i] === 1 && reg.tiles[world.map.tile[i]].buildable) { shore = i; break; }
   assert.ok(shore >= 0);
-  const r = applyCommand(world, reg, { type: 'zone.set', rect: { x0: shore % w, y0: (shore / w) | 0, x1: shore % w, y1: (shore / w) | 0 }, zoneId: 'res_commoner' });
-  assert.equal(r.count, 0);
+  const r = applyCommand(world, reg, { type: 'build.place', typeId: 'house_commoner', x: shore % w, y: (shore / w) | 0 });
+  assert.equal(r.ok, false);
+  assert.ok(r.reasons.includes('岸辺には置けない'), JSON.stringify(r.reasons));
 });

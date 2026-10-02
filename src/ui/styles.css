@@ -13,9 +13,10 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #dfe7ee; col
 #demand { left: 8px; bottom: 124px; width: 170px; padding: 6px 8px; }
 #demand h4 { margin: 0 0 4px; font-size: 11px; opacity: .7; font-weight: normal; }
 .dm-row { display: flex; align-items: center; gap: 6px; font-size: 12px; margin: 2px 0; }
-.dm-bar { flex: 1; height: 8px; background: rgba(255,255,255,0.08); border-radius: 2px; position: relative; overflow: hidden; }
-.dm-bar .dm-pos { position: absolute; left: 50%; top: 0; height: 100%; background: #5fbf6a; }
-.dm-bar .dm-neg { position: absolute; right: 50%; top: 0; height: 100%; background: #e06060; }
+.dm-row > span:first-child { flex: 1; }
+.dm-row b { min-width: 3em; text-align: right; }
+.dm-row .dm-unit { opacity: .6; font-size: 10px; width: 2.4em; }
+.dm-row b.dm-warn { color: #ff9a6b; }
 .bigpanel { top: 56px; left: 50%; transform: translateX(-50%); width: 700px; max-width: calc(100% - 340px); max-height: calc(100% - 200px); overflow-y: auto; padding: 12px 16px; display: none; z-index: 4; }
 .bigpanel h3 { margin: 0; color: var(--accent); font-size: 16px; }
 .bigpanel h4 { margin: 10px 0 4px; font-size: 12px; opacity: .8; font-weight: normal; }
@@ -378,6 +379,12 @@ h1, h3, .bigpanel h3, #info h3, .adv-title, #hud .city, .tb-tabs .tab span { fon
 #toolbar .tool-ico .swatch { position: absolute; right: 2px; bottom: 2px; width: 9px; height: 9px; border-radius: 2px; border: 1px solid #4a3418; }
 #toolbar .tool-name { white-space: nowrap; max-width: 64px; overflow: hidden; text-overflow: ellipsis; }
 #toolbar .cost { position: absolute; top: 1px; right: 3px; font-size: 9px; color: #6b4a12; opacity: .85; }
+#toolbar .tb-opts { display: flex; gap: 6px; padding-left: 8px; border-left: 2px solid rgba(0,0,0,0.35); }
+#toolbar .tb-opts [data-rot-ico] { transition: transform .15s; }
+#place-hint { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(var(--tb-h) + 34px + env(safe-area-inset-bottom)); z-index: 6; max-width: min(520px, 90vw); padding: 6px 12px; font-size: 13px; line-height: 1.45; background: var(--parch-bg); color: var(--ink); border: 2px solid var(--wood3); border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.35); pointer-events: none; display: none; }
+#place-hint .ph-ok { color: #2f7a2f; }
+#place-hint .ph-ng { color: #b0301e; }
+#place-hint ul { margin: 2px 0 0; padding-left: 18px; }
 #toolbar .lock { position: absolute; top: 1px; left: 3px; font-size: 9px; background: #7a1e1e; color: #fff; border-radius: 3px; padding: 0 3px; }
 #toolbar.collapsed { display: none; }
 /* 表示モードの凡例・ツールチップ・操作ボタン */

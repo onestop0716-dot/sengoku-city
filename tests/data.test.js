@@ -16,9 +16,11 @@ test('data/*.json は検証を通る（エラー0）', async () => {
 
 test('検証は壊れた参照を検出する', async () => {
   const raw = await loadDataNode(path.join(root, 'data'));
-  raw.zones = [{ ...raw.zones[0], buildings: [{ id: 'nope' }] }];
+  raw.tabs = { tabs: [{ ...raw.tabs.tabs[0], items: [...raw.tabs.tabs[0].items, 'nope'] }, ...raw.tabs.tabs.slice(1)] };
+  raw.buildings = [{ ...raw.buildings[0], levels: [{ ...raw.buildings[0].levels[0], upgrade: { needs: ['bath'] } }] }, ...raw.buildings.slice(1)];
   const { errors } = validateData(raw);
   assert.ok(errors.some((e) => e.includes('nope')));
+  assert.ok(errors.some((e) => e.includes('bath')));
 });
 
 test('検証は禁止語を警告する', async () => {

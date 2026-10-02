@@ -31,16 +31,22 @@ const perf = await page.evaluate(async (extra) => {
   const cx = world.map.w >> 1, cy = world.map.h >> 1;
   world.money = 1e9;
   world.services.water = new Uint8Array(world.map.w * world.map.h).fill(1);
-  // 見本の街: マップの大きさに応じた碁盤目の道路と区画
+  // 見本の街: マップの大きさに応じた碁盤目の道路と、街区ごとに家・畑を置く（範囲で埋めるコマンドで）
+  world.materials.wood = 1e6; world.materials.stone = 1e6;
   const R = Math.round(world.map.w * 0.28);
   for (let y = cy - R; y <= cy + R; y += 8) applyCommand(world, reg, { type: 'road.build', x0: cx - R, y0: y, x1: cx + R, y1: y });
   for (let x = cx - R; x <= cx + R; x += 12) applyCommand(world, reg, { type: 'road.build', x0: x, y0: cy - R, x1: x, y1: cy + R });
-  const zonesList = ['res_commoner', 'res_commoner', 'farm_millet', 'res_shi', 'farm_rice', 'res_commoner', 'res_noble', 'farm_wheat'];
-  let zi = 0;
-  for (let y = cy - R; y < cy + R; y += 8) for (let x = cx - R; x < cx + R; x += 12) {
-    applyCommand(world, reg, { type: 'zone.set', rect: { x0: x + 1, y0: y + 1, x1: x + 11, y1: y + 3 }, zoneId: zonesList[zi++ % zonesList.length] });
-    applyCommand(world, reg, { type: 'zone.set', rect: { x0: x + 1, y0: y + 5, x1: x + 11, y1: y + 7 }, zoneId: zonesList[zi++ % zonesList.length] });
-  }
+  const fillA = (typeId, x0, y0, x1, y1) => applyCommand(world, reg, { type: 'build.area', typeId, rect: { x0, y0, x1, y1 } });
+  const blocks = [
+    (x, y) => { fillA('house_commoner', x + 1, y + 1, x + 11, y + 2); fillA('house_commoner', x + 1, y + 6, x + 11, y + 7); },
+    (x, y) => fillA('field_millet', x + 1, y + 2, x + 11, y + 5),
+    (x, y) => { fillA('house_shi', x + 1, y + 1, x + 11, y + 2); fillA('house_commoner', x + 1, y + 6, x + 11, y + 7); },
+    (x, y) => fillA('field_rice', x + 1, y + 2, x + 11, y + 5),
+    (x, y) => { fillA('house_noble', x + 1, y + 1, x + 11, y + 3); fillA('house_commoner', x + 1, y + 6, x + 11, y + 7); },
+    (x, y) => fillA('field_wheat', x + 1, y + 2, x + 11, y + 5),
+  ];
+  let bi = 0;
+  for (let y = cy - R; y < cy + R; y += 8) for (let x = cx - R; x < cx + R; x += 12) blocks[bi++ % blocks.length](x, y);
   const t0 = performance.now();
   for (let d = 0; d < 400; d++) tick(world, reg);
   const tickMs = (performance.now() - t0) / 400;

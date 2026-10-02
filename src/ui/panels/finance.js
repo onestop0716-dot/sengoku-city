@@ -1,9 +1,10 @@
-// 財政パネル: 税率・積穀率のスライダー、今月の収支、24か月の推移グラフ。
+// 財政パネル: 税率・積穀率のスライダー、今月の収支、建設材料（木材・石材、市で買う）、24か月の推移グラフ。
 import { applyCommand } from '../../sim/commands.js';
+import { MATERIALS, MATERIAL_NAMES } from '../../sim/materials.js';
 
 const fmt = (n) => Math.round(n).toLocaleString('ja-JP');
 
-export function createFinancePanel(world, reg, tooltip) {
+export function createFinancePanel(world, reg, tooltip, log = null) {
   const el = document.getElementById('panel-finance');
   const sliders = [
     ['taxLand', 'tianzu', '田租'], ['taxHead', 'koufu', '口賦'], ['taxMarket', 'shizu', '市租'], ['taxCustoms', 'guanshui', '関税'], ['granaryShare', 'granary_share', '積穀率'],
@@ -20,6 +21,9 @@ export function createFinancePanel(world, reg, tooltip) {
         <h4>今月の収支</h4>
         <table id="finance-month"></table>
         <div id="finance-harvest" class="note"></div>
+        <h4>建設材料</h4>
+        <table id="finance-materials"></table>
+        <div class="note">市の店が1軒以上あれば、市で買えます（割高）。伐木場・石切場で作るほうが安上がりです。</div>
       </div>
     </div>
     <h4>24か月の推移（緑=収入 / 赤=支出 / 黄=残高）</h4>
@@ -29,6 +33,12 @@ export function createFinancePanel(world, reg, tooltip) {
     applyCommand(world, reg, { type: 'policy.set', key, value: inp.type === 'checkbox' ? inp.checked : Number(inp.value) / 100 });
     render();
   }));
+  el.querySelector('#finance-materials').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-buy]'); if (!b) return;
+    const r = applyCommand(world, reg, { type: 'materials.buy', kind: b.dataset.buy, amount: Number(b.dataset.n) });
+    if (!r.ok) log?.push(r.message);
+    render();
+  });
   el.querySelector('[data-close]').addEventListener('click', () => { el.style.display = 'none'; });
   const table = el.querySelector('#finance-month'), harvestEl = el.querySelector('#finance-harvest'), canvas = el.querySelector('#finance-chart');
 
@@ -40,8 +50,10 @@ export function createFinancePanel(world, reg, tooltip) {
     table.innerHTML = `<tr><th colspan="2">収入 ${fmt(sum(inc))}</th></tr>` + inc.map(([k, v]) => `<tr><td>${k}</td><td>${fmt(v)}</td></tr>`).join('')
       + `<tr><th colspan="2">支出 ${fmt(sum(exp))}</th></tr>` + exp.map(([k, v]) => `<tr><td>${k}</td><td>${fmt(v)}</td></tr>`).join('')
       + `<tr><th>差引</th><th>${fmt(sum(inc) - sum(exp))}</th></tr>`;
+    const MT = reg.balance.materials, made = world.finance.lastMaterials || {};
+    el.querySelector('#finance-materials').innerHTML = MATERIALS.map((k) => `<tr><td>${MATERIAL_NAMES[k]}</td><td>${fmt(world.materials?.[k] ?? 0)}</td><td class="note">先月 +${fmt(made[k] || 0)}</td><td>${[10, 50].map((n) => `<button class="btn" data-buy="${k}" data-n="${n}">${n}買う（${fmt(Math.ceil(MT.price[k] * MT.buyMarkup * n))}銭）</button>`).join(' ')}</td></tr>`).join('');
     const h = world.finance.lastHarvest;
-    harvestEl.textContent = h ? `直近の収穫（${h.month}月）: ${h.tiles} 区画、穀物 ${fmt(h.grain)} 石、価値 ${fmt(h.value)} 銭、田租 ${fmt(h.tax)} 銭` : 'まだ収穫がありません（粟・黍・麻は8月、菽・稲は9月、麦は5月、桑は6月）';
+    harvestEl.textContent = h ? `直近の収穫（${h.month}月）: 畑 ${h.tiles} 枚、穀物 ${fmt(h.grain)} 石、価値 ${fmt(h.value)} 銭、田租 ${fmt(h.tax)} 銭` : 'まだ収穫がありません（粟・黍・麻は8月、菽・稲は9月、麦は5月、桑は6月）';
     drawChart();
   };
   const drawChart = () => {

@@ -29,7 +29,7 @@ export function unitAvailable(world, reg, unitId) {
   const r = u.requires || {};
   if (r.tech && !hasTech(world, r.tech)) return { ok: false, message: `技術「${reg.techById.get(r.tech)?.name}」が必要` };
   const cap = barracksCapacity(world, reg);
-  if (unitId === 'cavalry' && cap.cavalry <= 0) return { ok: false, message: '馬厩（軍事区画）が必要' };
+  if (unitId === 'cavalry' && cap.cavalry <= 0) return { ok: false, message: '馬厩（「軍事」タブ）が必要' };
   if (unitId === 'chariot' && !cap.chariot) return { ok: false, message: '車両工房が必要' };
   return { ok: true };
 }

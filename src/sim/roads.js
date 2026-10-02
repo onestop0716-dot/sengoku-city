@@ -25,7 +25,6 @@ export function buildRoadPath(world, reg, path) {
     world.roads[i] = 1;
     // 森は切り開かれて平地になる
     if (reg.tiles[world.map.tile[i]].clearable) { world.map.tile[i] = reg.tileIndex.get('plain'); world.dirty.trees = true; cleared++; }
-    world.zones[i] = 0;
     world.dirty.tiles.add(i);
     built++;
   }

@@ -16,7 +16,7 @@ export function createPopulationPanel(world, reg, tooltip) {
       <tr><td>${tooltip.termHtml('shi', '士')}</td><td>${fmt(p.shi)} / ${fmt(c.shi || 0)}</td></tr>
       <tr><td>${tooltip.termHtml('noble', '貴族')}</td><td>${fmt(p.noble)} / ${fmt(c.noble || 0)}</td></tr>
       <tr><th>合計</th><th>${fmt(p.total)} / ${fmt(world.stats.housingCapacity)}</th></tr>
-      <tr><td>農地の仕事</td><td>${fmt(world.stats.farmJobs)}（畑 ${fmt(world.stats.farmTiles)} 区画）</td></tr>`;
+      <tr><td>農地の仕事</td><td>${fmt(world.stats.farmJobs)}（畑 ${fmt(world.stats.farmTiles)} マス）</td></tr>`;
     st.innerHTML = `
       <tr><td>${tooltip.termHtml('loyalty', '民忠')}</td><td>${bar(world.loyalty)}</td></tr>
       <tr><td>${tooltip.termHtml('security', '治安')}</td><td>${bar(world.security)}</td></tr>

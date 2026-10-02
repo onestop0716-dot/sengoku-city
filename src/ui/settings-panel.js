@@ -6,7 +6,7 @@ export function createSettingsPanel(settings, onChange, { advisorFrequencies = n
   el.innerHTML = `<h3>設定</h3>
     <div class="row"><span>描画品質</span><label><input type="radio" name="quality" value="auto" ${settings.quality === 'auto' ? 'checked' : ''}> 自動</label>${Object.entries(QUALITIES).map(([k, q]) => `<label><input type="radio" name="quality" value="${k}" ${settings.quality === k ? 'checked' : ''}> ${q.name}</label>`).join('')}</div>
     <div class="row"><span>画面の調子</span><label><input type="radio" name="style" value="anime" ${settings.style !== 'plain' ? 'checked' : ''}> アニメ調（輪郭線・セル調の陰影）</label><label><input type="radio" name="style" value="plain" ${settings.style === 'plain' ? 'checked' : ''}> 通常</label></div>
-    <div class="row"><span>操作の確認</span><label><input type="checkbox" name="confirm" ${settings.confirmActions ? 'checked' : ''}> 区画や道路をドラッグした後に「決定」「取消」で確定する（タッチ端末向け）</label></div>
+    <div class="row"><span>操作の確認</span><label><input type="checkbox" name="confirm" ${settings.confirmActions ? 'checked' : ''}> 建物や道路を置いた後に「決定」「取消」で確定する（タッチ端末向け）</label></div>
     <div class="note">自動: 端末に合わせて始め、動きが重くなったら段階的に下げます。高: 地形4分割・影2048 / 中: 2分割・影1024 / 低: 分割なし・影なし。</div>
     <div class="note" id="settings-fps"></div>
     ${advisorFrequencies ? `<div class="row"><span>案内役の助言</span>${Object.entries(advisorFrequencies).map(([k, f]) => `<label><input type="radio" name="advisor" value="${k}" ${settings.advisor === k ? 'checked' : ''}> ${f.name}</label>`).join('')}</div><div class="note">右下のフクロウが状況に応じて助言します。「オフ」でもフクロウを押せば「いまやるべきこと」は見られます。</div>` : ''}

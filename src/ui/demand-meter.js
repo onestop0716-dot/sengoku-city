@@ -1,14 +1,17 @@
-// 需要メーター（住・農・商・工）。ツールバーの下に表示。
+// 暮らしの指標（空き家・入居待ち・働き口・失業）。建築バーの上に表示。何を置けばよいかの目安になる。
 export function createDemandMeter(world, tooltip) {
   const el = document.getElementById('demand');
-  const rows = [['residential', '住'], ['farm', '農'], ['market', '商'], ['workshop', '工']];
-  el.innerHTML = `<h4>${tooltip.termHtml('demand', '需要')}</h4>` + rows.map(([k, l]) => `<div class="dm-row"><span>${l}</span><span class="dm-bar"><span class="dm-neg" data-neg="${k}"></span><span class="dm-pos" data-pos="${k}"></span></span></div>`).join('');
+  const rows = [['vacant', '空き家', '人分'], ['waiting', '入居待ち', '人'], ['jobsOpen', '働き口', '人分'], ['unemployed', '失業', '人']];
+  el.innerHTML = `<h4>${tooltip.termHtml('demand', '暮らし')}</h4>` + rows.map(([k, l, u]) => `<div class="dm-row"><span>${l}</span><b data-ind="${k}">0</b><span class="dm-unit">${u}</span></div>`).join('');
+  const warnIf = { waiting: (v) => v >= 5, unemployed: (v) => v >= 10 };
   return {
     update() {
+      const ind = world.indicators || {};
       for (const [k] of rows) {
-        const v = world.demand[k] ?? 0;
-        el.querySelector(`[data-pos="${k}"]`).style.width = `${Math.max(0, v) / 2}%`;
-        el.querySelector(`[data-neg="${k}"]`).style.width = `${Math.max(0, -v) / 2}%`;
+        const v = Math.round(ind[k] || 0);
+        const cell = el.querySelector(`[data-ind="${k}"]`);
+        if (cell.textContent !== String(v)) cell.textContent = String(v);
+        cell.classList.toggle('dm-warn', !!warnIf[k]?.(v));
       }
     },
   };

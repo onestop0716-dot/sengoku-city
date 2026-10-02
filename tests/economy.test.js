@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { getRegistry } from './_helpers.js';
+import { getRegistry, fill } from './_helpers.js';
 import { createWorld, tick } from '../src/sim/world.js';
 import { applyCommand } from '../src/sim/commands.js';
 
@@ -8,8 +8,8 @@ async function town(seed = 21) {
   const reg = await getRegistry();
   const world = createWorld({ seed, cityId: 'daliang', reg, size: 64, money: 200000 , village: false });
   world.services.water = new Uint8Array(64 * 64).fill(1);
-  applyCommand(world, reg, { type: 'zone.set', rect: { x0: 33, y0: 33, x1: 38, y1: 34 }, zoneId: 'res_commoner' });   // 横道(y=32)の南
-  applyCommand(world, reg, { type: 'zone.set', rect: { x0: 26, y0: 33, x1: 31, y1: 37 }, zoneId: 'farm_millet' });
+  fill(applyCommand, world, reg, 'house_commoner', 33, 33, 38, 34);   // 横道(y=32)の南に家 12 軒
+  fill(applyCommand, world, reg, 'field_millet', 24, 33, 31, 36);      // 縦道(x=32)の西に 4×4 の畑 2 枚
   return { reg, world };
 }
 const runDays = (world, reg, n) => { for (let d = 0; d < n; d++) tick(world, reg); };
@@ -39,7 +39,7 @@ test('畑がないと飢饉になり、民忠が下がって人口が流出す�
   const world = createWorld({ seed: 21, cityId: 'daliang', reg, size: 64, money: 200000 , village: false });
   world.services.water = new Uint8Array(64 * 64).fill(1);
   world.grain.civil = 0;
-  applyCommand(world, reg, { type: 'zone.set', rect: { x0: 33, y0: 33, x1: 40, y1: 35 }, zoneId: 'res_commoner' });
+  fill(applyCommand, world, reg, 'house_commoner', 33, 33, 40, 35);
   let peak = 0, minFood = 1, minLoyalty = 100, popAtMinFood = 0;
   for (let d = 0; d < 390; d++) {
     tick(world, reg);
@@ -72,15 +72,16 @@ test('年初に上納が引かれ、履歴は24か月まで', async () => {
   assert.ok(world.finance.history.length <= 24);
 });
 
-test('需要メーターは −100〜100 の範囲で、飢えると農需要が上がる', async () => {
+test('暮らしの指標: 家が満杯なら入居待ちが出て、値はすべて 0 以上', async () => {
   const reg = await getRegistry();
-  const world = createWorld({ seed: 4, cityId: 'chen', reg, size: 64, money: 200000 , village: false });
+  const world = createWorld({ seed: 4, cityId: 'chen', reg, size: 64, money: 200000, village: false });
   world.services.water = new Uint8Array(64 * 64).fill(1);
-  applyCommand(world, reg, { type: 'zone.set', rect: { x0: 33, y0: 33, x1: 40, y1: 35 }, zoneId: 'res_commoner' });
-  world.grain.civil = 0;
-  let maxFarm = -100;
-  for (let d = 0; d < 300; d++) { tick(world, reg); for (const v of Object.values(world.demand)) assert.ok(v >= -100 && v <= 100); maxFarm = Math.max(maxFarm, world.demand.farm); }
-  assert.ok(maxFarm > 60, `農需要の最大 ${maxFarm}`);
+  fill(applyCommand, world, reg, 'house_commoner', 33, 33, 34, 33);   // 家 2 軒だけ
+  fill(applyCommand, world, reg, 'field_millet', 24, 33, 31, 36);
+  let maxWaiting = 0;
+  for (let d = 0; d < 300; d++) { tick(world, reg); for (const v of Object.values(world.indicators)) assert.ok(v >= 0); maxWaiting = Math.max(maxWaiting, world.indicators.waiting); }
+  assert.ok(maxWaiting > 0, '入居待ちが出ない');
+  assert.ok(world.indicators.jobsOpen > 0, '畑の働き口が余っていない');
 });
 
 test('政策コマンドは範囲外を切り詰める', async () => {

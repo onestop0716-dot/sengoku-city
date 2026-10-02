@@ -23,7 +23,7 @@ export function showStartScreen(reg) {
     // 続きから（スロット / ファイル）
     const cont = el.querySelector('#start-continue');
     const slots = listSlots().filter((s) => !s.empty);
-    cont.innerHTML = `<label>保存データ</label>${slots.length ? slots.map((s) => `<button class="btn wide" data-slot="${s.slot}">${s.slot === 'auto' ? 'オートセーブ' : `スロット ${s.slot}`}: ${s.meta.nationName}・${s.meta.cityName} ${s.meta.year < 0 ? '前' + -s.meta.year : s.meta.year}年${s.meta.month}月（人口 ${(s.meta.population || 0).toLocaleString('ja-JP')}）</button>`).join('') : '<div class="note">保存データはありません</div>'}<label class="btn wide">ファイルから読み込む<input type="file" accept=".json,application/json" data-import style="display:none"></label><div class="note" id="start-load-note"></div>`;
+    cont.innerHTML = `<label>保存データ</label>${slots.length ? slots.map((s) => `<button class="btn wide" data-slot="${s.slot}"${s.incompatible ? ` disabled title="${s.incompatible}"` : ''}>${s.slot === 'auto' ? 'オートセーブ' : `スロット ${s.slot}`}: ${s.meta.nationName}・${s.meta.cityName} ${s.meta.year < 0 ? '前' + -s.meta.year : s.meta.year}年${s.meta.month}月（人口 ${(s.meta.population || 0).toLocaleString('ja-JP')}）${s.incompatible ? `<br><small>${s.incompatible}</small>` : ''}</button>`).join('') : '<div class="note">保存データはありません</div>'}<label class="btn wide">ファイルから読み込む<input type="file" accept=".json,application/json" data-import style="display:none"></label><div class="note" id="start-load-note"></div>`;
     cont.querySelectorAll('[data-slot]').forEach((b) => b.addEventListener('click', () => { const d = loadFromSlot(b.dataset.slot); if (d) { el.style.display = 'none'; resolve({ load: d }); } }));
     cont.querySelector('[data-import]').addEventListener('change', async (e) => { const f = e.target.files?.[0]; if (!f) return; try { const d = await importFromFile(f); el.style.display = 'none'; resolve({ load: d }); } catch (err) { cont.querySelector('#start-load-note').textContent = `読み込めません: ${err.message}`; } });
     void setPendingLoad;
@@ -33,7 +33,7 @@ export function showStartScreen(reg) {
     const showTab = (k) => { for (const t of Object.keys(tabs)) { tabs[t].classList.toggle('active', t === k); tabs[t].setAttribute('aria-selected', t === k ? 'true' : 'false'); panes[t].style.display = t === k ? 'block' : 'none'; } };
     tabs.new.addEventListener('click', () => showTab('new'));
     tabs.continue.addEventListener('click', () => showTab('continue'));
-    showTab(slots.length ? 'continue' : 'new');
+    showTab(slots.some((s) => !s.incompatible) ? 'continue' : 'new');
     fillCities();
     el.querySelector('#start-btn').addEventListener('click', () => {
       const seedText = seedIn.value.trim();

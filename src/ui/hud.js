@@ -1,4 +1,4 @@
-// 上部バー: 日付・銭・穀・人口・民忠・治安・速度・パネルの開閉。
+// 上部バー: 日付・銭・穀・木材・石材・人口・民忠・治安・速度・パネルの開閉。
 import { formatDate } from '../sim/calendar.js';
 import { icon } from './icons.js';
 
@@ -11,6 +11,8 @@ export function createHud(world, reg, loop, tooltip, { onSettings, onPanel } = {
     <span id="hud-fps" style="display:none"></span>
     <div class="stat">${icon('coin')}${tooltip.termHtml('qian', nation.currencyName)} <b id="hud-money"></b></div>
     <div class="stat">${icon('grain')}${tooltip.termHtml('grain', '穀')} <b id="hud-grain"></b><span class="sub" id="hud-grain2"></span></div>
+    <div class="stat" data-tip="木材。家・工房などの建設に使う。伐木場で作るか、市で買う">${icon('wood')}<span>木材</span> <b id="hud-wood"></b></div>
+    <div class="stat" data-tip="石材。城門・宮殿・宗廟・橋などの礎石に使う。石切場で作るか、市で買う">${icon('stone')}<span>石材</span> <b id="hud-stone"></b></div>
     <div class="stat" data-tip="人口 / 住居の収容数">${icon('people')}<span>人口</span> <b id="hud-pop"></b><span class="sub" id="hud-cap"></span></div>
     <div class="stat">${icon('loyalty')}${tooltip.termHtml('loyalty', '民忠')} <b id="hud-loy"></b></div>
     <div class="stat">${icon('security')}${tooltip.termHtml('security', '治安')} <b id="hud-sec"></b></div>
@@ -32,6 +34,7 @@ export function createHud(world, reg, loop, tooltip, { onSettings, onPanel } = {
   el.querySelectorAll('[data-panel]').forEach((b) => b.addEventListener('click', () => onPanel?.(b.dataset.panel)));
   const q = (id) => el.querySelector(id);
   const viewBtn = q('#hud-view'), rankEl = q('#hud-rank');
+  const woodEl = q('#hud-wood'), stoneEl = q('#hud-stone');
   const dateEl = q('#hud-date'), moneyEl = q('#hud-money'), grainEl = q('#hud-grain'), grain2El = q('#hud-grain2'), popEl = q('#hud-pop'), capEl = q('#hud-cap'), loyEl = q('#hud-loy'), secEl = q('#hud-sec'), foodEl = q('#hud-food'), fpsEl = q('#hud-fps');
   const fmt = (n) => Math.round(n).toLocaleString('ja-JP');
   return {
@@ -43,6 +46,8 @@ export function createHud(world, reg, loop, tooltip, { onSettings, onPanel } = {
       moneyEl.style.color = world.money < 0 ? '#ff7b6b' : '';
       grainEl.textContent = fmt(world.grain.civil + world.grain.granary);
       grain2El.textContent = `（官倉 ${fmt(world.grain.granary)}）`;
+      woodEl.textContent = fmt(world.materials?.wood ?? 0); stoneEl.textContent = fmt(world.materials?.stone ?? 0);
+      woodEl.style.color = (world.materials?.wood ?? 0) < 10 ? '#ffc46b' : '';
       popEl.textContent = fmt(world.population.total);
       capEl.textContent = `/${fmt(world.stats.housingCapacity)}`;
       loyEl.textContent = Math.round(world.loyalty); secEl.textContent = Math.round(world.security);

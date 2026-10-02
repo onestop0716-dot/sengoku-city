@@ -22,7 +22,7 @@ export function effectText(e) {
     case 'warning': return '敵の接近を早く知る（フェーズ6）';
     case 'post': return '使者・商隊が速くなる（フェーズ5）';
     case 'dock': return '舟が発着する';
-    case 'farm_demand': return `農の需要 +${e.value}`;
+    case 'satisfaction': return `近くの建物の満足度 +${e.value}${r}`;
     case 'disaster_mitigation': return `災害の被害 −${Math.round(e.value * 100)}%（フェーズ7）`;
     default: return e.type;
   }

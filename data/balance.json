@@ -20,9 +20,9 @@
     "money": 8000,
     "grain": 1500,
     "village": {
-      "_note": "開始時の小さな村。中央の十字路の周りに家と畑、井戸を置く",
+      "_note": "開始時の小さな村。中央の十字路の周りに家と畑（4×4）、農家、井戸を置く",
       "houses": 6,
-      "fields": 12,
+      "fields": 1,
       "farmhouses": 2,
       "population": 40,
       "structures": [
@@ -32,17 +32,25 @@
           "dy": -2
         }
       ]
+    },
+    "materials": {
+      "wood": 200,
+      "stone": 40
     }
   },
   "road": {
     "costPerTile": 5,
     "maxRoadDistance": 6
   },
-  "zoning": {
+  "placement": {
+    "_note": "置く: shoreDistance=水際からこのマス数以内には建物を置けない（岸辺）。移動は費用の moveCostRate、修繕は repairCostRate、撤去で木材の demolishWoodRefund が戻る",
     "shoreDistance": 1,
-    "_note": "水際からこのマス数以内には区画を置けない（岸辺）"
+    "moveCostRate": 0.25,
+    "repairCostRate": 0.5,
+    "demolishWoodRefund": 0.5,
+    "undoMax": 5
   },
-  "prosperity": {
+  "satisfaction": {
     "base": 50,
     "water": {
       "bonus": 12,
@@ -64,14 +72,10 @@
       "bonus": 10,
       "penalty": -20
     },
-    "demandScale": 0.2,
     "roadFar": -100
   },
-  "growth": {
-    "_note": "buildThreshold: これ未満の繁栄度では新築しない。道路が届いて需要があれば基本的に建つ値にしてある",
-    "buildThreshold": 35,
-    "buildChancePerDay": 0.15,
-    "maxBuildsPerDay": 4,
+  "upgrade": {
+    "_note": "満足度による自動格上げ・衰退。レベル1で衰退が続くと廃屋（abandonDays）。templeRadius: 格上げ条件「宗廟など」の距離",
     "levelUp": {
       "threshold": 65,
       "days": 30
@@ -80,7 +84,8 @@
       "threshold": 30,
       "days": 60
     },
-    "removeAfterDays": 60
+    "abandonDays": 60,
+    "templeRadius": 12
   },
   "placeholders": {
     "_note": "フェーズ2で人口・食糧・治安は本実装済み。市までの距離はフェーズ3",
@@ -92,7 +97,7 @@
     "maxVehicles": 60
   },
   "economy": {
-    "_note": "フェーズ2: 経済・人口の定数。単位は 銭 と 石。畑1区画（レベル1、標準的な土地）で約4人分の穀物",
+    "_note": "単位は 銭 と 石。畑は 4×4 マスで、収量・働き口は 1マスあたりの値 × マス数",
     "grainPrice": 6,
     "productValuePerTile": {
       "mulberry": 40,
@@ -104,7 +109,7 @@
       1.5,
       2.0
     ],
-    "farmJobsPerTile": 3,
+    "farmJobsPerTile": 2,
     "farmhouseBonus": 0.15,
     "headTaxPerPersonPerMonthAt10": 0.15,
     "officialsSalaryPerMonth": 20,
@@ -144,28 +149,11 @@
     "hygiene": {
       "base": 70,
       "per500": 4
-    }
-  },
-  "demand": {
-    "residential": {
-      "base": 25,
-      "jobs": 0.4,
-      "loyalty": 1.0,
-      "foodOk": 15,
-      "foodShort": -30,
-      "vacancy": 30
     },
-    "farm": {
-      "base": 20,
-      "shortage": 120,
-      "surplus": -40
-    },
-    "market": {
-      "perPerson": 0.05,
-      "base": -10
-    },
-    "workshop": {
-      "base": 0
+    "waiting": {
+      "_note": "入居待ち: 魅力（民忠・食糧）×（base + 人口 × perPop）から空き家を引いた数",
+      "base": 10,
+      "perPop": 0.1
     }
   },
   "goods": {
@@ -263,5 +251,17 @@
     "_note": "イベント全体の確率係数（難易度の disasterRate も掛かる）",
     "chanceScale": 1.0,
     "autosaveYearly": true
+  },
+  "materials": {
+    "_note": "建設材料。perMonth は伐木場・石切場1軒（レベル1、働き手が満ちたとき）の月産。伐木場は周りの森のマス数（forestFull で満額）に比例。買うときは price × buyMarkup 銭",
+    "woodPerMonth": 12,
+    "forestFull": 16,
+    "stonePerMonth": 6,
+    "woodPerForestTile": 2,
+    "price": {
+      "wood": 3,
+      "stone": 8
+    },
+    "buyMarkup": 1.5
   }
 }

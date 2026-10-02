@@ -5,18 +5,19 @@ import { fileURLToPath } from 'node:url';
 import { loadDataNode, createRegistry } from '../src/data/registry.js';
 import { createWorld, tick } from '../src/sim/world.js';
 import { applyCommand } from '../src/sim/commands.js';
-import { explainBuildBlockers } from '../src/sim/zones.js';
+import { buildingReasons } from '../src/sim/build.js';
+import { fill } from './_helpers.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
-/** 典型的な始め方: 十字路の脇に住居2か所と農地2か所 */
+/** 典型的な始め方: 十字路の脇に家を2か所（6×3 軒ずつ）、4×4 の畑を2か所に敷きつめる */
 function typicalStart(reg, cityId, seed) {
   const world = createWorld({ seed, cityId, reg, size: 128 });
   const cx = 64, cy = 64;
-  applyCommand(world, reg, { type: 'zone.set', rect: { x0: cx + 1, y0: cy + 2, x1: cx + 6, y1: cy + 4 }, zoneId: 'res_commoner' });
-  applyCommand(world, reg, { type: 'zone.set', rect: { x0: cx - 6, y0: cy - 3, x1: cx - 1, y1: cy - 1 }, zoneId: 'res_commoner' });
-  applyCommand(world, reg, { type: 'zone.set', rect: { x0: cx + 1, y0: cy - 6, x1: cx + 8, y1: cy - 1 }, zoneId: 'farm_millet' });
-  applyCommand(world, reg, { type: 'zone.set', rect: { x0: cx - 8, y0: cy + 3, x1: cx - 1, y1: cy + 8 }, zoneId: 'farm_millet' });
+  fill(applyCommand, world, reg, 'house_commoner', cx + 1, cy + 1, cx + 6, cy + 3);
+  fill(applyCommand, world, reg, 'house_commoner', cx - 6, cy - 3, cx - 1, cy - 1);
+  fill(applyCommand, world, reg, 'field_millet', cx + 2, cy - 8, cx + 9, cy - 1);
+  fill(applyCommand, world, reg, 'field_millet', cx - 9, cy + 7, cx - 2, cy + 14);
   return world;
 }
 
@@ -36,28 +37,25 @@ test('標準難易度: 開始から3年で人口が増え、資金が減らず�
   }
 });
 
-test('難易度で開始資金と建設基準が変わり、「難しい」は以前の値', async () => {
+test('難易度で開始資金と満足度の基準が変わる', async () => {
   const raw = await loadDataNode(path.join(root, 'data'));
   const easy = createRegistry(raw, { difficulty: 'easy' }), hard = createRegistry(raw, { difficulty: 'hard' }), normal = createRegistry(raw);
   assert.ok(easy.balance.start.money > normal.balance.start.money && normal.balance.start.money > hard.balance.start.money);
-  assert.equal(hard.balance.growth.buildThreshold, 50); assert.equal(hard.balance.prosperity.water.penalty, -20);
-  assert.equal(normal.balance.growth.buildThreshold, 35);
-  assert.equal(normal.balance.demand.residential.vacancy, 30);   // 難易度の上書きが他のキーを消していない
-  assert.equal(hard.balance.demand.farm.base, normal.balance.demand.farm.base);
+  assert.equal(hard.balance.satisfaction.water.penalty, -20);
+  assert.equal(normal.balance.satisfaction.water.penalty, -8);
+  assert.equal(hard.balance.satisfaction.food.bonus, normal.balance.satisfaction.food.bonus);   // 難易度の上書きが他のキーを消していない
+  assert.equal(hard.balance.upgrade.levelUp.days, normal.balance.upgrade.levelUp.days);
   const w = createWorld({ seed: 1, cityId: 'daliang', reg: hard, size: 64 });
   assert.equal(w.difficulty, 'hard');
 });
 
-test('建たない理由と助言が出る', async () => {
+test('置けない理由が出る（道路から遠い・市亭の範囲外）', async () => {
   const raw = await loadDataNode(path.join(root, 'data'));
   const reg = createRegistry(raw);
   const world = createWorld({ seed: 3, cityId: 'daliang', reg, size: 64, village: false });
-  world.services.water = new Uint8Array(64 * 64);
-  applyCommand(world, reg, { type: 'zone.set', rect: { x0: 5, y0: 5, x1: 8, y1: 8 }, zoneId: 'res_commoner' });
-  const ex = explainBuildBlockers(world, reg, 6, 6);
-  assert.equal(ex.canBuild, false);
-  assert.ok(ex.reasons.some((r) => r.includes('道路')));
-  assert.ok(ex.tips.some((t) => t.includes('井戸')));
-  applyCommand(world, reg, { type: 'zone.set', rect: { x0: 33, y0: 33, x1: 33, y1: 33 }, zoneId: 'market' });
-  assert.ok(explainBuildBlockers(world, reg, 33, 33).tips.some((t) => t.includes('市亭')));
+  const far = buildingReasons(world, reg, reg.buildingById.get('house_commoner'), 5, 5);
+  assert.ok(far.some((r) => r.includes('道路')), JSON.stringify(far));
+  const stall = buildingReasons(world, reg, reg.buildingById.get('market_stall'), 33, 33);
+  assert.ok(stall.some((r) => r.includes('市亭')), JSON.stringify(stall));
+  assert.deepEqual(buildingReasons(world, reg, reg.buildingById.get('house_commoner'), 34, 33), []);
 });

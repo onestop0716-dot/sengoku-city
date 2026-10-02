@@ -3,6 +3,8 @@
 const P = {
   coin: '<circle cx="12" cy="12" r="8.5" fill="#e4b64a" stroke="#6b4a12" stroke-width="2"/><rect x="9" y="9" width="6" height="6" fill="#6b4a12"/>',
   grain: '<path d="M12 21 V8" stroke="#6b4a12" stroke-width="2.4" fill="none"/><path d="M12 9 C8 9 6 6 6 3 C9 3 12 5 12 9 Z M12 9 C16 9 18 6 18 3 C15 3 12 5 12 9 Z M12 14 C8 14 6 11 6 8 C9 8 12 10 12 14 Z M12 14 C16 14 18 11 18 8 C15 8 12 10 12 14 Z" fill="#e4b64a" stroke="#6b4a12" stroke-width="1.6"/>',
+  wood: '<rect x="3" y="12" width="18" height="5" rx="2.5" fill="#a8743a" stroke="#4a3418" stroke-width="1.8"/><rect x="5" y="6.5" width="14" height="5" rx="2.5" fill="#c08a48" stroke="#4a3418" stroke-width="1.8"/><circle cx="19" cy="14.5" r="1.6" fill="#e8c890"/><circle cx="17" cy="9" r="1.6" fill="#e8c890"/>',
+  stone: '<path d="M3 19 L5 12 L10 10 L12 14 L10 19 Z" fill="#a8a196" stroke="#3a3a36" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 19 L12 13 L17 8 L21 12 L20 19 Z" fill="#8a857c" stroke="#3a3a36" stroke-width="1.8" stroke-linejoin="round"/>',
   people: '<circle cx="9" cy="8" r="3.4" fill="#f0c9a0" stroke="#6b4a12" stroke-width="1.8"/><circle cx="16" cy="9" r="2.8" fill="#f0c9a0" stroke="#6b4a12" stroke-width="1.8"/><path d="M3 20 C3 15 6 13 9 13 C12 13 15 15 15 20 Z" fill="#c9403a" stroke="#6b4a12" stroke-width="1.8"/><path d="M14 20 C14.5 16 16 14.5 17.5 14.5 C19.5 14.5 21 16 21 20 Z" fill="#3d5a86" stroke="#6b4a12" stroke-width="1.8"/>',
   loyalty: '<path d="M12 20 C6 15 3 12 3 8.5 C3 6 5 4 7.5 4 C9.5 4 11 5 12 6.5 C13 5 14.5 4 16.5 4 C19 4 21 6 21 8.5 C21 12 18 15 12 20 Z" fill="#d9573f" stroke="#6b2a12" stroke-width="2"/>',
   security: '<path d="M12 2.5 L20 5.5 V11 C20 16 16.5 19.5 12 21.5 C7.5 19.5 4 16 4 11 V5.5 Z" fill="#4e7fb5" stroke="#1e3a5a" stroke-width="2"/><path d="M12 6 V18 M8 11 H16" stroke="#e6eef8" stroke-width="2"/>',
@@ -37,5 +39,3 @@ export function icon(id, size = 20, cls = '') {
 }
 /** 特殊建築のカテゴリ → アイコン */
 export const STRUCT_ICON = { water: 'water', admin: 'admin', storage: 'storage', market: 'market', defense: 'defense', military: 'military', temple: 'temple', trade: 'trade', road: 'road' };
-/** 区画カテゴリ → アイコン */
-export const ZONE_ICON = { residential: 'house', farm: 'farm', market: 'market', workshop: 'workshop', military: 'military' };

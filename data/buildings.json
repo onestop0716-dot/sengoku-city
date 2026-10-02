@@ -3,17 +3,38 @@
   "id": "house_commoner",
   "name": "庶民の家",
   "category": "residential",
-  "zone": "res_commoner",
+  "tab": "residential",
   "size": [
    1,
    1
+  ],
+  "place": [
+   "single"
+  ],
+  "cost": {
+   "qian": 20,
+   "wood": 4
+  },
+  "buildDays": 10,
+  "requires": {
+   "roadWithin": 3
+  },
+  "neighbors": {
+   "adjWorkshop": -10,
+   "adjFarm": 5,
+   "adjTemple": 0,
+   "adjNoble": 0
+  },
+  "term": "commoner",
+  "residents": [
+   "farmer",
+   "artisan",
+   "merchant"
   ],
   "levels": [
    {
     "level": 1,
     "capacity": 5,
-    "cost": 20,
-    "buildDays": 10,
     "models": [
      "house_c1_a",
      "house_c1_b",
@@ -23,8 +44,13 @@
    {
     "level": 2,
     "capacity": 8,
-    "cost": 40,
     "buildDays": 15,
+    "upgrade": {
+     "satisfaction": 65,
+     "needs": [
+      "water"
+     ]
+    },
     "models": [
      "house_c2_a",
      "house_c2_b",
@@ -34,8 +60,14 @@
    {
     "level": 3,
     "capacity": 12,
-    "cost": 80,
     "buildDays": 20,
+    "upgrade": {
+     "satisfaction": 70,
+     "needs": [
+      "water",
+      "market"
+     ]
+    },
     "models": [
      "house_c3_a",
      "house_c3_b",
@@ -43,28 +75,43 @@
     ]
    }
   ],
-  "residents": [
-   "farmer",
-   "artisan",
-   "merchant"
-  ],
   "note": "版築の壁に茅葺き。レベル3で瓦葺き"
  },
  {
   "id": "house_shi",
   "name": "士の邸",
   "category": "residential",
-  "zone": "res_shi",
+  "tab": "residential",
   "size": [
    2,
    2
+  ],
+  "place": [
+   "single"
+  ],
+  "cost": {
+   "qian": 120,
+   "wood": 20
+  },
+  "buildDays": 20,
+  "requires": {
+   "roadWithin": 3
+  },
+  "neighbors": {
+   "adjWorkshop": -15,
+   "adjFarm": 0,
+   "adjTemple": 10,
+   "adjNoble": 5
+  },
+  "term": "shi",
+  "residents": [
+   "shi",
+   "merchant"
   ],
   "levels": [
    {
     "level": 1,
     "capacity": 6,
-    "cost": 120,
-    "buildDays": 20,
     "models": [
      "house_s1_a",
      "house_s1_b",
@@ -74,8 +121,14 @@
    {
     "level": 2,
     "capacity": 9,
-    "cost": 240,
     "buildDays": 25,
+    "upgrade": {
+     "satisfaction": 65,
+     "needs": [
+      "water",
+      "market"
+     ]
+    },
     "models": [
      "house_s2_a",
      "house_s2_b",
@@ -85,8 +138,15 @@
    {
     "level": 3,
     "capacity": 12,
-    "cost": 400,
     "buildDays": 30,
+    "upgrade": {
+     "satisfaction": 75,
+     "needs": [
+      "water",
+      "market",
+      "temple"
+     ]
+    },
     "models": [
      "house_s3_a",
      "house_s3_b",
@@ -94,27 +154,43 @@
     ]
    }
   ],
-  "residents": [
-   "shi",
-   "merchant"
-  ],
   "note": "門と堂を持つ院落。瓦葺き"
  },
  {
   "id": "house_noble",
   "name": "卿大夫の邸",
   "category": "residential",
-  "zone": "res_noble",
+  "tab": "residential",
   "size": [
    3,
    3
+  ],
+  "place": [
+   "single"
+  ],
+  "cost": {
+   "qian": 500,
+   "wood": 60,
+   "stone": 10
+  },
+  "buildDays": 40,
+  "requires": {
+   "roadWithin": 3
+  },
+  "neighbors": {
+   "adjWorkshop": -20,
+   "adjFarm": -5,
+   "adjTemple": 10,
+   "adjNoble": 5
+  },
+  "term": "noble",
+  "residents": [
+   "noble"
   ],
   "levels": [
    {
     "level": 1,
     "capacity": 8,
-    "cost": 500,
-    "buildDays": 40,
     "models": [
      "house_n1_a",
      "house_n1_b",
@@ -124,8 +200,14 @@
    {
     "level": 2,
     "capacity": 12,
-    "cost": 900,
     "buildDays": 50,
+    "upgrade": {
+     "satisfaction": 65,
+     "needs": [
+      "water",
+      "market"
+     ]
+    },
     "models": [
      "house_n2_a",
      "house_n2_b",
@@ -135,8 +217,15 @@
    {
     "level": 3,
     "capacity": 16,
-    "cost": 1500,
     "buildDays": 60,
+    "upgrade": {
+     "satisfaction": 75,
+     "needs": [
+      "water",
+      "market",
+      "temple"
+     ]
+    },
     "models": [
      "house_n3_a",
      "house_n3_b",
@@ -144,27 +233,35 @@
     ]
    }
   ],
-  "residents": [
-   "noble"
-  ],
   "note": "版築の高台（台榭）に堂を載せる戦国式"
  },
  {
   "id": "farmhouse",
   "name": "農家",
   "category": "farm_house",
-  "zone": null,
+  "tab": "farm",
   "size": [
    1,
    1
   ],
-  "needsRoadAdjacent": true,
+  "place": [
+   "single"
+  ],
+  "cost": {
+   "qian": 15,
+   "wood": 3
+  },
+  "buildDays": 8,
+  "requires": {
+   "roadWithin": 6
+  },
+  "residents": [
+   "farmer"
+  ],
   "levels": [
    {
     "level": 1,
     "capacity": 4,
-    "cost": 15,
-    "buildDays": 8,
     "models": [
      "farmhouse_a",
      "farmhouse_b",
@@ -172,26 +269,32 @@
     ]
    }
   ],
-  "residents": [
-   "farmer"
-  ],
   "note": "茅葺きと藁積み"
  },
  {
   "id": "field_millet",
   "name": "粟の畑",
   "category": "field",
+  "tab": "farm",
   "crop": "millet",
-  "zone": "farm_millet",
   "size": [
-   1,
-   1
+   4,
+   4
   ],
+  "place": [
+   "single",
+   "area"
+  ],
+  "cost": {
+   "qian": 80
+  },
+  "buildDays": 6,
+  "requires": {
+   "roadWithin": 6
+  },
   "levels": [
    {
     "level": 1,
-    "cost": 5,
-    "buildDays": 3,
     "models": [
      "field_millet_1_a",
      "field_millet_1_b",
@@ -200,7 +303,6 @@
    },
    {
     "level": 2,
-    "cost": 5,
     "buildDays": 3,
     "models": [
      "field_millet_2_a",
@@ -210,7 +312,6 @@
    },
    {
     "level": 3,
-    "cost": 5,
     "buildDays": 3,
     "models": [
      "field_millet_3_a",
@@ -224,17 +325,26 @@
   "id": "field_broomcorn",
   "name": "黍の畑",
   "category": "field",
+  "tab": "farm",
   "crop": "broomcorn",
-  "zone": "farm_broomcorn",
   "size": [
-   1,
-   1
+   4,
+   4
   ],
+  "place": [
+   "single",
+   "area"
+  ],
+  "cost": {
+   "qian": 80
+  },
+  "buildDays": 6,
+  "requires": {
+   "roadWithin": 6
+  },
   "levels": [
    {
     "level": 1,
-    "cost": 5,
-    "buildDays": 3,
     "models": [
      "field_broomcorn_1_a",
      "field_broomcorn_1_b",
@@ -243,7 +353,6 @@
    },
    {
     "level": 2,
-    "cost": 5,
     "buildDays": 3,
     "models": [
      "field_broomcorn_2_a",
@@ -253,7 +362,6 @@
    },
    {
     "level": 3,
-    "cost": 5,
     "buildDays": 3,
     "models": [
      "field_broomcorn_3_a",
@@ -267,17 +375,26 @@
   "id": "field_wheat",
   "name": "麦の畑",
   "category": "field",
+  "tab": "farm",
   "crop": "wheat",
-  "zone": "farm_wheat",
   "size": [
-   1,
-   1
+   4,
+   4
   ],
+  "place": [
+   "single",
+   "area"
+  ],
+  "cost": {
+   "qian": 80
+  },
+  "buildDays": 6,
+  "requires": {
+   "roadWithin": 6
+  },
   "levels": [
    {
     "level": 1,
-    "cost": 5,
-    "buildDays": 3,
     "models": [
      "field_wheat_1_a",
      "field_wheat_1_b",
@@ -286,7 +403,6 @@
    },
    {
     "level": 2,
-    "cost": 5,
     "buildDays": 3,
     "models": [
      "field_wheat_2_a",
@@ -296,7 +412,6 @@
    },
    {
     "level": 3,
-    "cost": 5,
     "buildDays": 3,
     "models": [
      "field_wheat_3_a",
@@ -310,17 +425,26 @@
   "id": "field_bean",
   "name": "菽の畑",
   "category": "field",
+  "tab": "farm",
   "crop": "bean",
-  "zone": "farm_bean",
   "size": [
-   1,
-   1
+   4,
+   4
   ],
+  "place": [
+   "single",
+   "area"
+  ],
+  "cost": {
+   "qian": 80
+  },
+  "buildDays": 6,
+  "requires": {
+   "roadWithin": 6
+  },
   "levels": [
    {
     "level": 1,
-    "cost": 5,
-    "buildDays": 3,
     "models": [
      "field_bean_1_a",
      "field_bean_1_b",
@@ -329,7 +453,6 @@
    },
    {
     "level": 2,
-    "cost": 5,
     "buildDays": 3,
     "models": [
      "field_bean_2_a",
@@ -339,7 +462,6 @@
    },
    {
     "level": 3,
-    "cost": 5,
     "buildDays": 3,
     "models": [
      "field_bean_3_a",
@@ -353,17 +475,26 @@
   "id": "field_rice",
   "name": "水田",
   "category": "field",
+  "tab": "farm",
   "crop": "rice",
-  "zone": "farm_rice",
   "size": [
-   1,
-   1
+   4,
+   4
   ],
+  "place": [
+   "single",
+   "area"
+  ],
+  "cost": {
+   "qian": 128
+  },
+  "buildDays": 8,
+  "requires": {
+   "roadWithin": 6
+  },
   "levels": [
    {
     "level": 1,
-    "cost": 8,
-    "buildDays": 4,
     "models": [
      "field_rice_1_a",
      "field_rice_1_b",
@@ -372,7 +503,6 @@
    },
    {
     "level": 2,
-    "cost": 8,
     "buildDays": 4,
     "models": [
      "field_rice_2_a",
@@ -382,7 +512,6 @@
    },
    {
     "level": 3,
-    "cost": 8,
     "buildDays": 4,
     "models": [
      "field_rice_3_a",
@@ -396,17 +525,26 @@
   "id": "field_mulberry",
   "name": "桑園",
   "category": "field",
+  "tab": "farm",
   "crop": "mulberry",
-  "zone": "farm_mulberry",
   "size": [
-   1,
-   1
+   4,
+   4
   ],
+  "place": [
+   "single",
+   "area"
+  ],
+  "cost": {
+   "qian": 160
+  },
+  "buildDays": 12,
+  "requires": {
+   "roadWithin": 6
+  },
   "levels": [
    {
     "level": 1,
-    "cost": 10,
-    "buildDays": 6,
     "models": [
      "field_mulberry_1_a",
      "field_mulberry_1_b",
@@ -415,7 +553,6 @@
    },
    {
     "level": 2,
-    "cost": 10,
     "buildDays": 6,
     "models": [
      "field_mulberry_2_a",
@@ -425,7 +562,6 @@
    },
    {
     "level": 3,
-    "cost": 10,
     "buildDays": 6,
     "models": [
      "field_mulberry_3_a",
@@ -439,17 +575,26 @@
   "id": "field_hemp",
   "name": "麻の畑",
   "category": "field",
+  "tab": "farm",
   "crop": "hemp",
-  "zone": "farm_hemp",
   "size": [
-   1,
-   1
+   4,
+   4
   ],
+  "place": [
+   "single",
+   "area"
+  ],
+  "cost": {
+   "qian": 80
+  },
+  "buildDays": 6,
+  "requires": {
+   "roadWithin": 6
+  },
   "levels": [
    {
     "level": 1,
-    "cost": 5,
-    "buildDays": 3,
     "models": [
      "field_hemp_1_a",
      "field_hemp_1_b",
@@ -458,7 +603,6 @@
    },
    {
     "level": 2,
-    "cost": 5,
     "buildDays": 3,
     "models": [
      "field_hemp_2_a",
@@ -468,7 +612,6 @@
    },
    {
     "level": 3,
-    "cost": 5,
     "buildDays": 3,
     "models": [
      "field_hemp_3_a",
@@ -482,20 +625,28 @@
   "id": "market_stall",
   "name": "市の店",
   "category": "market",
-  "zone": "market",
+  "tab": "commerce",
   "size": [
    1,
    1
   ],
-  "jobs": 3,
-  "requires": {
-   "marketAdmin": true
+  "place": [
+   "single"
+  ],
+  "cost": {
+   "qian": 30,
+   "wood": 6
   },
+  "buildDays": 8,
+  "requires": {
+   "marketAdmin": true,
+   "roadWithin": 2
+  },
+  "term": "market",
+  "jobs": 3,
   "levels": [
    {
     "level": 1,
-    "cost": 30,
-    "buildDays": 8,
     "models": [
      "stall_1_a",
      "stall_1_b",
@@ -504,7 +655,6 @@
    },
    {
     "level": 2,
-    "cost": 60,
     "buildDays": 13,
     "models": [
      "stall_2_a",
@@ -514,7 +664,6 @@
    },
    {
     "level": 3,
-    "cost": 90,
     "buildDays": 18,
     "models": [
      "stall_3_a",
@@ -529,22 +678,30 @@
   "id": "ws_iron",
   "name": "製鉄工房",
   "category": "workshop",
-  "zone": "workshop",
+  "tab": "industry",
   "size": [
    1,
    1
   ],
-  "jobs": 6,
-  "produces": "iron",
+  "place": [
+   "single"
+  ],
+  "cost": {
+   "qian": 60,
+   "wood": 12
+  },
+  "buildDays": 12,
   "requires": {
    "resource": "iron",
-   "radius": 6
+   "radius": 6,
+   "roadWithin": 3
   },
+  "term": "workshop",
+  "jobs": 6,
+  "produces": "iron",
   "levels": [
    {
     "level": 1,
-    "cost": 60,
-    "buildDays": 12,
     "models": [
      "ws_iron_1_a",
      "ws_iron_1_b",
@@ -553,7 +710,6 @@
    },
    {
     "level": 2,
-    "cost": 120,
     "buildDays": 17,
     "models": [
      "ws_iron_2_a",
@@ -563,7 +719,6 @@
    },
    {
     "level": 3,
-    "cost": 180,
     "buildDays": 22,
     "models": [
      "ws_iron_3_a",
@@ -572,28 +727,36 @@
     ]
    }
   ],
-  "note": "鉄器。鉄鉱の近く"
+  "note": "鉄器。鉄鉱の近く。種類はプレイヤーが選ぶ"
  },
  {
   "id": "ws_bronze",
   "name": "青銅器工房",
   "category": "workshop",
-  "zone": "workshop",
+  "tab": "industry",
   "size": [
    1,
    1
   ],
-  "jobs": 6,
-  "produces": "bronze",
+  "place": [
+   "single"
+  ],
+  "cost": {
+   "qian": 60,
+   "wood": 12
+  },
+  "buildDays": 12,
   "requires": {
    "resource": "copper",
-   "radius": 6
+   "radius": 6,
+   "roadWithin": 3
   },
+  "term": "workshop",
+  "jobs": 6,
+  "produces": "bronze",
   "levels": [
    {
     "level": 1,
-    "cost": 60,
-    "buildDays": 12,
     "models": [
      "ws_bronze_1_a",
      "ws_bronze_1_b",
@@ -602,7 +765,6 @@
    },
    {
     "level": 2,
-    "cost": 120,
     "buildDays": 17,
     "models": [
      "ws_bronze_2_a",
@@ -612,7 +774,6 @@
    },
    {
     "level": 3,
-    "cost": 180,
     "buildDays": 22,
     "models": [
      "ws_bronze_3_a",
@@ -621,28 +782,36 @@
     ]
    }
   ],
-  "note": "青銅器。銅鉱の近く"
+  "note": "青銅器。銅鉱の近く。種類はプレイヤーが選ぶ"
  },
  {
   "id": "ws_pottery",
   "name": "陶器工房",
   "category": "workshop",
-  "zone": "workshop",
+  "tab": "industry",
   "size": [
    1,
    1
   ],
-  "jobs": 6,
-  "produces": "pottery",
+  "place": [
+   "single"
+  ],
+  "cost": {
+   "qian": 60,
+   "wood": 12
+  },
+  "buildDays": 12,
   "requires": {
    "resource": "clay",
-   "radius": 6
+   "radius": 6,
+   "roadWithin": 3
   },
+  "term": "workshop",
+  "jobs": 6,
+  "produces": "pottery",
   "levels": [
    {
     "level": 1,
-    "cost": 60,
-    "buildDays": 12,
     "models": [
      "ws_pottery_1_a",
      "ws_pottery_1_b",
@@ -651,7 +820,6 @@
    },
    {
     "level": 2,
-    "cost": 120,
     "buildDays": 17,
     "models": [
      "ws_pottery_2_a",
@@ -661,7 +829,6 @@
    },
    {
     "level": 3,
-    "cost": 180,
     "buildDays": 22,
     "models": [
      "ws_pottery_3_a",
@@ -670,28 +837,36 @@
     ]
    }
   ],
-  "note": "陶器・瓦。粘土の近く"
+  "note": "陶器・瓦。粘土の近く。種類はプレイヤーが選ぶ"
  },
  {
   "id": "ws_salt",
   "name": "製塩所",
   "category": "workshop",
-  "zone": "workshop",
+  "tab": "industry",
   "size": [
    1,
    1
   ],
-  "jobs": 6,
-  "produces": "salt",
+  "place": [
+   "single"
+  ],
+  "cost": {
+   "qian": 60,
+   "wood": 12
+  },
+  "buildDays": 12,
   "requires": {
    "resource": "salt",
-   "radius": 6
+   "radius": 6,
+   "roadWithin": 3
   },
+  "term": "workshop",
+  "jobs": 6,
+  "produces": "salt",
   "levels": [
    {
     "level": 1,
-    "cost": 60,
-    "buildDays": 12,
     "models": [
      "ws_salt_1_a",
      "ws_salt_1_b",
@@ -700,7 +875,6 @@
    },
    {
     "level": 2,
-    "cost": 120,
     "buildDays": 17,
     "models": [
      "ws_salt_2_a",
@@ -710,7 +884,6 @@
    },
    {
     "level": 3,
-    "cost": 180,
     "buildDays": 22,
     "models": [
      "ws_salt_3_a",
@@ -719,31 +892,39 @@
     ]
    }
   ],
-  "note": "塩。塩の資源の近く"
+  "note": "塩。塩の資源の近く。種類はプレイヤーが選ぶ"
  },
  {
   "id": "ws_textile",
   "name": "織物工房",
   "category": "workshop",
-  "zone": "workshop",
+  "tab": "industry",
   "size": [
    1,
    1
   ],
-  "jobs": 6,
-  "produces": "silk",
+  "place": [
+   "single"
+  ],
+  "cost": {
+   "qian": 60,
+   "wood": 12
+  },
+  "buildDays": 12,
   "requires": {
    "field": [
     "mulberry",
     "hemp"
    ],
-   "radius": 8
+   "radius": 8,
+   "roadWithin": 3
   },
+  "term": "workshop",
+  "jobs": 6,
+  "produces": "silk",
   "levels": [
    {
     "level": 1,
-    "cost": 60,
-    "buildDays": 12,
     "models": [
      "ws_textile_1_a",
      "ws_textile_1_b",
@@ -752,7 +933,6 @@
    },
    {
     "level": 2,
-    "cost": 120,
     "buildDays": 17,
     "models": [
      "ws_textile_2_a",
@@ -762,7 +942,6 @@
    },
    {
     "level": 3,
-    "cost": 180,
     "buildDays": 22,
     "models": [
      "ws_textile_3_a",
@@ -771,30 +950,38 @@
     ]
    }
   ],
-  "note": "絹・麻布。桑畑・麻の畑の近く"
+  "note": "絹・麻布。桑畑・麻の畑の近く。種類はプレイヤーが選ぶ"
  },
  {
   "id": "ws_lacquer",
   "name": "漆器工房",
   "category": "workshop",
-  "zone": "workshop",
+  "tab": "industry",
   "size": [
    1,
    1
   ],
-  "jobs": 6,
-  "produces": "lacquer",
+  "place": [
+   "single"
+  ],
+  "cost": {
+   "qian": 60,
+   "wood": 12
+  },
+  "buildDays": 12,
   "requires": {
    "nationAny": [
     "chu",
     "qin"
-   ]
+   ],
+   "roadWithin": 3
   },
+  "term": "workshop",
+  "jobs": 6,
+  "produces": "lacquer",
   "levels": [
    {
     "level": 1,
-    "cost": 60,
-    "buildDays": 12,
     "models": [
      "ws_lacquer_1_a",
      "ws_lacquer_1_b",
@@ -803,7 +990,6 @@
    },
    {
     "level": 2,
-    "cost": 120,
     "buildDays": 17,
     "models": [
      "ws_lacquer_2_a",
@@ -813,7 +999,6 @@
    },
    {
     "level": 3,
-    "cost": 180,
     "buildDays": 22,
     "models": [
      "ws_lacquer_3_a",
@@ -822,31 +1007,39 @@
     ]
    }
   ],
-  "note": "漆器。楚・秦の特産"
+  "note": "漆器。楚・秦の特産。種類はプレイヤーが選ぶ"
  },
  {
   "id": "ws_vehicle",
   "name": "車両工房",
   "category": "workshop",
-  "zone": "workshop",
+  "tab": "industry",
   "size": [
    1,
    1
   ],
-  "jobs": 6,
-  "produces": "vehicle",
+  "place": [
+   "single"
+  ],
+  "cost": {
+   "qian": 60,
+   "wood": 12
+  },
+  "buildDays": 12,
   "requires": {
    "workshopNear": [
     "ws_iron",
     "ws_bronze"
    ],
-   "radius": 8
+   "radius": 8,
+   "roadWithin": 3
   },
+  "term": "workshop",
+  "jobs": 6,
+  "produces": "vehicle",
   "levels": [
    {
     "level": 1,
-    "cost": 60,
-    "buildDays": 12,
     "models": [
      "ws_vehicle_1_a",
      "ws_vehicle_1_b",
@@ -855,7 +1048,6 @@
    },
    {
     "level": 2,
-    "cost": 120,
     "buildDays": 17,
     "models": [
      "ws_vehicle_2_a",
@@ -865,7 +1057,6 @@
    },
    {
     "level": 3,
-    "cost": 180,
     "buildDays": 22,
     "models": [
      "ws_vehicle_3_a",
@@ -874,31 +1065,39 @@
     ]
    }
   ],
-  "note": "牛車・馬車・戦車。金属工房の近く"
+  "note": "牛車・馬車・戦車。金属工房の近く。種類はプレイヤーが選ぶ"
  },
  {
   "id": "ws_weapon",
   "name": "武器工房",
   "category": "workshop",
-  "zone": "workshop",
+  "tab": "industry",
   "size": [
    1,
    1
   ],
-  "jobs": 6,
-  "produces": "weapon",
+  "place": [
+   "single"
+  ],
+  "cost": {
+   "qian": 60,
+   "wood": 12
+  },
+  "buildDays": 12,
   "requires": {
    "workshopNear": [
     "ws_iron",
     "ws_bronze"
    ],
-   "radius": 8
+   "radius": 8,
+   "roadWithin": 3
   },
+  "term": "workshop",
+  "jobs": 6,
+  "produces": "weapon",
   "levels": [
    {
     "level": 1,
-    "cost": 60,
-    "buildDays": 12,
     "models": [
      "ws_weapon_1_a",
      "ws_weapon_1_b",
@@ -907,7 +1106,6 @@
    },
    {
     "level": 2,
-    "cost": 120,
     "buildDays": 17,
     "models": [
      "ws_weapon_2_a",
@@ -917,7 +1115,6 @@
    },
    {
     "level": 3,
-    "cost": 180,
     "buildDays": 22,
     "models": [
      "ws_weapon_3_a",
@@ -926,23 +1123,147 @@
     ]
    }
   ],
-  "note": "弩・戈・剣。金属工房の近く"
+  "note": "弩・戈・剣。金属工房の近く。種類はプレイヤーが選ぶ"
+ },
+ {
+  "id": "lumber_camp",
+  "name": "伐木場",
+  "category": "workshop",
+  "tab": "industry",
+  "size": [
+   1,
+   1
+  ],
+  "place": [
+   "single"
+  ],
+  "cost": {
+   "qian": 40,
+   "wood": 4
+  },
+  "buildDays": 10,
+  "requires": {
+   "tileNear": [
+    "forest"
+   ],
+   "tileCount": 6,
+   "radius": 4,
+   "roadWithin": 4
+  },
+  "jobs": 5,
+  "material": "wood",
+  "levels": [
+   {
+    "level": 1,
+    "models": [
+     "lumber_1_a",
+     "lumber_1_b",
+     "lumber_1_c"
+    ]
+   },
+   {
+    "level": 2,
+    "buildDays": 14,
+    "models": [
+     "lumber_2_a",
+     "lumber_2_b",
+     "lumber_2_c"
+    ]
+   },
+   {
+    "level": 3,
+    "buildDays": 18,
+    "models": [
+     "lumber_3_a",
+     "lumber_3_b",
+     "lumber_3_c"
+    ]
+   }
+  ],
+  "note": "周りの森（半径4）のマス数に応じて毎月木材ができる"
+ },
+ {
+  "id": "quarry",
+  "name": "石切場",
+  "category": "workshop",
+  "tab": "industry",
+  "size": [
+   1,
+   1
+  ],
+  "place": [
+   "single"
+  ],
+  "cost": {
+   "qian": 60,
+   "wood": 8
+  },
+  "buildDays": 14,
+  "requires": {
+   "tileNear": [
+    "hill",
+    "mountain"
+   ],
+   "tileCount": 4,
+   "radius": 3,
+   "roadWithin": 4
+  },
+  "jobs": 6,
+  "material": "stone",
+  "levels": [
+   {
+    "level": 1,
+    "models": [
+     "quarry_1_a",
+     "quarry_1_b",
+     "quarry_1_c"
+    ]
+   },
+   {
+    "level": 2,
+    "buildDays": 14,
+    "models": [
+     "quarry_2_a",
+     "quarry_2_b",
+     "quarry_2_c"
+    ]
+   },
+   {
+    "level": 3,
+    "buildDays": 18,
+    "models": [
+     "quarry_3_a",
+     "quarry_3_b",
+     "quarry_3_c"
+    ]
+   }
+  ],
+  "note": "丘・山すそ（半径3）で石材を切り出す。礎石・基壇に使う"
  },
  {
   "id": "barracks",
   "name": "兵舎",
   "category": "military",
-  "zone": "military",
+  "tab": "military",
   "size": [
    2,
    2
   ],
-  "soldiers": 40,
+  "place": [
+   "single"
+  ],
+  "cost": {
+   "qian": 150,
+   "wood": 25
+  },
+  "buildDays": 15,
+  "requires": {
+   "roadWithin": 3
+  },
+  "term": "junying",
   "levels": [
    {
     "level": 1,
-    "cost": 150,
-    "buildDays": 15,
     "models": [
      "barracks_1_a",
      "barracks_1_b",
@@ -951,7 +1272,6 @@
    },
    {
     "level": 2,
-    "cost": 300,
     "buildDays": 20,
     "models": [
      "barracks_2_a",
@@ -961,7 +1281,6 @@
    },
    {
     "level": 3,
-    "cost": 450,
     "buildDays": 25,
     "models": [
      "barracks_3_a",
@@ -976,17 +1295,26 @@
   "id": "stable",
   "name": "馬厩",
   "category": "military",
-  "zone": "military",
+  "tab": "military",
   "size": [
    2,
    2
   ],
-  "horses": 20,
+  "place": [
+   "single"
+  ],
+  "cost": {
+   "qian": 180,
+   "wood": 30
+  },
+  "buildDays": 15,
+  "requires": {
+   "roadWithin": 3
+  },
+  "term": "junying",
   "levels": [
    {
     "level": 1,
-    "cost": 180,
-    "buildDays": 15,
     "models": [
      "stable_1_a",
      "stable_1_b",
@@ -995,7 +1323,6 @@
    },
    {
     "level": 2,
-    "cost": 360,
     "buildDays": 20,
     "models": [
      "stable_2_a",
@@ -1005,7 +1332,6 @@
    },
    {
     "level": 3,
-    "cost": 540,
     "buildDays": 25,
     "models": [
      "stable_3_a",

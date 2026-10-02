@@ -1,11 +1,22 @@
 // セーブデータ: World を JSON にする / JSON から World を復元する。
-// version を持ち、古い版は migrate() で読み替える。マップの大きさ（w,h）を必ず含める。
+// version を持つ。版1（区画方式）は建物の置き方が違うため読めない（互換を切った）。マップの大きさ（w,h）を必ず含める。
 import { createRng } from '../../core/rng.js';
 import { createWorld } from '../world.js';
 import { recomputeServices } from '../structures.js';
 import { refreshModifiers } from '../modifiers.js';
 
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
+/** 読める最も古い版 */
+export const MIN_SAVE_VERSION = 2;
+export const OLD_FORMAT_MESSAGE = '古い形式（区画方式）の保存データのため読めません';
+
+/** 読める保存データか。読めないときは理由を返す */
+export function saveCompatibility(data) {
+  if (!data || typeof data !== 'object') return { ok: false, message: '保存データではありません' };
+  if ((data.version || 1) < MIN_SAVE_VERSION) return { ok: false, message: OLD_FORMAT_MESSAGE };
+  if (data.version > SAVE_VERSION) return { ok: false, message: '新しい版の保存データのため読めません' };
+  return { ok: true };
+}
 
 const arr = (typed) => Array.from(typed);
 
@@ -17,10 +28,10 @@ export function serializeWorld(world) {
     rngState: world.rng.getState(),
     day: world.day, calendar: { ...world.calendar },
     map: { w: world.map.w, h: world.map.h, tile: arr(world.map.tile), height: arr(world.map.height), fertility: arr(world.map.fertility), resource: arr(world.map.resource) },
-    roads: arr(world.roads), zones: arr(world.zones),
+    roads: arr(world.roads), materials: { ...world.materials },
     buildings: Array.from(world.buildings.values()), nextBuildingId: world.nextBuildingId,
     structures: Array.from(world.structures.values()), nextStructureId: world.nextStructureId, rank: world.rank, techs: world.techs, goods: { ...world.goods },
-    money: world.money, demand: { ...world.demand }, security: world.security, foodSufficient: world.foodSufficient,
+    money: world.money, indicators: { ...world.indicators }, security: world.security, foodSufficient: world.foodSufficient,
     policy: { ...world.policy }, population: { ...world.population }, grain: { ...world.grain }, loyalty: world.loyalty, hygiene: world.hygiene,
     foodSufficiency: world.foodSufficiency, finance: JSON.parse(JSON.stringify(world.finance)), stats: JSON.parse(JSON.stringify(world.stats)),
     log: world.log.slice(-100),
@@ -36,6 +47,8 @@ export function serializeWorld(world) {
 export function migrate(data) {
   const d = { ...data };
   if (!d.version) d.version = 1;
+  const c = saveCompatibility(d);
+  if (!c.ok) throw new Error(c.message);
   if (!d.map) throw new Error('セーブデータに map がありません');
   if (!d.map.w || !d.map.h) { const n = Math.round(Math.sqrt(d.map.tile.length)); d.map.w = n; d.map.h = n; }   // 大きさが無い古いデータは正方形とみなす
   return d;
@@ -48,7 +61,8 @@ export function deserializeWorld(data, reg) {
   const { w, h } = world.map;
   if (d.map.h !== h) throw new Error(`マップの大きさが一致しません (${d.map.w}×${d.map.h})`);
   world.map.tile.set(d.map.tile); world.map.height.set(d.map.height); world.map.fertility.set(d.map.fertility); world.map.resource.set(d.map.resource);
-  world.roads.set(d.roads); world.zones.set(d.zones); world.roadDirty = true;
+  world.roads.set(d.roads); world.roadDirty = true;
+  if (d.materials) world.materials = { ...world.materials, ...d.materials };
   world.buildings = new Map();
   world.buildingAt.fill(-1);
   for (const b of d.buildings) {
@@ -64,7 +78,7 @@ export function deserializeWorld(data, reg) {
   recomputeServices(world, reg);
   world.day = d.day; world.calendar = { ...d.calendar };
   world.rng = createRng(d.seed); world.rng.setState(d.rngState);
-  world.money = d.money; world.demand = { ...d.demand }; world.security = d.security; world.foodSufficient = d.foodSufficient;
+  world.money = d.money; if (d.indicators) world.indicators = { ...d.indicators }; world.security = d.security; world.foodSufficient = d.foodSufficient;
   if (d.policy) world.policy = { ...world.policy, ...d.policy };
   if (d.advisor) world.advisor = d.advisor;
   if (d.nation) world.nation = d.nation;

@@ -1,4 +1,4 @@
-// パネルの開閉（左の建物一覧・右の情報・需要・ログ）と、タッチ端末用の画面調整（操作説明の切り替え）。
+// パネルの開閉（左の建物一覧・右の情報・暮らしの指標・ログ）と、タッチ端末用の画面調整（操作説明の切り替え）。
 const KEY = 'sengoku-city.layout';
 
 export function setupLayout({ touch }) {
@@ -20,7 +20,7 @@ export function setupLayout({ touch }) {
   };
   make('toolbar', 'bottomcenter', '建築');
   make('info', 'right', '情報');
-  make('demand', 'bottomleft', '需要');
+  make('demand', 'bottomleft', '暮らし');
   make('log', 'bottom', '記録');
   return { state };
 }

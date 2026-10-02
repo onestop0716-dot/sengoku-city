@@ -1,5 +1,5 @@
-// 右上のミニマップ: 地形・区画・道路・水を描き、いまの視点の位置を枠で示す。クリック／ドラッグでその場所へ移動。
-// 描画は 1 秒ごと（区画や道路が変わりうる）。視点枠は毎フレーム。
+// 右上のミニマップ: 地形・建物（用途の色）・道路・水を描き、いまの視点の位置を枠で示す。クリック／ドラッグでその場所へ移動。
+// 描画は 1 秒ごと（建物や道路が変わりうる）。視点枠は毎フレーム。
 export function createMinimap(world, reg, orbit, env) {
   const el = document.getElementById('minimap');
   const { w, h } = world.map;
@@ -10,13 +10,13 @@ export function createMinimap(world, reg, orbit, env) {
   const img = mctx.createImageData(w, h);
   const hex = (s) => [parseInt(s.slice(1, 3), 16), parseInt(s.slice(3, 5), 16), parseInt(s.slice(5, 7), 16)];
   const tileRgb = reg.tiles.map((t) => hex(t.color || '#9db55a'));
-  const zoneRgb = reg.zones.map((z) => hex(z.color));
+  const tabRgb = new Map(reg.tabs.map((t) => [t.id, hex(t.color)]));
   const road = [92, 78, 58], struct = [240, 228, 200];
   const redraw = () => {
     const d = img.data;
     for (let i = 0; i < w * h; i++) {
       let c = tileRgb[world.map.tile[i]];
-      if (world.zones[i]) { const z = zoneRgb[world.zones[i] - 1]; c = world.buildingAt[i] !== -1 ? z : [(z[0] + c[0]) >> 1, (z[1] + c[1]) >> 1, (z[2] + c[2]) >> 1]; }
+      if (world.buildingAt[i] !== -1) { const b = world.buildings.get(world.buildingAt[i]); c = tabRgb.get(reg.buildingById.get(b.buildingType).tab) || c; }
       if (world.structAt && world.structAt[i] !== -1) c = struct;
       if (world.roads[i]) c = road;
       const o = i * 4; d[o] = c[0]; d[o + 1] = c[1]; d[o + 2] = c[2]; d[o + 3] = 255;
