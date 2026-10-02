@@ -38,6 +38,9 @@ import { createTouchBar } from './ui/touchbar.js';
 import { setupLayout } from './ui/layout.js';
 import { registerServiceWorker } from './app/sw-register.js';
 import { createDemandMeter } from './ui/demand-meter.js';
+import { createMinimap } from './ui/minimap.js';
+import { createLabels } from './ui/labels.js';
+import { createStatusCards } from './ui/status-cards.js';
 import { createGameLoop } from './app/game-loop.js';
 import { createInput } from './app/input.js';
 import { loadSettings, qualityFor } from './app/settings.js';
@@ -105,7 +108,7 @@ async function main() {
       agentsView.update(dt, loop.speed, orbit.camera.position);
       toolbar.update();
       sc.followShadow(orbit.state.target, quality.shadowRadius);
-      hud.update(); log.update(); infoPanel.update(); demand.update(); finance.update(); population.update(); persons.update(); research.update(); nation.update(); military.update(); eventModal.update(); ending.update(); settingsPanel.update(loop.stats); advisor.update(); viewPanel.update(); touchBar.update();
+      hud.update(); log.update(); infoPanel.update(); demand.update(); finance.update(); population.update(); persons.update(); research.update(); nation.update(); military.update(); eventModal.update(); ending.update(); settingsPanel.update(loop.stats); advisor.update(); viewPanel.update(); touchBar.update(); minimap.update(); labels.update(); statusCards.update();
       renderer.render(scene, orbit.camera);
     },
   });
@@ -135,6 +138,9 @@ async function main() {
   const toolbar = createToolbar(reg, world, () => { radiusOverlay.clear(); });
   const input = createInput({ canvas, picker, overlay, radiusOverlay, world, reg, toolbar, infoPanel, log, orbit, viewMode, viewPanel, settings, onPending: (a, n) => touchBar.setPending(a, n) });
   const touchBar = createTouchBar({ loop, orbit, toolbar, viewMode, input, show: device.touch });
+  const minimap = createMinimap(world, reg, orbit, env);
+  const labels = createLabels(world, reg, orbit, env);
+  const statusCards = createStatusCards(world, advisor, { onOpen: () => document.querySelector('#advisor .adv-char')?.click() });
   touchBar.setPending(null, 0);
 
   window.addEventListener('resize', () => { const s = sc.resize(); orbit.setAspect(s.w / s.h); });

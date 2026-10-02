@@ -69,6 +69,7 @@ export function createAdvisorUi(world, reg, settings, { onOpenSettings, onOpen, 
     el: panel,
     restart() { tutorial = true; lastDay = -1; },
     setExpression,   // 確認ツール用
+    todo() { return lastTodo; },
     /** 設定で案内役を変えたとき: 画像と名前を替え、ひとこと挨拶する */
     refreshCharacter() {
       const next = characterOf(reg, settings.advisorCharacter);

@@ -18,7 +18,7 @@ export function setupLayout({ touch }) {
     tab.addEventListener('click', () => { state[id] = !state[id]; save(); apply(); });
     apply();
   };
-  make('toolbar', 'left', '建物');
+  make('toolbar', 'bottomcenter', '建築');
   make('info', 'right', '情報');
   make('demand', 'bottomleft', '需要');
   make('log', 'bottom', '記録');

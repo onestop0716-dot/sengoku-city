@@ -1,7 +1,8 @@
-// 左のツール: 選択 / 道路 / 撤去（常時表示）と、折りたためるカテゴリ（区画・特殊建築）。
-// 開閉状態は localStorage に保存。選択中のツールを含むカテゴリは見出しを強調する。
+// 下部の建築バー: 左に 選択・道路・撤去（常時）、タブ（住居・農地・商業・工房・軍事・建築）で切り替わるアイコンボタン列。
+// 開いているタブは localStorage に保存。選択中のツールを含むタブは見出しを強調する。data-tool の値は従来どおり（入力処理と共通）。
 import { lockReason, structureName } from '../sim/structures.js';
 import { effectText } from './structure-info.js';
+import { icon, STRUCT_ICON, ZONE_ICON } from './icons.js';
 
 const KEY = 'sengoku-city.toolbar';
 const STRUCT_GROUPS = [
@@ -13,42 +14,51 @@ const STRUCT_GROUPS = [
 
 export function createToolbar(reg, world, onSelect) {
   const el = document.getElementById('toolbar');
-  let open = { residential: true, farm: true };
-  try { const raw = localStorage.getItem(KEY); if (raw) open = { ...open, ...JSON.parse(raw) }; } catch { /* 保存なし */ }
+  let open = { tab: 'residential' };
+  try { const raw = localStorage.getItem(KEY); if (raw) { const o = JSON.parse(raw); if (typeof o.tab === 'string') open.tab = o.tab; } } catch { /* 保存なし */ }
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(open)); } catch { /* 無視 */ } };
 
-  const cats = { residential: '住居区画', farm: '農地区画', market: '商業区画', workshop: '工房区画', military: '軍事区画' };
+  const cats = { residential: '住居', farm: '農地', market: '商業', workshop: '工房', military: '軍事' };
   const zoneGroups = new Map();
   for (const z of reg.zones) { if (!zoneGroups.has(z.category)) zoneGroups.set(z.category, []); zoneGroups.get(z.category).push(z); }
-  const zoneBtn = (z) => `<button data-tool="zone:${z.id}" data-cat="${z.category}" ${z.term ? `data-term="${z.term}"` : `data-tip="ドラッグで範囲を指定。条件を満たすと自動で建ちます"`}><span class="swatch" style="background:${z.color}"></span>${z.name}</button>`;
+  const shortName = (name) => name.replace(/^(住居|農地)（(.+)）$/, '$2');
+  const zoneBtn = (z) => `<button class="tool" data-tool="zone:${z.id}" data-cat="${z.category}" ${z.term ? `data-term="${z.term}"` : `data-tip="ドラッグで範囲を指定。条件を満たすと自動で建ちます"`}><span class="tool-ico" style="--zc:${z.color}">${icon(ZONE_ICON[z.category] || 'house', 26)}<span class="swatch" style="background:${z.color}"></span></span><span class="tool-name">${shortName(z.name)}</span></button>`;
   const structBtn = (s) => {
     const tip = `${reg.termById.get(s.term)?.desc || ''} 費用 ${s.cost}銭${s.linear ? '/マス（ドラッグで引く）' : ''}、維持 ${s.upkeep}銭/月。${s.effects.map(effectText).join('、')}`;
-    return `<button data-tool="struct:${s.id}" data-cat="structure" data-tip="${tip.replace(/"/g, '&quot;')}"><span class="cost">${s.cost}</span>${structureName(reg, s, world.nationId)}</button>`;
+    return `<button class="tool" data-tool="struct:${s.id}" data-cat="structure" data-tip="${tip.replace(/"/g, '&quot;')}"><span class="tool-ico">${icon(STRUCT_ICON[s.category] || 'build', 26)}</span><span class="tool-name">${structureName(reg, s, world.nationId)}</span><span class="cost">${s.cost}</span></button>`;
   };
-  const section = (id, title, body) => `<div class="cat" data-cat-id="${id}"><h4 class="cat-head" data-toggle="${id}"><span class="arrow"></span>${title}</h4><div class="cat-body">${body}</div></div>`;
-
-  let html = `<button data-tool="select" data-tip="マスや建物をクリックすると右に情報が出ます">選択・情報</button>`;
-  html += `<button data-tool="road" data-tip="ドラッグで L 字に敷きます。1マス ${reg.balance.road.costPerTile} 銭。建物は道路から3マス以内にしか建ちません。森は伐採されます">道路</button>`;
-  for (const [cat, zones] of zoneGroups) html += section(cat, cats[cat] || cat, zones.map(zoneBtn).join(''));
-  const structBody = STRUCT_GROUPS.map(([label, ids]) => `<div class="sub">${label}</div>` + ids.map((id) => reg.structureById.get(id)).filter((s) => s && !s.initial).map(structBtn).join('')).join('');
-  html += section('structure', '特殊建築', structBody);
-  html += section('other', 'その他', `<button data-tool="demolish" data-cat="other" data-tip="ドラッグ範囲の建物・区画・道路・建築を撤去します">撤去</button>`);
-  el.innerHTML = html;
+  const tabIds = [...zoneGroups.keys(), 'structure'];
+  const tabs = tabIds.map((id) => `<button class="tab" data-tab="${id}">${icon(id === 'structure' ? 'build' : ZONE_ICON[id] || 'house', 16)}<span>${id === 'structure' ? '建築' : cats[id] || id}</span></button>`).join('');
+  const bodies = [...zoneGroups].map(([cat, zones]) => `<div class="tab-body" data-body="${cat}">${zones.map(zoneBtn).join('')}</div>`).join('')
+    + `<div class="tab-body" data-body="structure">${STRUCT_GROUPS.map(([label, ids]) => `<div class="sub"><span class="sub-label">${label}</span>${ids.map((id) => reg.structureById.get(id)).filter((s) => s && !s.initial).map(structBtn).join('')}</div>`).join('')}</div>`;
+  el.innerHTML = `
+    <div class="tb-tabs">${tabs}</div>
+    <div class="tb-row">
+      <div class="tb-fixed">
+        <button class="tool" data-tool="select" data-tip="マスや建物をクリックすると右に情報が出ます"><span class="tool-ico">${icon('select', 26)}</span><span class="tool-name">選択</span></button>
+        <button class="tool" data-tool="road" data-tip="ドラッグで L 字に敷きます。1マス ${reg.balance.road.costPerTile} 銭。建物は道路から3マス以内にしか建ちません。森は伐採されます"><span class="tool-ico">${icon('road', 26)}</span><span class="tool-name">道路</span></button>
+        <button class="tool" data-tool="demolish" data-cat="other" data-tip="ドラッグ範囲の建物・区画・道路・建築を撤去します"><span class="tool-ico">${icon('demolish', 26)}</span><span class="tool-name">撤去</span></button>
+      </div>
+      <div class="tb-scroll">${bodies}</div>
+    </div>`;
 
   let current = 'select';
   const buttons = el.querySelectorAll('[data-tool]');
-  const heads = el.querySelectorAll('.cat');
+  const tabBtns = el.querySelectorAll('[data-tab]');
+  const bodyEls = el.querySelectorAll('[data-body]');
   const applyOpen = () => {
-    for (const c of heads) {
-      const id = c.dataset.catId;
-      c.classList.toggle('open', !!open[id]);
-      const activeInside = !!c.querySelector('[data-tool].active');
-      c.classList.toggle('has-active', activeInside);
-    }
+    if (!tabIds.includes(open.tab)) open.tab = tabIds[0];
+    for (const t of tabBtns) { t.classList.toggle('open', t.dataset.tab === open.tab); t.classList.toggle('has-active', !!el.querySelector(`[data-body="${t.dataset.tab}"] [data-tool].active`)); }
+    for (const b of bodyEls) b.classList.toggle('open', b.dataset.body === open.tab);
   };
-  const set = (id) => { current = id; buttons.forEach((b) => b.classList.toggle('active', b.dataset.tool === id)); applyOpen(); onSelect(id); };
+  const set = (id) => {
+    current = id; buttons.forEach((b) => b.classList.toggle('active', b.dataset.tool === id));
+    const body = el.querySelector(`[data-tool="${id}"]`)?.closest('[data-body]');
+    if (body) { open.tab = body.dataset.body; save(); }
+    applyOpen(); onSelect(id);
+  };
   buttons.forEach((b) => b.addEventListener('click', () => { if (!b.classList.contains('locked')) set(b.dataset.tool); }));
-  el.querySelectorAll('[data-toggle]').forEach((h) => h.addEventListener('click', () => { const id = h.dataset.toggle; open[id] = !open[id]; save(); applyOpen(); }));
+  tabBtns.forEach((t) => t.addEventListener('click', () => { open.tab = t.dataset.tab; save(); applyOpen(); }));
   const refreshLocks = () => {
     for (const b of buttons) {
       if (!b.dataset.tool.startsWith('struct:')) continue;

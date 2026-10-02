@@ -1,21 +1,22 @@
 // 上部バー: 日付・銭・穀・人口・民忠・治安・速度・パネルの開閉。
 import { formatDate } from '../sim/calendar.js';
+import { icon } from './icons.js';
 
 export function createHud(world, reg, loop, tooltip, { onSettings, onPanel } = {}) {
   const el = document.getElementById('hud');
   const nation = reg.nationById.get(world.nationId), city = reg.cityById.get(world.cityId);
   const speeds = reg.balance.time.speeds;
   el.innerHTML = `
-    <div class="stat"><span>${nation.name}・${city.name}</span> <span id="hud-rank" class="rank" data-tip="官位。功績と人口で昇進します（全国パネル）"></span></div>
-    <div class="stat"><span id="hud-date"></span></div>
+    <div class="stat place"><span class="city">${nation.name}・${city.name}</span> <span id="hud-rank" class="rank" data-tip="官位。功績と人口で昇進します（全国パネル）"></span></div>
     <span id="hud-fps" style="display:none"></span>
-    <div class="stat">${tooltip.termHtml('qian', nation.currencyName)} <b id="hud-money"></b></div>
-    <div class="stat">${tooltip.termHtml('grain', '穀')} <b id="hud-grain"></b><span style="opacity:.7;font-size:11px" id="hud-grain2"></span></div>
-    <div class="stat" data-tip="人口 / 住居の収容数"><span>人口</span> <b id="hud-pop"></b><span style="opacity:.7;font-size:11px" id="hud-cap"></span></div>
-    <div class="stat">${tooltip.termHtml('loyalty', '民忠')} <b id="hud-loy"></b></div>
-    <div class="stat">${tooltip.termHtml('security', '治安')} <b id="hud-sec"></b></div>
+    <div class="stat">${icon('coin')}${tooltip.termHtml('qian', nation.currencyName)} <b id="hud-money"></b></div>
+    <div class="stat">${icon('grain')}${tooltip.termHtml('grain', '穀')} <b id="hud-grain"></b><span class="sub" id="hud-grain2"></span></div>
+    <div class="stat" data-tip="人口 / 住居の収容数">${icon('people')}<span>人口</span> <b id="hud-pop"></b><span class="sub" id="hud-cap"></span></div>
+    <div class="stat">${icon('loyalty')}${tooltip.termHtml('loyalty', '民忠')} <b id="hud-loy"></b></div>
+    <div class="stat">${icon('security')}${tooltip.termHtml('security', '治安')} <b id="hud-sec"></b></div>
     <div class="stat" id="hud-food"></div>
     <div class="spacer"></div>
+    <div class="stat date"><span id="hud-date"></span></div>
     <button data-panel="finance">財政</button>
     <button data-panel="population">人口</button>
     <button data-panel="persons">人材</button>
@@ -23,8 +24,8 @@ export function createHud(world, reg, loop, tooltip, { onSettings, onPanel } = {
     <button data-panel="nation">全国</button>
     <button data-panel="military">軍</button>
     <button id="hud-view" title="表示モード（Tab で順送り、Esc で通常）">表示</button>
-    <button id="hud-menu" title="メニュー（保存・実績・設定）">≡</button>
-    <div id="hud-speed">${speeds.map((s, i) => `<button data-speed="${i}" title="${s === 0 ? '一時停止 (Space)' : s + '倍速'}">${s === 0 ? '❚❚' : '▶'.repeat(Math.log2(s) + 1)}</button>`).join('')}</div>
+    <button id="hud-menu" class="iconbtn" title="メニュー（保存・実績・設定）">${icon('menu', 18)}</button>
+    <div id="hud-speed">${speeds.map((s, i) => `<button data-speed="${i}" title="${s === 0 ? '一時停止 (Space)' : s + '倍速'}">${s === 0 ? icon('pause', 14) : icon('play', 14).repeat(Math.log2(s) + 1)}</button>`).join('')}</div>
   `;
   el.querySelectorAll('[data-speed]').forEach((b) => b.addEventListener('click', () => loop.setSpeedIndex(Number(b.dataset.speed))));
   el.querySelector('#hud-menu').addEventListener('click', () => onSettings?.());
