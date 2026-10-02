@@ -26,6 +26,7 @@
 - 動くもの（人・牛馬・車・舟）のモデルは前が +z。向き・車輪・脚の動きは `vehicles-view.js` / `people-view.js` が付ける。
 - 表示モード（データマップ）はゲームの状態を読むだけ（`sim/view-data.js` が値、`render/view-mode.js` が描画）。セーブには含めない。新しい状態値を足したら `STATE_MODES` に項目を追加する。
 - 技術・官職の効果は `sim/modifiers.js` で1つの補正（`world.mods`）にまとめ、各処理はそれを読む。新しい効果種別は `applyEffect` と `research.js` の `effectSummary` に追加する。人物データは `data/persons.json`（出典と `note` 必須、能力は史書の評価による相対値）。
+- 3D の見た目は `render/post.js` の後処理（輪郭線・セル調）で作る。設定 `style` で通常に戻せる。
 - UI の見た目はアニメ調（木枠・羊皮紙・金の縁、`src/ui/styles.css` 末尾のテーマ節）。アイコンは `src/ui/icons.js` のインライン SVG だけを使い、外部の画像・フォントは入れない。レイアウトは 上=資源バー / 左=状況札・需要・記録 / 右=ミニマップ・情報 / 下=建築バー。
 - 案内役の助言は `data/advice.json`（条件・文・優先度・間隔）。文はコードに書かない。案内役は創作のフクロウ「ホウ」だけ（`advice.json` の `characters` 先頭、画像 `assets/ui/advisor.png`。2人以上並べると設定に選択が出る）で、史実・漫画・映画・実在の人物の画像や設定は使わない（ユーザーから渡されても断る）。口癖は `tone.endings`（文末の言い換え）と `overrides`（id ごとの文の差し替え）で、文をコードに書かない。表情差分は持たず、動きと記号で状態を表す。
 - 外部素材は CC0 など再配布可能なものだけ。出典とライセンスを `CREDITS.md` に必ず記録する。

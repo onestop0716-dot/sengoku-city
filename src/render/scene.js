@@ -3,7 +3,7 @@ import * as THREE from 'three';
 
 const SKY_VERT = /* glsl */`varying vec3 vDir; void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
 const SKY_FRAG = /* glsl */`precision highp float; varying vec3 vDir; uniform vec3 top; uniform vec3 horizon;
-  void main(){ float t = smoothstep(-0.05, 0.45, vDir.y); gl_FragColor = vec4(mix(horizon, top, t), 1.0);
+  void main(){ float t = smoothstep(-0.02, 0.35, vDir.y); gl_FragColor = vec4(mix(horizon, top, t), 1.0);
   #include <tonemapping_fragment>
   #include <colorspace_fragment> }`;
 
@@ -16,7 +16,7 @@ export function createScene(canvas) {
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   const scene = new THREE.Scene();
-  const horizon = new THREE.Color('#e6ede9').convertSRGBToLinear();
+  const horizon = new THREE.Color('#dde9ee').convertSRGBToLinear();
   scene.background = horizon.clone();                        // 万一空が描けない領域があっても黒くしない
   scene.fog = new THREE.Fog(horizon.clone(), 140, 320);
 
@@ -24,7 +24,7 @@ export function createScene(canvas) {
   const sky = new THREE.Mesh(
     new THREE.SphereGeometry(1000, 24, 12),
     new THREE.ShaderMaterial({ vertexShader: SKY_VERT, fragmentShader: SKY_FRAG, side: THREE.BackSide, depthWrite: false, fog: false,
-      uniforms: { top: { value: new THREE.Color('#8fb6d8').convertSRGBToLinear() }, horizon: { value: horizon.clone() } } }),
+      uniforms: { top: { value: new THREE.Color('#5d9bd6').convertSRGBToLinear() }, horizon: { value: horizon.clone() } } }),
   );
   sky.frustumCulled = false;
   scene.add(sky);

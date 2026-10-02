@@ -3,6 +3,8 @@ import * as THREE from 'three';
 import { loadDataBrowser, createRegistry } from './data/registry.js';
 import { createWorld } from './sim/world.js';
 import { createScene } from './render/scene.js';
+import { createPostProcess } from './render/post.js';
+import { createClouds } from './render/clouds.js';
 import { createOrbitCamera } from './render/camera.js';
 import { createTerrainMesh } from './render/terrain-mesh.js';
 import { createAssetResolver } from './render/assets/resolve.js';
@@ -70,6 +72,8 @@ async function main() {
   const maxDistance = Math.max(60, Math.round(world.map.w * 1.35));   // ズームアウトの上限（マップ外が大きく見えすぎない）
   const orbit = createOrbitCamera(canvas, { centerX: world.map.w / 2, centerZ: world.map.h / 2, aspect: w / h, maxDistance, bounds: { minX: 0, maxX: world.map.w, minZ: 0, maxZ: world.map.h, margin: 12 } });
   sc.setFog(maxDistance * 1.4, maxDistance * 3.4);
+  const post = createPostProcess(renderer); post.setSize(w, h); post.setEnabled(settings.style !== 'plain');
+  const clouds = createClouds(scene, { centerX: world.map.w / 2, centerZ: world.map.h / 2, radius: Math.max(world.map.w, world.map.h) * 0.9 });
   const env = { terrain: null };
   const buildTerrain = (q) => {
     if (env.terrain) { scene.remove(env.terrain.group); env.terrain.dispose(); }
@@ -109,7 +113,8 @@ async function main() {
       toolbar.update();
       sc.followShadow(orbit.state.target, quality.shadowRadius);
       hud.update(); log.update(); infoPanel.update(); demand.update(); finance.update(); population.update(); persons.update(); research.update(); nation.update(); military.update(); eventModal.update(); ending.update(); settingsPanel.update(loop.stats); advisor.update(); viewPanel.update(); touchBar.update(); minimap.update(); labels.update(); statusCards.update();
-      renderer.render(scene, orbit.camera);
+      clouds.update(dt);
+      post.render(scene, orbit.camera);
     },
   });
   const applyQualityChange = () => {
@@ -117,10 +122,11 @@ async function main() {
     const rebuild = q.segments !== quality.segments;
     quality = q;
     sc.applyQuality(q);
+    post.setSamples(q.shadows ? 4 : 0);
     if (rebuild) { buildTerrain(q); buildings.refreshModels(); viewMode.reapply(); } else env.terrain.setRipple(q.ripple);
     buildings.setQuality(q); agentsView.setQuality(q);
   };
-  const settingsPanel = createSettingsPanel(settings, applyQualityChange, { advisorFrequencies: reg.advice.frequency, advisorCharacters: reg.advice.characters, onAdvisor: () => advisor.refreshCharacter() });
+  const settingsPanel = createSettingsPanel(settings, applyQualityChange, { onStyle: () => post.setEnabled(settings.style !== 'plain'), advisorFrequencies: reg.advice.frequency, advisorCharacters: reg.advice.characters, onAdvisor: () => advisor.refreshCharacter() });
   qctx.loop = loop; qctx.log = log;
   const finance = createFinancePanel(world, reg, tooltip);
   const population = createPopulationPanel(world, reg, tooltip);
@@ -143,7 +149,7 @@ async function main() {
   const statusCards = createStatusCards(world, advisor, { onOpen: () => document.querySelector('#advisor .adv-char')?.click() });
   touchBar.setPending(null, 0);
 
-  window.addEventListener('resize', () => { const s = sc.resize(); orbit.setAspect(s.w / s.h); });
+  window.addEventListener('resize', () => { const s = sc.resize(); orbit.setAspect(s.w / s.h); post.setSize(s.w, s.h); });
   window.addEventListener('keydown', (e) => { if (e.code === 'Space' && e.target.tagName !== 'INPUT') { e.preventDefault(); loop.togglePause(); } });
 
   const eventModal = createEventModal(world, reg, loop, log);
@@ -154,7 +160,7 @@ async function main() {
   window.addEventListener('pagehide', () => saveToSlot(world, reg, 'auto'));
   loop.start();
   assets.loadExternal(() => buildings.refreshModels());
-  window.__game = { world, reg, loop, THREE, settings, orbit, env, agentsView, advisor, viewMode, input, device, autoQ, rendererInfo: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles }) }; // デバッグ用
+  window.__game = { world, reg, loop, THREE, settings, orbit, env, agentsView, advisor, viewMode, input, device, autoQ, post, rendererInfo: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles }) }; // デバッグ用
 }
 
 main().catch((err) => { console.error(err); showError(`起動に失敗しました: ${err.message}`); });
